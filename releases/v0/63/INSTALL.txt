@@ -1,0 +1,21 @@
+PSP GameShelf v0.63.0
+
+La v0.62 restituiva 0x80020001 (eseguibile non valido) usando l'API MS_PS1.
+Questa versione torna all'API Memory Stick già accettata dal tuo PRO-C e
+mantiene soltanto la configurazione POPS prima del lancio.
+
+Sostituisci sulla SD soltanto:
+
+  PSP/GAME/GAMESHELF/EBOOT.PBP
+
+Poi apri GameShelf, vai alla vista [PS1] e premi X su Marvel vs Capcom.
+Il file di verifica sarà:
+
+  PSP/GAMESHELF/PS1_STATUS.TXT
+
+Dovrà indicare:
+
+  API type: PSP_INIT_APITYPE_MS2 (0x141)
+  Key config: PSP_INIT_KEYCONFIG_POPS (0x300)
+
+Se il gioco torna allo schermo nero, la v0.61 resta il recupero precedente.

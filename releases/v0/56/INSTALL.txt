@@ -1,0 +1,20 @@
+PSP GameShelf v0.56.0
+
+Questa versione aggiunge le viste Game Boy e Game Boy Color usando
+GBAdhoc 4.1.0 già presente sulla scheda.
+
+1. Sostituisci PSP/GAME/GAMESHELF/EBOOT.PBP con questo file.
+2. Mantieni installata la cartella PSP/GAME/GBAdhoc410 con EBOOT.PBP,
+   gbadhoc_me.prx e gbadhoc_home.prx.
+3. Le ROM .gb e .gbc devono stare in:
+   PSP/GAME/TempGBA4PSP-Mod/roms/
+
+Con Sinistra/Destra passa alle viste GB e GBC. Premendo X GameShelf copia la
+ROM nella cartella GBAdhoc410/roms e apre GBAdhoc. Seleziona quindi la ROM nel
+browser dell'emulatore. NES e GBA restano invariati.
+
+Le copertine usano rispettivamente boxart/gb e boxart/gbc.
+
+Se la PSP mostra una schermata nera, ripristina l'EBOOT della v0.55.
+
+MD5 EBOOT.PBP: 692e857cdaaefc46d4872b52b32328bd

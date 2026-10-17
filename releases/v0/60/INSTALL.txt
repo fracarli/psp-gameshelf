@@ -1,0 +1,14 @@
+PSP GameShelf v0.60.0
+
+Correzione dell'avvio PS1: GameShelf ora avvia gli EBOOT POPS senza passare
+un percorso come argomento, come fa il menu ufficiale Memory Stick.
+
+Sostituisci sulla SD soltanto:
+
+  PSP/GAME/GAMESHELF/EBOOT.PBP
+
+Vai alla vista [PS1], seleziona un gioco e premi X. I giochi PSP ISO restano
+in hand-off tramite LAUNCH.TXT finché il loader PRO-C non supporta il mount.
+
+Se la PSP mostra una schermata nera, spegnila tenendo POWER premuto e rimetti
+l'EBOOT della v0.58.

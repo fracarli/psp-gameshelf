@@ -5,6 +5,8 @@ dist/
 *.prx
 *.pbp
 .DS_Store
+__pycache__/
+*.py[cod]
 
 # Publishable release payloads only. Source/build artifacts remain ignored.
 !releases/**/EBOOT.PBP

@@ -1,0 +1,16 @@
+PSP GameShelf v0.61.0
+
+Corregge il riconoscimento PS1 includendo anche cartelle nominate per titolo,
+come Crash Bandicoot, Spyro e Marvel vs Capcom, oltre agli identificativi
+SCUS/SLUS/SLES/SCES.
+
+Sostituisci sulla SD soltanto:
+
+  PSP/GAME/GAMESHELF/EBOOT.PBP
+
+Vai alla vista [PS1] e premi X sul gioco. GameShelf crea anche:
+
+  PSP/GAMESHELF/PS1_STATUS.TXT
+
+Se il gioco ancora non parte, inviami quel file. La v0.60 resta la versione
+di recupero.

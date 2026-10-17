@@ -264,6 +264,57 @@ runtime because pressing HOME after a cross-homebrew launch can crash the PSP.
 TempGBA's own menu remains available through its controller mapping and should
 be used for `Quit/Exit` until a safe return-to-GameShelf hand-off is implemented.
 
+Version `v0.52.0` adds platform badges to the catalog views and creates the
+cover-art directory structure on the Memory Stick:
+`PSP/GAME/GAMESHELF/boxart/{psp,homebrew,gba,nes}/`. This is the first visual
+metadata step; actual image loading and additional emulator platforms follow in
+later releases.
+
+Version `v0.53.0` recognizes user-provided PNG covers. A cover uses the game
+filename without its extension, for example `FIFA 13.png`, and is placed in
+the matching platform folder. The catalog reports whether the selected entry
+has a matching cover; emulator launch behavior is unchanged.
+
+Version `v0.54.0` adds the Mac helper `tools/fetch_boxart.py`. It scans the
+connected SD card, downloads matching PNG box art from the public Libretro
+thumbnail index, and creates a PSP-native `.gsh` texture beside each PNG.
+GameShelf renders the `.gsh` texture directly in the catalog, avoiding a PNG
+decoder in the PSP EBOOT. It never uploads ROMs, BIOS files or downloaded
+covers to this repository.
+
+Version `v0.55.0` renders the generated `.gsh` textures in the catalog and
+supports the framebuffer pixel formats used by PSP models. The v0.53 EBOOT
+remains the recovery version if a hardware-specific display issue occurs.
+
+Version `v0.56.0` adds Game Boy and Game Boy Color catalog views. These ROMs
+are handed to the existing GBAdhoc 4.1.0 homebrew runtime, while NES and GBA
+launch paths remain unchanged.
+
+Version `v0.57.0` adds catalog views and emulator hand-off paths for Atari 2600,
+Mega Drive and Super Nintendo using the existing `psp2600`, `PicoDrive` and
+`s9xTYLme_mod` installations.
+
+Version `v0.58.0` adds automatic PS1 folder detection and a dedicated PS1 view.
+Folders containing regional PlayStation identifiers such as `SCUS`, `SLUS`,
+`SLES` or `SCES` are launched through their existing `EBOOT.PBP`.
+
+Version `v0.59.0` verifies the selected ISO before creating the launch request
+and writes `PSP/GAMESHELF/ISO_STATUS.TXT` with the exact hand-off result. This
+keeps the ISO path recoverable while the PRO-C-specific VSH loader remains
+experimental.
+
+Version `v0.60.0` fixes PS1 launching by matching the XMB behavior: POPS
+EBOOTs are loaded without passing a ROM path as an argument.
+
+Version `v0.62.0` uses the dedicated PS1 Memory Stick API type
+(`PSP_INIT_APITYPE_MS_PS1`) and sets the CFW init key to POPS
+(`PSP_INIT_KEYCONFIG_POPS`) before launching a PS1 EBOOT. It also records both
+values in `PSP/GAMESHELF/PS1_STATUS.TXT` for hardware diagnostics.
+
+Version `v0.63.0` backs off to the regular `PSP_INIT_APITYPE_MS2` after the
+target PRO-C returned `0x80020001` with `MS_PS1`; it keeps the POPS key
+configuration while using the API that the previous launcher accepted.
+
 Hardware testing confirmed v0.51.0 stable on the target PSP for NES and GBA:
 the catalog loads, NES ROMs launch through NesterJ, GBA ROMs launch through the
 integrated TempGBA runtime, and GBA games can exit through TempGBA's internal
@@ -313,6 +364,15 @@ git clone --recurse-submodules https://github.com/fracarli/psp-gameshelf.git
 cd psp-gameshelf
 make
 ```
+
+With the PSP SD card mounted as `SD-FAT32`, fetch covers with:
+
+```sh
+./tools/fetch_boxart.py
+```
+
+Use `--sd-root /path/to/card` for another mount point and `--force` to
+redownload existing images.
 
 The two emulator sources under `third_party/` are tracked as Git submodules
 so their original repositories and licenses remain clear. Use

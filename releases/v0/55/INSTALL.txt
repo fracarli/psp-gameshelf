@@ -1,0 +1,19 @@
+PSP GameShelf v0.55.0
+
+Questa versione corregge il renderer delle copertine supportando i formati
+framebuffer PSP 565, 5551, 4444 e 8888.
+
+Sostituisci sulla SD:
+
+  PSP/GAME/GAMESHELF/EBOOT.PBP
+
+con questo file. Non devi sostituire la cartella boxart: i file .gsh già
+creati dalla v0.54 restano validi.
+
+Avvia GameShelf e seleziona con Su/Giu un titolo con file .gsh. La copertina
+dovrebbe apparire sulla destra.
+
+Se la PSP mostra una schermata nera, spegnila tenendo premuto POWER e ripristina
+l'EBOOT della v0.53, che resta la versione di recupero stabile.
+
+MD5 EBOOT.PBP: 4f645902ef9db8456d6fdbf75601eaf0

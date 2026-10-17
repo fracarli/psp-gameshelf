@@ -36,10 +36,12 @@ Quit/Exit menu is the safe exit path.
 
 ## Current development sequence
 
-1. Add a safe return from TempGBA to GameShelf.
-2. Add Game Boy/Game Boy Color, Atari, Mega Drive and SNES adapters one at a
-   time, preserving a stable fallback for every failure.
-3. Add platform icons, cover art and richer metadata.
+1. Improve the v0.54 cover layout and replace text badges with bitmap icons
+   where supported.
+2. Add Atari, Mega Drive and SNES adapters one at a time, preserving a stable
+   fallback for every failure. Game Boy and Game Boy Color are covered by
+   v0.56 through GBAdhoc.
+3. Add a safe return from TempGBA to GameShelf.
 4. Add favourites, recently played entries and free-space information.
 5. Add an installer/checker that validates emulator files, BIOS files and
    directory structure.

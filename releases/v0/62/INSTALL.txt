@@ -1,0 +1,22 @@
+PSP GameShelf v0.62.0
+
+Corregge il contesto di avvio dei giochi PS1. La v0.61 trovava correttamente
+l'EBOOT ma lo avviava come un'applicazione PSP generica; questa versione usa
+l'API della Memory Stick per PS1 e la configurazione POPS del CFW.
+
+Sostituisci sulla SD soltanto:
+
+  PSP/GAME/GAMESHELF/EBOOT.PBP
+
+Poi apri GameShelf, vai alla vista [PS1] e premi X su Marvel vs Capcom.
+GameShelf aggiorna anche:
+
+  PSP/GAMESHELF/PS1_STATUS.TXT
+
+Nel file dovresti vedere:
+
+  API type: PSP_INIT_APITYPE_MS_PS1 (0x144)
+  Key config: PSP_INIT_KEYCONFIG_POPS (0x300)
+
+La v0.51 resta la versione stabile per NES/GBA; la v0.61 resta il recupero
+se la v0.62 dovesse causare un blocco.
