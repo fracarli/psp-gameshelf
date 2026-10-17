@@ -596,7 +596,7 @@ static void write_ps1_status(const char *folder, const char *path)
     SceUID file;
     char status[512];
     int length = snprintf(status, sizeof(status),
-                          "GameShelf PS1 launch v0.65\n"
+                          "GameShelf PS1 launch v0.66\n"
                           "Folder: %s\nEBOOT: %s\n"
                           "Arguments: EBOOT path (POPS launch protocol)\n"
                           "API type: PSP_INIT_APITYPE_MS4 (0x143)\n"
@@ -859,7 +859,6 @@ static void launch_selected(void)
         has_argument = 1;
         launch_apitype = PSP_INIT_APITYPE_MS4;
         launch_ps1 = 1;
-        sceIoChdir("ms0:/PSP/GAME");
         goto launch_application;
     }
     if (cursor >= homebrew_count) {
@@ -876,12 +875,6 @@ launch_application:
     param.args = has_argument ? strlen(argument) + 1 : 0;
     param.argp = has_argument ? argument : NULL;
     param.key = launch_ps1 ? "pops" : "game";
-    if (view_mode == 1) {
-        /* XMB starts official PS1 EBOOTs in the POPS context.  PRO-C exposes
-         * the same context through the PS1 memory-stick apitype and init key.
-         */
-        sctrlKernelSetInitKeyConfig(PSP_INIT_KEYCONFIG_POPS);
-    }
     result = sctrlKernelLoadExecVSHWithApitype(launch_apitype, path, &param);
     if (result < 0) {
         snprintf(status_message, STATUS_LENGTH, "Errore loader: 0x%08X",

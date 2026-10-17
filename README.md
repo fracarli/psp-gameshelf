@@ -324,6 +324,9 @@ Version `v0.65.0` uses the POPS launch protocol used by PSP shell launchers:
 the argument string. This replaces the generic `"game"` key and empty argument
 list that left the target POPS launch at a black screen.
 
+Version `v0.66.0` removes the extra global key-config change and working-directory
+change before the PS1 reboot, matching the known PSP sample sequence exactly.
+
 Hardware testing confirmed v0.51.0 stable on the target PSP for NES and GBA:
 the catalog loads, NES ROMs launch through NesterJ, GBA ROMs launch through the
 integrated TempGBA runtime, and GBA games can exit through TempGBA's internal
