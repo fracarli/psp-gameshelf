@@ -319,6 +319,11 @@ Version `v0.64.0` uses `sctrlKernelLoadExecVSHMs4()` for PS1 entries. The
 systemctrl interface documents this dedicated Memory Stick path as the PSX
 launcher, while `MS2` remains reserved for generic PSP games and homebrew.
 
+Version `v0.65.0` uses the POPS launch protocol used by PSP shell launchers:
+`PSP_INIT_APITYPE_MS4` (`0x143`), `param.key = "pops"`, and the EBOOT path as
+the argument string. This replaces the generic `"game"` key and empty argument
+list that left the target POPS launch at a black screen.
+
 Hardware testing confirmed v0.51.0 stable on the target PSP for NES and GBA:
 the catalog loads, NES ROMs launch through NesterJ, GBA ROMs launch through the
 integrated TempGBA runtime, and GBA games can exit through TempGBA's internal

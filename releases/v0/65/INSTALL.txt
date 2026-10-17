@@ -1,0 +1,21 @@
+PSP GameShelf v0.65.0
+
+Corregge il protocollo di avvio PS1: API type MS4 (0x143), key "pops" e
+percorso dell'EBOOT passato come argomento. Questa è la combinazione usata
+dagli shell launcher PSP per consegnare correttamente il gioco a POPS.
+
+Sostituisci sulla SD soltanto:
+
+  PSP/GAME/GAMESHELF/EBOOT.PBP
+
+Poi apri GameShelf, vai alla vista [PS1] e premi X su Marvel vs Capcom.
+Il file di verifica sarà:
+
+  PSP/GAMESHELF/PS1_STATUS.TXT
+
+Dovrà indicare:
+
+  API type: PSP_INIT_APITYPE_MS4 (0x143)
+  Key: pops
+
+Se non funziona, ripristina la v0.64 o la v0.63.

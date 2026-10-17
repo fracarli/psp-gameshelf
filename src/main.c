@@ -596,10 +596,11 @@ static void write_ps1_status(const char *folder, const char *path)
     SceUID file;
     char status[512];
     int length = snprintf(status, sizeof(status),
-                          "GameShelf PS1 launch v0.64\n"
+                          "GameShelf PS1 launch v0.65\n"
                           "Folder: %s\nEBOOT: %s\n"
-                          "Arguments: none (XMB-compatible launch)\n"
-                          "Loader: sctrlKernelLoadExecVSHMs4 (PSX path)\n"
+                          "Arguments: EBOOT path (POPS launch protocol)\n"
+                          "API type: PSP_INIT_APITYPE_MS4 (0x143)\n"
+                          "Key: pops\n"
                           "Key config: PSP_INIT_KEYCONFIG_POPS (0x300)\n",
                           folder, path);
     file = sceIoOpen("ms0:/PSP/GAMESHELF/PS1_STATUS.TXT",
@@ -851,11 +852,12 @@ static void launch_selected(void)
             return;
         }
         write_ps1_status(ps1_games[cursor], path);
-        /* POPS EBOOTs are launched by XMB without an argv path. Passing the
-         * path as an argument can produce a black screen even when the same
-         * EBOOT works normally from the Memory Stick menu. */
-        argument[0] = '\0';
-        has_argument = 0;
+        /* The POPS loadexec protocol uses the PS1 apitype, the "pops" key,
+         * and the EBOOT path as argp. This is the sequence used by PSP shell
+         * launchers; the generic "game" key leaves POPS at a black screen. */
+        strcpy(argument, path);
+        has_argument = 1;
+        launch_apitype = PSP_INIT_APITYPE_MS4;
         launch_ps1 = 1;
         sceIoChdir("ms0:/PSP/GAME");
         goto launch_application;
@@ -873,20 +875,14 @@ launch_application:
     param.size = sizeof(param);
     param.args = has_argument ? strlen(argument) + 1 : 0;
     param.argp = has_argument ? argument : NULL;
-    param.key = "game";
+    param.key = launch_ps1 ? "pops" : "game";
     if (view_mode == 1) {
         /* XMB starts official PS1 EBOOTs in the POPS context.  PRO-C exposes
          * the same context through the PS1 memory-stick apitype and init key.
          */
         sctrlKernelSetInitKeyConfig(PSP_INIT_KEYCONFIG_POPS);
     }
-    if (launch_ps1) {
-        /* systemctrl exposes a dedicated PSX/POPS Memory Stick launcher.
-         * MS2 is only the generic PSP/homebrew path. */
-        result = sctrlKernelLoadExecVSHMs4(path, &param);
-    } else {
-        result = sctrlKernelLoadExecVSHWithApitype(launch_apitype, path, &param);
-    }
+    result = sctrlKernelLoadExecVSHWithApitype(launch_apitype, path, &param);
     if (result < 0) {
         snprintf(status_message, STATUS_LENGTH, "Errore loader: 0x%08X",
                  (unsigned int)result);
