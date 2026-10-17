@@ -596,10 +596,10 @@ static void write_ps1_status(const char *folder, const char *path)
     SceUID file;
     char status[512];
     int length = snprintf(status, sizeof(status),
-                          "GameShelf PS1 launch v0.63\n"
+                          "GameShelf PS1 launch v0.64\n"
                           "Folder: %s\nEBOOT: %s\n"
                           "Arguments: none (XMB-compatible launch)\n"
-                          "API type: PSP_INIT_APITYPE_MS2 (0x141)\n"
+                          "Loader: sctrlKernelLoadExecVSHMs4 (PSX path)\n"
                           "Key config: PSP_INIT_KEYCONFIG_POPS (0x300)\n",
                           folder, path);
     file = sceIoOpen("ms0:/PSP/GAMESHELF/PS1_STATUS.TXT",
@@ -726,6 +726,7 @@ static void launch_selected(void)
     char argument[ENTRY_LENGTH];
     int has_argument = 0;
     int launch_apitype = PSP_INIT_APITYPE_MS2;
+    int launch_ps1 = 0;
     int result;
 
     if (view_mode == 3) {
@@ -855,9 +856,7 @@ static void launch_selected(void)
          * EBOOT works normally from the Memory Stick menu. */
         argument[0] = '\0';
         has_argument = 0;
-        /* PRO-C accepts the regular Memory Stick launch API. The PS1-specific
-         * MS5 API returns 0x80020001 on the target PSP before POPS starts. */
-        launch_apitype = PSP_INIT_APITYPE_MS2;
+        launch_ps1 = 1;
         sceIoChdir("ms0:/PSP/GAME");
         goto launch_application;
     }
@@ -881,7 +880,13 @@ launch_application:
          */
         sctrlKernelSetInitKeyConfig(PSP_INIT_KEYCONFIG_POPS);
     }
-    result = sctrlKernelLoadExecVSHWithApitype(launch_apitype, path, &param);
+    if (launch_ps1) {
+        /* systemctrl exposes a dedicated PSX/POPS Memory Stick launcher.
+         * MS2 is only the generic PSP/homebrew path. */
+        result = sctrlKernelLoadExecVSHMs4(path, &param);
+    } else {
+        result = sctrlKernelLoadExecVSHWithApitype(launch_apitype, path, &param);
+    }
     if (result < 0) {
         snprintf(status_message, STATUS_LENGTH, "Errore loader: 0x%08X",
                  (unsigned int)result);

@@ -315,6 +315,10 @@ Version `v0.63.0` backs off to the regular `PSP_INIT_APITYPE_MS2` after the
 target PRO-C returned `0x80020001` with `MS_PS1`; it keeps the POPS key
 configuration while using the API that the previous launcher accepted.
 
+Version `v0.64.0` uses `sctrlKernelLoadExecVSHMs4()` for PS1 entries. The
+systemctrl interface documents this dedicated Memory Stick path as the PSX
+launcher, while `MS2` remains reserved for generic PSP games and homebrew.
+
 Hardware testing confirmed v0.51.0 stable on the target PSP for NES and GBA:
 the catalog loads, NES ROMs launch through NesterJ, GBA ROMs launch through the
 integrated TempGBA runtime, and GBA games can exit through TempGBA's internal

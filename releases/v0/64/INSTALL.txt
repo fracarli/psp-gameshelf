@@ -1,0 +1,21 @@
+PSP GameShelf v0.64.0
+
+Questa versione corregge il percorso di avvio PS1 usando direttamente
+sctrlKernelLoadExecVSHMs4(), l'API systemctrl dedicata ai giochi PSX/POPS.
+La v0.63 usava ancora il loader generico MS2 e poteva lasciare lo schermo nero.
+
+Sostituisci sulla SD soltanto:
+
+  PSP/GAME/GAMESHELF/EBOOT.PBP
+
+Poi apri GameShelf, vai alla vista [PS1] e premi X su Marvel vs Capcom.
+Il file di verifica sarà:
+
+  PSP/GAMESHELF/PS1_STATUS.TXT
+
+Dovrà indicare:
+
+  Loader: sctrlKernelLoadExecVSHMs4 (PSX path)
+  Key config: PSP_INIT_KEYCONFIG_POPS (0x300)
+
+Se non funziona, ripristina la v0.63 o la v0.61.
