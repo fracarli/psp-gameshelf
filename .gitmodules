@@ -1,0 +1,7 @@
+[submodule "third_party/NesterJ-AoEX"]
+	path = third_party/NesterJ-AoEX
+	url = https://github.com/PSP-Archive/NesterJ-AoEX.git
+
+[submodule "third_party/TempGBA4PSP-Single-game"]
+	path = third_party/TempGBA4PSP-Single-game
+	url = https://github.com/GrabowskiDev/TempGBA4PSP-Single-game.git

@@ -1,0 +1,13 @@
+PSP GameShelf v0.49.0
+
+Sostituisci sulla scheda SD:
+
+1. EBOOT.PBP -> PSP/GAME/GAMESHELF/EBOOT.PBP
+2. L'intera cartella TempGBA/ -> PSP/GAME/GAMESHELF/TempGBA/
+
+La cartella completa contiene EBOOT, BIOS, PRX, dir.ini e le cartelle dati.
+Questa build non usa il parser dir.ini per assegnare le cartelle: imposta
+direttamente i percorsi runtime in memoria.
+
+MD5 GameShelf EBOOT.PBP: ef0c6ee24e0adced8461912ae712ca73
+MD5 TempGBA EBOOT.PBP:   591507491ffa0ee886bc375975d1c3c7

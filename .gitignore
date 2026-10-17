@@ -1,0 +1,24 @@
+build/
+dist/
+*.o
+*.elf
+*.prx
+*.pbp
+.DS_Store
+
+# Publishable release payloads only. Source/build artifacts remain ignored.
+!releases/**/EBOOT.PBP
+!releases/**/TempGBA/*.prx
+
+# User-owned or copyrighted runtime data must never be committed.
+*.gba
+*.gb
+*.gbc
+*.nes
+*.iso
+*.cso
+gba_bios.bin
+save/
+state/
+snapshot/
+cheats/

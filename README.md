@@ -309,8 +309,16 @@ compatible with the PSP.
 The project requires the PSPDEV/PSPSDK toolchain. Once installed:
 
 ```sh
+git clone --recurse-submodules https://github.com/fracarli/psp-gameshelf.git
+cd psp-gameshelf
 make
 ```
+
+The two emulator sources under `third_party/` are tracked as Git submodules
+so their original repositories and licenses remain clear. Use
+`git submodule update --init --recursive` when cloning without the recurse
+option. This repository does not include ROMs, save data or BIOS files; users
+must provide legally owned files separately.
 
 The resulting `EBOOT.PBP` can be copied to `PSP/GAME/GAMESHELF/` on a PSP
 running custom firmware. This repository contains no games, ROMs or BIOS files.
