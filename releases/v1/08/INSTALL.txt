@@ -1,5 +1,7 @@
-PSP GameShelf 1.08 - Atari 2600, Mega Drive and SNES test build
-Awaiting confirmation on a real PSP. Version 1.07 remains the confirmed fallback.
+PSP GameShelf 1.08 - stable release
+The user confirmed the installed setup works on PSP-3004, 6.61 PRO-C.
+This is a general confirmation, not an exhaustive per-game/save-state report.
+A fresh-card installation still needs separate hardware validation.
 
 Existing installation:
 python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --version 1.08 --check

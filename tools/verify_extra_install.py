@@ -11,6 +11,7 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'tools'))
 from check_installation import check_installation
 package=ROOT/'candidates/1.08'
+if not package.is_dir(): package=ROOT/'releases/v1/08'
 with tempfile.TemporaryDirectory() as d:
  root=Path(d);card=root/'card'
  with zipfile.ZipFile(package/'GameShelf-1.08-setup.zip') as z:

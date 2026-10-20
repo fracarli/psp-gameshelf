@@ -1,16 +1,19 @@
 # Next steps
 
-1. Confirm the 1.08 Atari/MD/SNES adapters on PSP: exact selected game,
-   controls, normal exit, battery saves and state separation between titles.
-2. Validate a fresh-card installation from the setup ZIP with a new user.
-3. Confirm recoverable missing-ROM cleanup on hardware and measure startup
-   preparation separately from the firmware hand-off.
-4. Choose a distinct final name and review the bridge icon at PSP size before
-   any repository or card-path rename. Preserve compatibility with installed data.
-5. Add an ongoing LinkedIn project entry now if desired; prepare the public
-   hardware demonstration/post after the new integrations are confirmed.
+1. Validate the optional XMB emulator filter on PSP: generated games, PSP/PS1
+   entries and direct launch must remain visible and working. Keep maintenance
+   and recovery tools accessible. Do not move runtime or save directories.
+2. Validate a fresh-card installation from the stable 1.08 setup ZIP with a
+   new user, including their own ROMs and GBA BIOS.
+3. Check recoverable missing-ROM cleanup and save/state separation per system
+   on hardware; measure preparation separately from firmware hand-off.
+4. Develop one installation and update flow for GameShelf and shared engines.
+   Existing emulator cores remain separate internally, with upstream licenses
+   and matching source. See architecture-next.md.
+5. Prepare an English public hardware demonstration and update the ongoing
+   LinkedIn project entry. GameShelf remains the chosen name.
 
-Confirmed: NES/GBA entries, covers, backgrounds, separate GBA saves, English UI,
-minimal startup bar and GB/GBC direct launch across multiple games in 1.07.
-Atari, Mega Drive and SNES are implemented in the 1.08 preview, not yet confirmed
-on hardware. PSP ISO and PS1 continue to use the PSP's normal home screen.
+The user confirmed the installed 1.08 setup works on PSP on 2026-10-20. This
+general confirmation follows earlier NES/GBA and GB/GBC tests; it is not an
+exhaustive game/save-state matrix or a fresh-card installation report.
+PSP ISO and PS1 continue to use the PSP's normal home screen.

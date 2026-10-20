@@ -7,7 +7,9 @@ Square cover icons and full-screen backgrounds are supported.
 **Confirmed on hardware:** NES/GBA launch, covers, backgrounds, separate GBA
 saves, English UI and loading feedback. Tested on PSP-3004, 6.61 PRO-C.
 **GB/GBC direct launch is also confirmed on hardware in 1.07.**
-Atari 2600, Mega Drive and SNES are implemented in the **1.08 test build**.
+**Version 1.08 is now stable:** the user confirmed the installed setup works
+on PSP. It adds Atari 2600, Mega Drive and SNES adapters. This general report
+does not replace dedicated per-system save/state or fresh-card installation checks.
 
 ## First installation
 
@@ -15,7 +17,7 @@ You need a PSP that **already runs homebrew with custom firmware**. GameShelf
 does not install or change firmware. With PRO-C, FastRecovery may be needed
 after a full shutdown. Back up your memory card before copying files.
 
-1. Download [GameShelf 1.07 setup ZIP](https://github.com/fracarli/psp-gameshelf/raw/refs/heads/main/releases/v1/07/GameShelf-1.07-setup.zip)
+1. Download [GameShelf 1.08 setup ZIP](https://github.com/fracarli/psp-gameshelf/raw/refs/heads/main/releases/v1/08/GameShelf-1.08-setup.zip)
    and extract it. This is the latest hardware-confirmed launcher/runtime.
 2. Copy the extracted **PSP** folder to the **root of the memory card**,
    merging with its existing PSP folder. Do not replace the whole PSP folder.
@@ -32,15 +34,15 @@ No Python, compiler or previous GameShelf versions are required for this first
 installation. The ZIP includes the adapted emulator executables and support
 modules. It contains **no games, BIOS, saves or downloaded artwork**.
 The assembled first-install ZIP has computer checks; a fresh-card hardware
-installation still needs confirmation. The individual NES/GBA runtimes have
-already been tested on the existing PSP setup.
+installation still needs confirmation. The user confirmed the installed 1.08
+setup on the existing PSP.
 
 | Files you provide | Location on the card |
 | --- | --- |
 | NES `.nes` games | `PSP/GAME/Nester_AoEX_R3/roms/` |
 | GBA `.gba` games | `PSP/GAME/TempGBA4PSP-Mod/roms/` |
 | GBA BIOS, named `gba_bios.bin`, 16,384 bytes | `PSP/GAME/TempGBA4PSP-Mod/` |
-| GB `.gb` / GBC `.gbc` games, **1.07 only** | `PSP/GAME/TempGBA4PSP-Mod/roms/` |
+| GB `.gb` / GBC `.gbc` games, **1.07 and newer** | `PSP/GAME/TempGBA4PSP-Mod/roms/` |
 
 NES and GB/GBC do not require the GBA BIOS. Scan limit: **32 games per system**,
 without subfolders. ROM names determine save associations: keep names unchanged.
@@ -55,8 +57,8 @@ Use the backup-preserving computer updater instead of merging a first-install
 ZIP over an existing setup. It requires Python 3.9 or newer:
 
 ```sh
-python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --version 1.07 --check
-python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --version 1.07 --backup-root ../PSP_BACKUP
+python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --version 1.08 --check
+python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --version 1.08 --backup-root ../PSP_BACKUP
 ```
 
 Replace `/Volumes/SD-FAT32` with your card path, for example `E:/` on Windows.
@@ -65,11 +67,11 @@ updates launcher and runtime together and verifies writes. Saves are preserved.
 Open GameShelf and press **X** to regenerate entries after updating.
 Restore the complete backup to roll back; do not downgrade only one executable.
 
-## Additional emulators: 1.08 preview
+## Atari, Mega Drive and SNES in 1.08
 
-[Download the 1.08 test setup ZIP](https://github.com/fracarli/psp-gameshelf/raw/refs/heads/main/candidates/1.08/GameShelf-1.08-setup.zip), or
+[Download the stable 1.08 setup ZIP](https://github.com/fracarli/psp-gameshelf/raw/refs/heads/main/releases/v1/08/GameShelf-1.08-setup.zip), or
 use the updater above with `--version 1.08` for an existing installation.
-Read the [1.08 instructions](candidates/1.08/INSTALL.txt).
+Read the [1.08 instructions](releases/v1/08/INSTALL.txt).
 
 | System | ROM directory | Uncompressed extensions |
 | --- | --- | --- |
@@ -88,12 +90,12 @@ only their executables alongside the GameShelf update. Existing support modules,
 ROMs and settings are retained. The first-install ZIP supplies the engines,
 modules and required keyboard assets; the optional upstream music archive is omitted.
 
-A new original bridge icon is used in this preview. The public name and card
-paths remain GameShelf while a new identity is being considered.
+The original bridge icon represents the connection between classic games and
+the PSP home screen. The project name remains GameShelf, as chosen by its owner.
 
-Computer checks pass; **Atari/MD/SNES startup, controls and saves still need PSP
-confirmation**. Version 1.07 remains the confirmed fallback. GB/GBC startup was
-confirmed with multiple games; dedicated save/state checks remain useful.
+Computer checks pass, and the user confirmed the installed 1.08 setup works on
+PSP. Dedicated save/state checks remain useful; the hardware report does not
+provide an exhaustive test matrix for every system or game.
 
 ## Covers and backgrounds
 
@@ -111,6 +113,14 @@ Names must match the ROM basename. Rectangular covers are centrally cropped.
 Run GameShelf and press X after changing artwork. Highlight a game and wait
 for XMB to display its background. ROM hacks may need manually supplied art.
 Downloaded art stays on the card and is never part of this repository.
+
+## Hiding emulator entries
+
+An optional Game Categories Lite filter can hide the shared emulator entries
+while retaining their executables and all existing game/save paths. GameShelf,
+FastRecovery and the N64 emulator remain visible because they are still useful.
+See [the XMB filter guide](docs/xmb-filter.md). This optional configuration
+is awaiting a PSP check and is not included in the stable setup ZIP.
 
 ## Saves, loading and library cleanup
 
@@ -136,7 +146,7 @@ ROM and regenerate to recreate its entry.
 | --- | --- |
 | NES / GBA | Confirmed on PSP |
 | GB / GBC | Direct launch confirmed on PSP in 1.07 |
-| Atari / Mega Drive / SNES | Implemented in 1.08; awaiting PSP tests |
+| Atari / Mega Drive / SNES | Available in stable 1.08; installed setup confirmed by user |
 | PSP ISO / PS1 | Use the normal PSP home screen; GameShelf launch remains unresolved on tested PRO-C |
 
 Each entry contains a small launcher copy; emulator runtimes remain shared.
@@ -160,7 +170,11 @@ are in [candidates/](candidates/). Archived executables are never overwritten.
 | [1.05](releases/v1/05/) | English UI and system-language selection |
 | [1.06](releases/v1/06/) | Confirmed startup feedback; one-copy preparation; first-install ZIP |
 | [1.07](releases/v1/07/) | GB/GBC direct launch confirmed; minimal loading bars |
-| [1.08 preview](candidates/1.08/) | Atari/MD/SNES adapters and new bridge icon |
+| [1.08](releases/v1/08/) | User-confirmed setup; Atari/MD/SNES adapters and bridge icon |
+
+See [the next architecture steps](docs/architecture-next.md) for a unified
+installation and [optional homebrew notes](docs/optional-homebrew.md) for
+Minecraft and Wi-Fi store research.
 
 ## Source, tests and licenses
 

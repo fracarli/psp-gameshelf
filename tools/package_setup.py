@@ -52,7 +52,10 @@ def package_setup(version):
         add(ROOT/'shared/extra_launch.h','SOURCE/shared/extra_launch.h')
         for patch in ['psp2600-gameshelf.patch','snes9x-gameshelf.patch']:
             add(ROOT/'patches'/patch,'SOURCE/'+patch)
-        payload['TEST-BUILD.txt']=b'1.08 requires PSP confirmation of Atari, Mega Drive and SNES launch and saves.\n'
+        if package.parent.name=='candidates':
+            payload['TEST-BUILD.txt']=b'1.08 awaits hardware confirmation.\n'
+        else:
+            payload['HARDWARE-STATUS.txt']=b'The user confirmed the installed 1.08 setup works on PSP-3004, 6.61 PRO-C.\nA fresh-card installation and dedicated per-system save/state checks remain separate validation steps.\n'
     payload[base+'INSTALL_VERSION.TXT']=(version+'\n').encode()
     payload['SOURCE/README.txt']=b'''Corresponding source: https://github.com/fracarli/psp-gameshelf
 Clone with --recurse-submodules and apply the included patches inside matching

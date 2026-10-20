@@ -7,7 +7,8 @@ If your setup needs FastRecovery after a full shutdown, run it first.
 Back up your memory card. For an existing GameShelf installation, use the
 backup-preserving update tool described in README.md instead of this ZIP.
 Version 1.07 has confirmed NES/GBA/GB/GBC direct launch.
-Version 1.08 is a test build adding Atari 2600, Mega Drive and SNES.
+Version 1.08 is the latest stable build. The user confirmed the installed
+setup works on PSP. It adds Atari 2600, Mega Drive and SNES support.
 
 1. Connect the PSP/card to your computer.
 2. Extract the ZIP. Copy its PSP folder to the ROOT of your memory card.
@@ -28,7 +29,7 @@ Version 1.08 is a test build adding Atari 2600, Mega Drive and SNES.
 4. Safely eject the card, return to the PSP and open Game > Memory Stick >
    PSP GameShelf. Press X to create entries. Review the result, then press X
    again to return to the PSP home screen.
-5. Open Game > Memory Stick and select an [NES], [GBA], [GB] or [GBC] game.
+5. Open Game > Memory Stick and select a generated game entry.
    You only need to run GameShelf again after adding/removing games or
    updating GameShelf. Existing generated entries persist after reboot.
 

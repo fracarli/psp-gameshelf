@@ -9,3 +9,12 @@ candidates/**/PicoDrive/readme.txt -whitespace
 candidates/**/PicoDrive/game_def.cfg -whitespace
 candidates/**/PicoDrive/skin/*.txt -whitespace
 candidates/**/Snes9x/DATA/*.dat -whitespace
+
+# Stable copies retain the same upstream formatting as the candidate payloads.
+releases/**/COPYING.txt -whitespace
+releases/**/Danzeff-NOTICE.txt -whitespace
+releases/**/OpenSPC-NOTICE.txt -whitespace
+releases/**/PicoDrive/readme.txt -whitespace
+releases/**/PicoDrive/game_def.cfg -whitespace
+releases/**/PicoDrive/skin/*.txt -whitespace
+releases/**/Snes9x/DATA/*.dat -whitespace

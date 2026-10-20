@@ -44,3 +44,5 @@ boxart/
 
 !releases/**/GBAdhoc/*.prx
 !candidates/**/Snes9x/*.prx
+
+!releases/**/Snes9x/*.prx

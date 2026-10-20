@@ -42,7 +42,7 @@ For the exact 1.06 TempGBA source adaptation, use the patch archived under
 `releases/v1/06/tempgba-gameshelf.patch`; the current patch includes 1.07 bars.
 
 
-## Atari 2600 and SNES adapters (1.08 preview)
+## Atari 2600 and SNES adapters (1.08)
 
 ```sh
 git -C third_party/PSP2600 apply ../../patches/psp2600-gameshelf.patch
@@ -68,4 +68,4 @@ upstream music archive, which contains game audio.
 
 PicoDrive is the unmodified official PSP 2.05 binary. Its native ROM argument
 interface needs no core patch. The archive provenance, checksum, source tag
-and original license are recorded under `candidates/1.08/PicoDrive/`.
+and original license are recorded under `releases/v1/08/PicoDrive/`.

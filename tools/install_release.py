@@ -16,7 +16,7 @@ def digest(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--sd-root', required=True, type=Path)
-    parser.add_argument('--version', choices=('1.00', '1.01', '1.02', '1.03', '1.04', '1.05', '1.06', '1.07', '1.08'), default='1.07')
+    parser.add_argument('--version', choices=('1.00', '1.01', '1.02', '1.03', '1.04', '1.05', '1.06', '1.07', '1.08'), default='1.08')
     parser.add_argument('--backup-root', type=Path)
     parser.add_argument('--check', action='store_true', help='check prerequisites without writing to the card')
     args = parser.parse_args()
