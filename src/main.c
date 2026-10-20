@@ -10,8 +10,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "../shared/gba_identity.h"
 
-PSP_MODULE_INFO("GameShelf", 0, 1, 3);
+PSP_MODULE_INFO("GameShelf", 0, 1, 4);
 PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER | THREAD_ATTR_VFPU);
 
 #define MAX_ENTRIES 32
@@ -492,6 +493,27 @@ static int write_gba_runtime_config(void)
     return 0;
 }
 
+static int write_gba_identity(const char *rom_name)
+{
+    unsigned char header[256];
+    char record[256];
+    const char *rom="ms0:/PSP/GAME/GAMESHELF/TempGBA/roms/game.gba";
+    SceIoStat st;
+    SceUID file;
+    int length,count;
+    if(sceIoGetstat(rom,&st)<0 || st.st_size<256 || st.st_size>33554432)return -1;
+    file=sceIoOpen(rom,PSP_O_RDONLY,0);
+    if(file<0)return -1;
+    count=sceIoRead(file,header,sizeof(header));sceIoClose(file);
+    if(count!=sizeof(header))return -1;
+    length=gsh_identity_encode(record,sizeof(record),rom_name,(unsigned int)st.st_size,header);
+    if(length<0)return -1;
+    file=sceIoOpen(GSH_IDENTITY_PATH,PSP_O_WRONLY|PSP_O_CREAT|PSP_O_TRUNC,0777);
+    if(file<0)return -1;
+    count=sceIoWrite(file,record,length);sceIoClose(file);
+    return count==length?0:-1;
+}
+
 static int prepare_gba_runtime(const char *rom_name)
 {
     static const char config[] =
@@ -524,6 +546,11 @@ static int prepare_gba_runtime(const char *rom_name)
     sceIoMkdir("ms0:/PSP/GAME/GAMESHELF/TempGBA/cfg", 0777);
     sceIoMkdir("ms0:/PSP/GAME/GAMESHELF/TempGBA/boxart", 0777);
     sceIoMkdir("ms0:/PSP/GAME/GAMESHELF/TempGBA/folder_boxart", 0777);
+    if(!gsh_valid_rom_name(rom_name))return -1;
+    /* Invalidate any previous identity before replacing the staged ROM. */
+    { SceIoStat old;
+      if(sceIoGetstat(GSH_IDENTITY_PATH,&old)>=0 && sceIoRemove(GSH_IDENTITY_PATH)<0)return -1;
+    }
     if (write_gba_runtime_config() < 0) return -1;
     file = sceIoOpen("ms0:/PSP/GAME/GAMESHELF/TempGBA/dir.ini",
                      PSP_O_WRONLY | PSP_O_CREAT | PSP_O_TRUNC, 0777);
@@ -560,7 +587,7 @@ static int prepare_gba_runtime(const char *rom_name)
                   "ms0:/PSP/GAME/GAMESHELF/exception.prx") < 0) return -1;
     if (copy_file("ms0:/PSP/GAME/GAMESHELF/exception.prx",
                   "ms0:/PSP/GAME/GAMESHELF/TempGBA/exception.prx") < 0) return -1;
-    return 0;
+    return write_gba_identity(rom_name);
 }
 
 static int is_ps1_folder(const char *folder_name)
@@ -909,7 +936,7 @@ static void draw_screen(void)
 
     pspDebugScreenClear();
     pspDebugScreenSetXY(0, 0);
-    pspDebugScreenPrintf("PSP GameShelf 1.03 - test PSP\n");
+    pspDebugScreenPrintf("PSP GameShelf 1.04 - test PSP\n");
     pspDebugScreenPrintf("PSP-3004 / TA-095v2 / FW 6.61\n\n");
     if (view_mode == 0) {
         pspDebugScreenPrintf("%s  Vista: PSP ISO / CSO (%d)\n", platform_badge(), iso_count);
@@ -1013,7 +1040,7 @@ int main(void)
         sceKernelExitGame();
         return 0;
     }
-    pspDebugScreenPrintf("GameShelf 1.03\nX: crea giochi NES/GBA nella Memory Stick\nCerchio: catalogo precedente   HOME: esci\n");
+    pspDebugScreenPrintf("GameShelf 1.04\nX: crea giochi NES/GBA nella Memory Stick\nCerchio: catalogo precedente   HOME: esci\n");
     setup_callbacks();
     for (;;) {
         sceCtrlReadBufferPositive(&pad, 1);

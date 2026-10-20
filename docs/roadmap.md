@@ -14,8 +14,9 @@ Version 1.03 is now stable; 1.02 remains an available fallback.
 
 ## Before adding more systems
 
-1. Verify GBA save isolation between two games using the shared temporary
-   `game.gba` runtime. Add per-ROM save routing if necessary, retaining backups.
+1. Test candidate 1.04 on PSP with the A/B/A save sequence. It now supplies
+   per-ROM names to TempGBA while retaining the temporary `game.gba` transport.
+   Launcher and runtime must be upgraded and restored together.
 2. Make installation and regeneration predictable: clear missing-file errors,
    automatic removal of stale entries owned by GameShelf, and a documented
    recovery procedure.

@@ -1,0 +1,35 @@
+PSP GameShelf 1.04 - salvataggi GBA separati, da confermare su PSP
+
+Aggiornamento accoppiato: aggiornare sia GameShelf sia TempGBA integrato.
+Sul Mac, con la SD collegata:
+python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --version 1.04 --backup-root ../PSP_BACKUP
+
+Il programma crea un backup e aggiorna solo i due EBOOT. Archivia e rimuove
+le vecchie voci GBA, che contengono ancora il launcher precedente.
+Sulla PSP aprire GameShelf 1.04 e premere X per rigenerare le voci.
+Non usare il vecchio launcher 1.03 insieme al nuovo runtime TempGBA 1.04.
+
+La ROM temporanea resta game.gba, ma salvataggi e stati usano il nome della
+ROM originale: ad esempio Gioco.sav e Gioco_0.svs, nelle cartelle save/state
+esistenti di GAMESHELF/TempGBA. Anche configurazioni, cheat e screenshot
+usano il nome originale. Il nome della ROM deve avere al massimo 180 byte.
+Il protocollo SAVE_ID.TXT controlla nome, dimensione e impronta dell’header
+prima di caricare i salvataggi. Non è una verifica crittografica dell’intera ROM.
+Un’identità mancante o non coerente interrompe il caricamento.
+
+I vecchi game.sav e game_*.svs non vengono eliminati né attribuiti a caso a
+un gioco. Anche i salvataggi archiviati degli altri emulatori restano intatti.
+Il trasferimento di vecchi salvataggi richiede di identificare il gioco corretto.
+Rinominare una ROM cambia il nome del relativo salvataggio: non rinominare
+le ROM durante questa prova.
+
+Prova su console:
+1. Avvia un gioco GBA A, salva nel gioco e con uno stato, poi usa Quit/Exit.
+2. Avvia un gioco GBA B, salva e usa Quit/Exit.
+3. Riapri A: verifica che ritrovi i propri progressi e il proprio stato.
+4. Riapri B e verifica anche i suoi progressi. Conferma inoltre icone e sfondi.
+Il tasto HOME del runtime conserva la limitazione precedente.
+
+Ripristino: usare il backup completo GAMESHELF e ripristinare anche le voci
+GBA dalla cartella generated_gba_entries del backup. I due EBOOT devono sempre
+essere riportati insieme alla versione precedente.

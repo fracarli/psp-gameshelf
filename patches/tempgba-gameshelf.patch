@@ -1,5 +1,5 @@
 diff --git a/source/Makefile b/source/Makefile
-index fce3122..4be3c57 100644
+index fce3122..6ee80f2 100644
 --- a/source/Makefile
 +++ b/source/Makefile
 @@ -39,11 +39,12 @@ TARGET = TempGBA
@@ -18,11 +18,12 @@ index fce3122..4be3c57 100644
   -DZLIB_CONST
  
  ASFLAGS = ${CFLAGS}
-@@ -54,4 +55,3 @@ LIBDIR = SDK/lib
- LIBS = src/libpower/libpsppower.a -lpspgu -lpsprtc -lpspaudio -lpspkubridge
+@@ -55,3 +56,5 @@ LIBS = src/libpower/libpsppower.a -lpspgu -lpsprtc -lpspaudio -lpspkubridge
  
  include ${PSPSDK}/lib/build.mak
--
+ 
++# Shared launcher/runtime save identity protocol.
++memory.o: ../../../shared/gba_identity.h
 diff --git a/source/src/gui.c b/source/src/gui.c
 index df1169b..9c196f4 100644
 --- a/source/src/gui.c
@@ -104,7 +105,7 @@ index df1169b..9c196f4 100644
  }
 -
 diff --git a/source/src/main.c b/source/src/main.c
-index 01aecae..22b408c 100644
+index 01aecae..57bcfba 100644
 --- a/source/src/main.c
 +++ b/source/src/main.c
 @@ -51,6 +51,14 @@ u32 option_clock_speed = PSP_CLOCK_333;
@@ -179,16 +180,35 @@ index 01aecae..22b408c 100644
  
    load_config_file();
    init_input();
+@@ -821,8 +834,8 @@ int user_main(int argc, char *argv[])
+     if (load_gamepak(load_filename) < 0)
+     {
+       clear_screen(COLOR32_BLACK);
+-      error_msg(MSG[MSG_ERR_LOAD_GAMEPACK], CONFIRMATION_CONT);
+-      menu();
++      error_msg(MSG[MSG_ERR_LOAD_GAMEPACK], CONFIRMATION_QUIT);
++      quit();
+     } 
+   }
+ 
 @@ -1144,4 +1157,3 @@ void main_write_mem_savestate(SceUID savestate_file)
  {
    MAIN_SAVESTATE_BODY(WRITE_MEM);
  }
 -
 diff --git a/source/src/memory.c b/source/src/memory.c
-index 349a393..09f8871 100644
+index 349a393..99aab6d 100644
 --- a/source/src/memory.c
 +++ b/source/src/memory.c
-@@ -2309,7 +2309,7 @@ CPU_ALERT_TYPE write_rtc(u32 address, u32 value)
+@@ -19,6 +19,7 @@
+  */
+ 
+ #include "common.h"
++#include "../../../../shared/gba_identity.h"
+ 
+ 
+ #define CONFIG_FILENAME  "game_config.txt"
+@@ -2309,7 +2310,7 @@ CPU_ALERT_TYPE write_rtc(u32 address, u32 value)
                    // Actually outputs the time, all of it
                    case RTC_COMMAND_OUTPUT_TIME_FULL:
                    {
@@ -197,7 +217,7 @@ index 349a393..09f8871 100644
                      int day_of_week;
  
                      sceRtcGetCurrentClockLocalTime(&current_time);
-@@ -2327,22 +2327,22 @@ CPU_ALERT_TYPE write_rtc(u32 address, u32 value)
+@@ -2327,22 +2328,22 @@ CPU_ALERT_TYPE write_rtc(u32 address, u32 value)
                      rtc_data[2] = encode_bcd(current_time.day);
                      rtc_data[3] = encode_bcd(day_of_week);
                      rtc_data[4] = encode_bcd(current_time.hour);
@@ -225,7 +245,27 @@ index 349a393..09f8871 100644
                      break;
                    }
                  }
-@@ -3616,4 +3616,3 @@ static void memory_write_mem_savestate(SceUID savestate_file)
+@@ -3444,7 +3445,18 @@ s32 load_gamepak(char *name)
+     if (p != NULL)
+       name = p + 1;
+ 
+-    sprintf(gamepak_filename, "%s", name);
++    /* Keep the original ROM basename for .sav, state, cfg and cheat files.
++     * The fixed game.gba is only a transport file, never a save identity. */
++    if (strcmp(name, "game.gba") == 0)
++    {
++      char original_name[MAX_FILE];
++      if (gsh_identity_load(GSH_IDENTITY_PATH, (unsigned int)file_size,
++                             gamepak_rom, original_name, sizeof(original_name)) < 0)
++        return -1;
++      strcpy(gamepak_filename, original_name);
++    }
++    else
++      sprintf(gamepak_filename, "%s", name);
+ 
+     char game_title[13];
+     char game_code[5];
+@@ -3616,4 +3628,3 @@ static void memory_write_mem_savestate(SceUID savestate_file)
  {
    MEMORY_SAVESTATE_BODY(WRITE_MEM);
  }
