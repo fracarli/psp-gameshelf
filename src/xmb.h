@@ -1,0 +1,137 @@
+/* GameShelf 1.01: generate per-ROM XMB EBOOTs, no emulator duplication. */
+static unsigned int read32(const unsigned char *p)
+{
+    return p[0] | ((unsigned int)p[1]<<8) | ((unsigned int)p[2]<<16) | ((unsigned int)p[3]<<24);
+}
+static void put32(unsigned char *p, unsigned int v)
+{
+    p[0]=v; p[1]=v>>8; p[2]=v>>16; p[3]=v>>24;
+}
+static unsigned int rom_id(const char *s, int mode)
+{
+    unsigned int h = 2166136261u ^ mode;
+    while (*s) { h ^= (unsigned char)*s++; h *= 16777619u; }
+    return h;
+}
+#include "xmb_icon.h"
+
+static int make_xmb_entry(const char *rom, int mode)
+{
+    unsigned char *b;
+    int updating=0;
+    SceUID f;
+    SceIoStat st;
+    unsigned int size, i, target=0, hits=0, sfo, end, keys, data, count;
+    char dir[128], path[160], temporary[164], backup[164], title[128];
+    unsigned int title_entry=0, oldmax=0, value=0, growth;
+    const char *base="ms0:/PSP/GAME/GAMESHELF/EBOOT.PBP";
+    if (strlen(rom) >= 256 || strchr(rom, '/') || strchr(rom, ':') || strchr(rom, '\\') || (mode!=3 && mode!=9)) return -1;
+    memset(&st, 0, sizeof(st));
+    if (sceIoGetstat(base, &st)<0 || st.st_size<40 || st.st_size>2097152) return -1;
+    size=(unsigned int)st.st_size;
+    b=malloc(size+128);
+    if (!b) return -1;
+    f=sceIoOpen(base, PSP_O_RDONLY, 0);
+    if (f<0) { free(b); return -1; }
+    i=sceIoRead(f,b,size); sceIoClose(f);
+    if (i!=size || read32(b)!=0x50425000) goto fail;
+    for (i=40;i+sizeof(xmb_target)<=size;i++) {
+        if (memcmp(b+i,(const void *)xmb_target.magic,16)==0) { target=i; hits++; }
+    }
+    if (hits!=1 || read32(b+target+16)!=0) goto fail;
+    put32(b+target+16,mode);
+    memset(b+target+20,0,256); strcpy((char *)b+target+20,rom);
+    /* Expand the final SFO TITLE value, keeping executable bytes unchanged. */
+    sfo=read32(b+8); end=read32(b+12);
+    if (sfo>size-20 || end>size || end<=sfo || read32(b+sfo)!=0x46535000) goto fail;
+    keys=read32(b+sfo+8); data=read32(b+sfo+12); count=read32(b+sfo+16);
+    if (count>64 || sfo+20+count*16>end || keys>=end-sfo || data>=end-sfo) goto fail;
+    for(i=0;i<count;i++) {
+        unsigned int e=sfo+20+i*16, k=b[e]|(b[e+1]<<8);
+        if (keys+k+6<=end-sfo && memcmp(b+sfo+keys+k,"TITLE",6)==0) {
+            title_entry=e; oldmax=read32(b+e+8); value=sfo+data+read32(b+e+12); break;
+        }
+    }
+    if (!title_entry || !oldmax || oldmax>128 || value>end || oldmax!=end-value) goto fail;
+    growth=128-oldmax;
+    memmove(b+end+growth,b+end,size-end);
+    size+=growth;
+    for (i=1;i<8;i++) put32(b+8+i*4,read32(b+8+i*4)+growth);
+    snprintf(title,sizeof(title),"[%s] %.115s",mode==3?"GBA":"NES",rom);
+    { char *dot=strrchr(title,'.'); if(dot) *dot=0; }
+    memset(b+value,0,128); strcpy((char *)b+value,title);
+    put32(b+title_entry+4,strlen(title)+1); put32(b+title_entry+8,128);
+    {
+        unsigned int icon_size=0, start=read32(b+12), finish=read32(b+16);
+        unsigned char *icon=xmb_cover_png(rom,mode,&icon_size);
+        if(icon) {
+            unsigned int old_size, new_size;
+            unsigned char *expanded;
+            if(finish<start || finish>size) { free(icon); goto fail; }
+            old_size=finish-start;new_size=size-old_size+icon_size;
+            expanded=realloc(b,new_size>size?new_size:size);
+            if(!expanded) { free(icon);goto fail; }
+            b=expanded;
+            memmove(b+start+icon_size,b+finish,size-finish);
+            memcpy(b+start,icon,icon_size);free(icon);
+            for(i=2;i<8;i++) put32(b+8+i*4,read32(b+8+i*4)-old_size+icon_size);
+            size=new_size;
+        }
+    }
+    snprintf(dir,sizeof(dir),"ms0:/PSP/GAME/GSH_%s_%08X",mode==3?"GBA":"NES",rom_id(rom,mode));
+    sceIoMkdir(dir,0777);
+    snprintf(path,sizeof(path),"%s/EBOOT.PBP",dir);
+    snprintf(temporary,sizeof(temporary),"%s/NEW.PBP",dir);
+    snprintf(backup,sizeof(backup),"%s/OLD.PBP",dir);
+    /* Replace only our own entry for this exact ROM; refuse hash collisions. */
+    if (sceIoGetstat(path,&st)>=0) {
+        unsigned char *old;
+        unsigned int old_size, old_target=0, old_hits=0;
+        if(st.st_size<40 || st.st_size>2097152) goto fail;
+        old_size=st.st_size;old=malloc(old_size);
+        if(!old) goto fail;
+        f=sceIoOpen(path,PSP_O_RDONLY,0);
+        if(f<0) { free(old);goto fail; }
+        i=sceIoRead(f,old,old_size);sceIoClose(f);
+        if(i==old_size && read32(old)==0x50425000) {
+            for(i=40;i+sizeof(xmb_target)<=old_size;i++) {
+                if(memcmp(old+i,(const void *)xmb_target.magic,16)==0) { old_target=i;old_hits++; }
+            }
+        }
+        if(old_hits==1) updating=read32(old+old_target+16)==(unsigned int)mode &&
+            memchr(old+old_target+20,0,256)!=NULL &&
+            strcmp((char *)old+old_target+20,rom)==0;
+        free(old);
+        if(!updating) goto fail;
+    }
+    if(sceIoGetstat(backup,&st)>=0) goto fail;
+    f=sceIoOpen(temporary,PSP_O_WRONLY|PSP_O_CREAT|PSP_O_TRUNC,0777);
+    if(f<0) goto fail;
+    i=sceIoWrite(f,b,size); sceIoClose(f);
+    if(i!=size) { sceIoRemove(temporary); goto fail; }
+    if(updating && sceIoRename(path,backup)<0) { sceIoRemove(temporary);goto fail; }
+    if(sceIoRename(temporary,path)<0) {
+        if(updating) sceIoRename(backup,path);
+        sceIoRemove(temporary);goto fail;
+    }
+    if(updating) sceIoRemove(backup);
+    free(b); return updating?1:0;
+fail:
+    free(b); return -1;
+}
+static void generate_xmb(void)
+{
+    int i, result, created=0, existing=0, failed=0;
+    scan_gba_roms(); scan_nes_roms();
+    for(i=0;i<gba_count+nes_count;i++) {
+        int gba=i<gba_count;
+        const char *rom=gba?gba_roms[i]:nes_roms[i-gba_count];
+        const char *runtime=gba?"ms0:/PSP/GAME/GAMESHELF/TempGBA/EBOOT.PBP":"ms0:/PSP/GAME/Nester_AoEX_R3/EBOOT.PBP";
+        if (!diagnostic_exists(runtime,0)) result=-1;
+        else result=make_xmb_entry(rom,gba?3:9);
+        if(result==0) created++; else if(result==1) existing++; else failed++;
+        pspDebugScreenPrintf("%s: %.45s\n",result<0?"ERRORE":result?"AGGIORNATO":"CREATO",rom);
+    }
+    pspDebugScreenPrintf("\nCreati %d, aggiornati %d, errori %d.\n",created,existing,failed);
+    pspDebugScreenPrintf("Massimo 32 ROM per sistema in questa prova.\n");
+}

@@ -10,6 +10,7 @@ __pycache__/
 
 # Publishable release payloads only. Source/build artifacts remain ignored.
 !releases/**/EBOOT.PBP
+!releases/**/NesterJ-EBOOT.PBP
 !releases/**/TempGBA/*.prx
 
 # User-owned or copyrighted runtime data must never be committed.
@@ -24,3 +25,16 @@ save/
 state/
 snapshot/
 cheats/
+
+# Generated build metadata and candidate binaries.
+PARAM.SFO
+!candidates/**/EBOOT.PBP
+
+# Local SD maintenance scripts and private installation data.
+tools/install_sd_100.py
+tools/clean_sd_duplicates.py
+PSP_BACKUP/
+boxart/
+*.sav
+*.srm
+*.svs

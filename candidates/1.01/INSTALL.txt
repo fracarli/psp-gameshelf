@@ -1,0 +1,23 @@
+PSP GameShelf 1.01 - copertine XMB, da confermare su PSP
+
+Aggiornamento da 1.00:
+1. Conserva una copia di PSP/GAME/GAMESHELF/EBOOT.PBP.
+2. Sostituiscilo con l’EBOOT.PBP di questa cartella.
+3. Mantieni gli emulatori, le ROM e i salvataggi già installati.
+4. Sul Mac puoi recuperare le copertine con:
+   python3 tools/fetch_boxart.py --sd-root /Volumes/SD-FAT32 --platform nes --platform gba
+5. Apri GameShelf 1.01 sulla PSP e premi X: aggiorna le voci esistenti.
+6. Premi nuovamente X per tornare alla home; rientra in Memory Stick.
+
+La copertina viene inserita come icona PNG 144x80, senza deformarla.
+Le immagini .gsh vengono lette da PSP/GAME/GAMESHELF/boxart/nes o gba,
+con lo stesso nome della ROM e senza estensione (esempio: Gioco.gsh).
+Se l’immagine manca o non è valida resta l’icona predefinita GameShelf.
+Gli hack senza una copertina corrispondente possono richiedere un PNG fornito
+manualmente e convertito con png_to_gsh di tools/fetch_boxart.py.
+
+Per la prima installazione installa prima il pacchetto stabile 1.00 e poi
+sostituisci soltanto l’EBOOT principale con questo.
+Per ripristinare copia l’EBOOT della 1.00 e rimuovi soltanto i collegamenti
+GSH_GBA_* / GSH_NES_* prima di rigenerarli con la 1.00.
+La 1.00 resta la versione stabile finché la 1.01 non viene provata su console.

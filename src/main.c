@@ -9,14 +9,22 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
-PSP_MODULE_INFO("CONTROLTEST", 0, 1, 1);
+PSP_MODULE_INFO("GameShelf", 0, 1, 1);
 PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER | THREAD_ATTR_VFPU);
 
 #define MAX_ENTRIES 32
 #define MAX_ROM_ENTRIES 32
 #define ENTRY_LENGTH 256
 #define STATUS_LENGTH 96
+
+/* Patched in each generated EBOOT; volatile prevents constant folding. */
+static volatile struct {
+    unsigned char magic[16];
+    unsigned int mode;
+    char rom[256];
+} xmb_target = { { 'G','S','H','X','M','B','1','0','0','T','A','R','G','E','T','!' }, 0, "" };
 
 static int done = 0;
 static int refresh = 1;
@@ -882,6 +890,9 @@ launch_application:
     }
 }
 
+// Generator shares the existing emulator launch adapters.
+#include "xmb.h"
+
 static void draw_screen(void)
 {
     int index;
@@ -898,7 +909,7 @@ static void draw_screen(void)
 
     pspDebugScreenClear();
     pspDebugScreenSetXY(0, 0);
-    pspDebugScreenPrintf("PSP GameShelf v0.57.0\n");
+    pspDebugScreenPrintf("PSP GameShelf 1.01 - test PSP\n");
     pspDebugScreenPrintf("PSP-3004 / TA-095v2 / FW 6.61\n\n");
     if (view_mode == 0) {
         pspDebugScreenPrintf("%s  Vista: PSP ISO / CSO (%d)\n", platform_badge(), iso_count);
@@ -983,8 +994,43 @@ int main(void)
     SceCtrlData pad;
 
     pspDebugScreenInit();
-    prepare_boxart_dirs();
+    if (xmb_target.mode != 0) {
+        char name[256];
+        unsigned int mode = xmb_target.mode;
+        memcpy(name, (const void *)xmb_target.rom, sizeof(name));
+        name[255] = '\0';
+        setup_callbacks();
+        if ((mode == 3 || mode == 9) && name[0] &&
+            !strchr(name, '/') && !strchr(name, ':') && !strchr(name, '\\')) {
+            view_mode = mode;
+            cursor = 0;
+            if (mode == 3) { strcpy(gba_roms[0], name); gba_count = 1; }
+            else { strcpy(nes_roms[0], name); nes_count = 1; }
+            launch_selected();
+        } else set_status("Collegamento non valido.");
+        pspDebugScreenPrintf("%s\nPremi HOME per uscire.\n", status_message);
+        while (!done) sceKernelDelayThread(16000);
+        sceKernelExitGame();
+        return 0;
+    }
+    pspDebugScreenPrintf("GameShelf 1.01\nX: crea giochi NES/GBA nella Memory Stick\nCerchio: catalogo precedente   HOME: esci\n");
     setup_callbacks();
+    for (;;) {
+        sceCtrlReadBufferPositive(&pad, 1);
+        if (done) { sceKernelExitGame(); return 0; }
+        if (pad.Buttons & PSP_CTRL_CROSS) {
+            generate_xmb();
+            pspDebugScreenPrintf("\nPremi X per tornare alla home.\n");
+            do { sceCtrlReadBufferPositive(&pad, 1); sceKernelDelayThread(16000); }
+            while (pad.Buttons & PSP_CTRL_CROSS);
+            do { sceCtrlReadBufferPositive(&pad, 1); sceKernelDelayThread(16000); }
+            while (!(pad.Buttons & PSP_CTRL_CROSS) && !done);
+            sceKernelExitGame(); return 0;
+        }
+        if (pad.Buttons & PSP_CTRL_CIRCLE) break;
+        sceKernelDelayThread(16000);
+    }
+    prepare_boxart_dirs();
     sceCtrlSetSamplingCycle(0);
     sceCtrlSetSamplingMode(PSP_CTRL_MODE_ANALOG);
 

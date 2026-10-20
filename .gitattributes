@@ -1,0 +1,2 @@
+# Patch files preserve upstream whitespace, including diff context prefixes.
+patches/*.patch -whitespace

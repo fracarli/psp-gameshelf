@@ -65,7 +65,7 @@ def find_remote_name(index: dict[str, str], title: str) -> str | None:
 def list_boxarts(playlist: str) -> dict[str, str]:
     """Return normalized filename -> original filename from the remote index."""
     index_url = f"{BASE_URL}/{quote(playlist)}/Named_Boxarts/"
-    request = Request(index_url, headers={"User-Agent": "PSP-GameShelf/0.54"})
+    request = Request(index_url, headers={"User-Agent": "PSP-GameShelf/1.01"})
     with urlopen(request, timeout=20) as response:
         html = response.read().decode("utf-8", errors="replace")
     names = re.findall(r'href="([^"]+\.png)"', html, flags=re.IGNORECASE)
@@ -74,7 +74,7 @@ def list_boxarts(playlist: str) -> dict[str, str]:
 
 def download_cover(playlist: str, remote_name: str, destination: Path) -> None:
     url = f"{BASE_URL}/{quote(playlist)}/Named_Boxarts/{quote(remote_name)}"
-    request = Request(url, headers={"User-Agent": "PSP-GameShelf/0.54"})
+    request = Request(url, headers={"User-Agent": "PSP-GameShelf/1.01"})
     with urlopen(request, timeout=30) as response:
         data = response.read()
     destination.write_bytes(data)
@@ -171,6 +171,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--sd-root", type=Path, default=Path("/Volumes/SD-FAT32"))
     parser.add_argument("--force", action="store_true", help="redownload existing covers")
+    parser.add_argument("--platform", choices=SYSTEMS, action="append", help="limit to a platform (repeatable)")
     args = parser.parse_args()
 
     sd_root = args.sd_root.expanduser().resolve()
@@ -180,6 +181,8 @@ def main() -> int:
 
     covers_root = sd_root / "PSP/GAME/GAMESHELF/boxart"
     roms = scan_roms(sd_root)
+    if args.platform:
+        roms = [item for item in roms if item[0] in args.platform]
     if not roms:
         print("Nessuna ROM supportata trovata sulla scheda.")
         return 0
