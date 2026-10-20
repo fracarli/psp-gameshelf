@@ -47,8 +47,8 @@ with tempfile.TemporaryDirectory() as d:
     assert not entry.exists()
     backup=next(backups.iterdir())
     assert (backup/'generated_gba_entries/GSH_GBA_TEST/EBOOT.PBP').read_bytes()==b
-    assert (shelf/'EBOOT.PBP').read_bytes()==(ROOT/'candidates/1.06/EBOOT.PBP').read_bytes()
-    assert (shelf/'TempGBA/EBOOT.PBP').read_bytes()==(ROOT/'candidates/1.06/TempGBA/EBOOT.PBP').read_bytes()
+    assert (shelf/'EBOOT.PBP').read_bytes()==(ROOT/'releases/v1/06/EBOOT.PBP').read_bytes()
+    assert (shelf/'TempGBA/EBOOT.PBP').read_bytes()==(ROOT/'releases/v1/06/TempGBA/EBOOT.PBP').read_bytes()
     assert (backup/'GAMESHELF/TempGBA/EBOOT.PBP').read_bytes()==old_runtime
     assert (shelf/'TempGBA/save/game.sav').read_bytes()==b'legacy SRAM must survive'
     assert (shelf/'TempGBA/state/game_0.svs').read_bytes()==b'legacy state must survive'

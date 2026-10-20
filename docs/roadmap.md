@@ -1,32 +1,17 @@
 # Next steps
 
-## Confirmed on PSP
+1. Confirm 1.07 on PSP: direct GB/GBC startup, save/reopen each, existing
+   NES/GBA regression checks and graphical loading-bar appearance.
+2. Validate the first-install ZIP on a fresh card/setup, including a user
+   following START-HERE without development tools. Keep recovery backups.
+3. Confirm recoverable cleanup by temporarily moving and restoring a ROM.
+   Measure preparation and end-to-end startup separately before claiming speedups.
+4. Integrate Atari, then Mega Drive and SNES, each with explicit ROM selection,
+   preserved saves, source/license records and a separate hardware test.
+5. Prepare an English hardware demonstration and public announcement only
+   after the first-install and new-system tests. Posting requires user approval.
 
-- NES/GBA direct launch, cover icons and full-screen backgrounds.
-- Independent GBA saves in 1.04.
-- English UI in 1.05, with the unchanged 1.04 save runtime.
-
-## Current candidate: 1.06
-
-- Visible preparation/ROM-copy progress and emulator loading messages.
-- One GBA ROM copy rather than two; unchanged support files are not rewritten.
-- Read-only installer preflight before backup and update.
-- Recoverable cleanup of verified missing-ROM entries during regeneration.
-
-Confirm startup behavior on PSP with small and large GBA ROMs and a NES game.
-Compare launch times without assuming firmware hand-off time has disappeared.
-Check existing saves and test cleanup by temporarily moving, then restoring,
-a ROM. Keep 1.05 as the stable rollback until these checks pass.
-
-## Next integration
-
-Add direct GB/GBC launch after validating 1.06. Inspect the GBAdhoc startup
-interface and source before claiming selected-ROM support. Follow with Atari
-as a separate adapter. Preserve a hardware-confirmed fallback for each change.
-
-## Public demonstration
-
-Check upstream license notices and corresponding emulator sources; prepare a
-short install guide and a 30–60 second hardware demonstration showing Memory
-Stick icons, backgrounds, direct launch and save recovery. Draft public posts
-for review before posting to any community or social account.
+Confirmed foundation: NES/GBA XMB entries, covers, backgrounds, independent GBA
+saves, English UI and visible startup feedback. GB/GBC are implemented in the
+1.07 preview. Other emulator entries remain a future integration, not a claim
+that catalog visibility already provides direct launch.

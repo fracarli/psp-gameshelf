@@ -1,0 +1,23 @@
+PSP GameShelf 1.07 - test build, awaiting PSP confirmation
+
+New: direct GB/GBC entries with covers/backgrounds; graphical loading bars.
+Use GameShelf-1.07-setup.zip for a FIRST installation on an already modified PSP.
+Read START-HERE.txt inside it. Games and GBA BIOS are not supplied.
+
+For an EXISTING GameShelf installation, use the backup-preserving updater:
+python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --version 1.07 --check
+python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --version 1.07 --backup-root ../PSP_BACKUP
+Open GameShelf and press X to regenerate entries, then X to return to XMB.
+Old GBA entries are backed up before removal. NES entries update in place.
+GB/GBC ROMs: PSP/GAME/TempGBA4PSP-Mod/roms/*.gb or *.gbc.
+Their dedicated runtime is PSP/GAME/GAMESHELF/GBAdhoc; the original GBAdhoc410
+installation is preserved. ROMs are read in place, with no staging copy.
+Battery saves use the original ROM basename with .gb.sav or .gbc.sav beside
+the source ROM. States use the upstream console-specific state suffixes.
+Existing GBAdhoc410 sidecars are not automatically migrated from its roms folder.
+
+Test on PSP: generate entries; launch one GB and one GBC title directly; save,
+exit and reopen each. Check existing NES/GBA games and saves. Loading bars
+show preparation stages; they do not estimate total firmware hand-off time.
+The default emulator menu remains available when leaving a GB/GBC game.
+Restore the complete backup to roll back paired launcher and runtimes.

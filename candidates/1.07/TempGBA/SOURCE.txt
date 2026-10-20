@@ -1,0 +1,15 @@
+TempGBA4PSP Single-game / GameShelf integration.
+Original project: https://github.com/GrabowskiDev/TempGBA4PSP-Single-game
+Core source headers credit Exophase and takka and specify GPL version 2 or later.
+
+Corresponding source in this repository:
+- third_party/TempGBA4PSP-Single-game at the recorded submodule commit.
+- patches/tempgba-gameshelf.patch, applied inside that submodule.
+- shared/gba_identity.h (included by the patched memory.c).
+The patch includes the Makefile used to build this runtime. The source tree
+must remain under the parent GameShelf repository for the shared header path.
+This runtime and its modifications retain the upstream GPL terms.
+GameShelf itself retains its existing MIT license.
+
+Version 1.07 replaces initialization/loading text with a graphical stage bar.
+The save identity protocol and emulation logic remain unchanged from 1.04.

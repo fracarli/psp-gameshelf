@@ -1,5 +1,7 @@
 PSP GameShelf 1.06 - loading feedback, preparation optimization and cleanup
-Awaiting confirmation on a real PSP. Version 1.05 remains the stable fallback.
+Game launch and visible loading feedback confirmed on PSP.
+The reported speed difference is subjective, not a measured benchmark.
+Recoverable missing-ROM cleanup still needs a dedicated hardware test.
 
 Check the existing installation without changing any files:
 python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --check

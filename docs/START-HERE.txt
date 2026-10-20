@@ -1,0 +1,51 @@
+PSP GameShelf - first installation
+
+BEFORE YOU START
+GameShelf requires a PSP that already runs homebrew with custom firmware.
+It does not modify or install firmware. Tested: PSP-3004, 6.61 PRO-C.
+If your setup needs FastRecovery after a full shutdown, run it first.
+Back up your memory card. For an existing GameShelf installation, use the
+backup-preserving update tool described in README.md instead of this ZIP.
+The 1.07 ZIP is a test build: GB/GBC need confirmation on a real PSP.
+
+1. Connect the PSP/card to your computer.
+2. Extract the ZIP. Copy its PSP folder to the ROOT of your memory card.
+   The root is the place where PSP and ISO normally appear.
+   Correct: [card]/PSP/GAME/GAMESHELF/EBOOT.PBP
+   Wrong:   [card]/PSP/PSP/GAME/GAMESHELF/EBOOT.PBP
+   On macOS, merge folders; do not replace your whole existing PSP folder.
+3. Add your own game files (up to 32 per system, no subfolders):
+   NES .nes:  PSP/GAME/Nester_AoEX_R3/roms/
+   GBA .gba:  PSP/GAME/TempGBA4PSP-Mod/roms/
+   GB .gb and GBC .gbc (1.07 only): same roms folder as GBA.
+   GBA requires your own 16,384-byte gba_bios.bin in:
+              PSP/GAME/TempGBA4PSP-Mod/gba_bios.bin
+   NES, GB and GBC do not require that GBA BIOS.
+4. Safely eject the card, return to the PSP and open Game > Memory Stick >
+   PSP GameShelf. Press X to create entries. Review the result, then press X
+   again to return to the PSP home screen.
+5. Open Game > Memory Stick and select an [NES], [GBA], [GB] or [GBC] game.
+   You only need to run GameShelf again after adding/removing games or
+   updating GameShelf. Existing generated entries persist after reboot.
+
+COVERS
+Optional. Missing covers do not stop games from launching.
+See README.md > Covers for the computer artwork helper. After adding art,
+open GameShelf and press X to update the entries.
+
+SAVES AND EXIT
+GBA: use the emulator's Quit/Exit menu. Saves are in
+PSP/GAME/GAMESHELF/TempGBA/save/ and states in TempGBA/state/.
+GB/GBC 1.07: console-specific saves/states are beside the original ROM.
+Keep the ROM filename unchanged to retain its save association.
+Never delete the emulator/runtime folders when removing a game entry.
+
+TROUBLESHOOTING
+Corrupted data/cannot start: check your custom firmware is active and that
+EBOOT.PBP is in the exact path above.
+No entries: check file extensions, folders, the 32-game limit and the X summary.
+GBA fails: check the BIOS file name/size and copy the complete setup payload.
+Long black gap: some firmware hand-off delay remains; the loading indicator
+cannot measure that phase. A failed launch needs investigation, not repeated
+firmware changes.
+This package contains no games, GBA BIOS, saves or downloaded cover artwork.

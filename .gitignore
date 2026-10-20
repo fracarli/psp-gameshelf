@@ -39,3 +39,5 @@ boxart/
 *.sav
 *.srm
 *.svs
+
+!candidates/**/GBAdhoc/*.prx

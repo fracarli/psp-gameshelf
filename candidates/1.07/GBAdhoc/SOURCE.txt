@@ -1,0 +1,10 @@
+GBAdhoc / GameShelf GB and GBC startup adapter. GPL-2.0.
+Upstream: https://github.com/ShoshinFauteux/GBAdhoc
+Upstream commit: 205b7cc9113cb8dc6160fc91ab6330df757d1955
+Corresponding source: third_party/GBAdhoc at that commit, with
+patches/gbadhoc-gameshelf.patch applied inside the submodule.
+TGB Dual source and its GPL notices are in gpsp/gbcore/tgbdual/.
+Build commands and release-profile flags: patches/README.md.
+Changes: explicit --gameshelf ROM argument and minimal loading bar.
+Normal console-specific save/state naming is retained; no forced save load.
+This build is dedicated to GB/GBC. GBA continues to use integrated TempGBA.

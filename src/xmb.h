@@ -1,5 +1,5 @@
 #include "language.h"
-/* GameShelf 1.06: generate per-ROM XMB EBOOTs, no emulator duplication. */
+/* GameShelf 1.07: generate per-ROM XMB EBOOTs, no emulator duplication. */
 static unsigned int read32(const unsigned char *p)
 {
     return p[0] | ((unsigned int)p[1]<<8) | ((unsigned int)p[2]<<16) | ((unsigned int)p[3]<<24);
@@ -14,6 +14,8 @@ static unsigned int rom_id(const char *s, int mode)
     while (*s) { h ^= (unsigned char)*s++; h *= 16777619u; }
     return h;
 }
+static const char *gsh_system(int mode)
+{ return mode==3?"GBA":mode==4?"GB":mode==5?"GBC":"NES"; }
 #include "xmb_icon.h"
 #include "xmb_cleanup.h"
 
@@ -44,7 +46,7 @@ static int make_xmb_entry(const char *rom, int mode)
     char dir[128], path[160], temporary[164], backup[164], title[128];
     unsigned int title_entry=0, oldmax=0, value=0, growth;
     const char *base="ms0:/PSP/GAME/GAMESHELF/EBOOT.PBP";
-    if (strlen(rom) >= 256 || strchr(rom, '/') || strchr(rom, ':') || strchr(rom, '\\') || (mode!=3 && mode!=9)) return -1;
+    if (strlen(rom) >= 256 || strchr(rom, '/') || strchr(rom, ':') || strchr(rom, '\\') || (mode!=3 && mode!=4 && mode!=5 && mode!=9)) return -1;
     memset(&st, 0, sizeof(st));
     if (sceIoGetstat(base, &st)<0 || st.st_size<40 || st.st_size>2097152) return -1;
     size=(unsigned int)st.st_size;
@@ -76,7 +78,7 @@ static int make_xmb_entry(const char *rom, int mode)
     memmove(b+end+growth,b+end,size-end);
     size+=growth;
     for (i=1;i<8;i++) put32(b+8+i*4,read32(b+8+i*4)+growth);
-    snprintf(title,sizeof(title),"[%s] %.115s",mode==3?"GBA":"NES",rom);
+    snprintf(title,sizeof(title),"[%s] %.115s",gsh_system(mode),rom);
     { char *dot=strrchr(title,'.'); if(dot) *dot=0; }
     memset(b+value,0,128); strcpy((char *)b+value,title);
     put32(b+title_entry+4,strlen(title)+1); put32(b+title_entry+8,128);
@@ -93,7 +95,7 @@ static int make_xmb_entry(const char *rom, int mode)
             free(image);if(result<0)goto fail;
         }
     }
-    snprintf(dir,sizeof(dir),"ms0:/PSP/GAME/GSH_%s_%08X",mode==3?"GBA":"NES",rom_id(rom,mode));
+    snprintf(dir,sizeof(dir),"ms0:/PSP/GAME/GSH_%s_%08X",gsh_system(mode),rom_id(rom,mode));
     sceIoMkdir(dir,0777);
     snprintf(path,sizeof(path),"%s/EBOOT.PBP",dir);
     snprintf(temporary,sizeof(temporary),"%s/NEW.PBP",dir);
@@ -137,13 +139,19 @@ fail:
 static void generate_xmb(void)
 {
     int i, result, created=0, existing=0, failed=0;
-    scan_gba_roms(); scan_nes_roms();
-    for(i=0;i<gba_count+nes_count;i++) {
-        int gba=i<gba_count;
-        const char *rom=gba?gba_roms[i]:nes_roms[i-gba_count];
-        const char *runtime=gba?"ms0:/PSP/GAME/GAMESHELF/TempGBA/EBOOT.PBP":"ms0:/PSP/GAME/Nester_AoEX_R3/EBOOT.PBP";
+    scan_gba_roms(); scan_nes_roms(); scan_gb_roms(); scan_gbc_roms();
+    for(i=0;i<gba_count+nes_count+gb_count+gbc_count;i++) {
+        int mode,index=i;
+        const char *rom,*runtime;
+        if(index<gba_count){mode=3;rom=gba_roms[index];}
+        else if((index-=gba_count)<nes_count){mode=9;rom=nes_roms[index];}
+        else if((index-=nes_count)<gb_count){mode=4;rom=gb_roms[index];}
+        else {index-=gb_count;mode=5;rom=gbc_roms[index];}
+        runtime=mode==3?"ms0:/PSP/GAME/GAMESHELF/TempGBA/EBOOT.PBP":
+                mode==9?"ms0:/PSP/GAME/Nester_AoEX_R3/EBOOT.PBP":
+                        "ms0:/PSP/GAME/GAMESHELF/GBAdhoc/EBOOT.PBP";
         if (!diagnostic_exists(runtime,0)) result=-1;
-        else result=make_xmb_entry(rom,gba?3:9);
+        else result=make_xmb_entry(rom,mode);
         if(result==0) created++; else if(result==1) existing++; else failed++;
         pspDebugScreenPrintf("%s: %.45s\n",result<0?gsh_text("ERROR"):result?gsh_text("UPDATED"):gsh_text("CREATED"),rom);
     }

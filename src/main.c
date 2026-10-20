@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include "../shared/gba_identity.h"
 
-PSP_MODULE_INFO("GameShelf", 0, 1, 6);
+PSP_MODULE_INFO("GameShelf", 0, 1, 7);
 PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER | THREAD_ATTR_VFPU);
 
 #define MAX_ENTRIES 32
@@ -785,8 +785,9 @@ static void launch_selected(void)
 {
     SceKernelLoadExecVSHParam param;
     char path[ENTRY_LENGTH];
-    char argument[ENTRY_LENGTH];
+    char argument[512];
     int has_argument = 0;
+    unsigned int argument_size = 0;
     int launch_apitype = PSP_INIT_APITYPE_MS2;
     int launch_ps1 = 0;
     int result;
@@ -810,27 +811,23 @@ static void launch_selected(void)
 
     if (view_mode == 4 || view_mode == 5) {
         const char *rom_name;
-        char source[ENTRY_LENGTH];
-        char destination[ENTRY_LENGTH];
-
         if ((view_mode == 4 && cursor >= gb_count) ||
             (view_mode == 5 && cursor >= gbc_count)) {
-            set_status(gsh_text("No Game Boy ROM selected."));
-            return;
+            set_status(gsh_text("No Game Boy ROM selected.")); return;
         }
         rom_name = view_mode == 4 ? gb_roms[cursor] : gbc_roms[cursor];
-        snprintf(source, sizeof(source),
-                 "ms0:/PSP/GAME/TempGBA4PSP-Mod/roms/%s", rom_name);
-        snprintf(destination, sizeof(destination),
-                 "ms0:/PSP/GAME/GBAdhoc410/roms/%s", rom_name);
-        if (strcmp(source, destination) != 0 && copy_file(source, destination) < 0) {
-            set_status(gsh_text("Failed to copy the GBAdhoc ROM."));
-            return;
+        snprintf(path, sizeof(path), "ms0:/PSP/GAME/GAMESHELF/GBAdhoc/EBOOT.PBP");
+        /* PSP argv requires NUL-separated executable, option and ROM path. */
+        {
+            unsigned int offset = strlen(path)+1;
+            memcpy(argument,path,offset);
+            memcpy(argument+offset,"--gameshelf",12); offset+=12;
+            snprintf(argument+offset,sizeof(argument)-offset,
+                     "ms0:/PSP/GAME/TempGBA4PSP-Mod/roms/%s",rom_name);
+            argument_size=offset+strlen(argument+offset)+1;
         }
-        snprintf(path, sizeof(path),
-                 "ms0:/PSP/GAME/GBAdhoc410/EBOOT.PBP");
-        argument[0] = '\0';
-        sceIoChdir("ms0:/PSP/GAME/GBAdhoc410");
+        has_argument=1;
+        sceIoChdir("ms0:/PSP/GAME/GAMESHELF/GBAdhoc");
         goto launch_application;
     }
 
@@ -932,12 +929,12 @@ static void launch_selected(void)
     has_argument = 1;
 launch_application:
     if(gsh_launch_active){
-        const char *name=view_mode==3?gba_roms[cursor]:nes_roms[cursor];
+        const char *name=view_mode==3?gba_roms[cursor]:view_mode==4?gb_roms[cursor]:view_mode==5?gbc_roms[cursor]:nes_roms[cursor];
         gsh_launch_stage("Starting emulator...");gsh_launch_log(name);
     }
     memset(&param, 0, sizeof(param));
     param.size = sizeof(param);
-    param.args = has_argument ? strlen(argument) + 1 : 0;
+    param.args = has_argument ? (argument_size ? argument_size : strlen(argument) + 1) : 0;
     param.argp = has_argument ? argument : NULL;
     param.key = launch_ps1 ? "pops" : "game";
     result = sctrlKernelLoadExecVSHWithApitype(launch_apitype, path, &param);
@@ -966,7 +963,7 @@ static void draw_screen(void)
 
     pspDebugScreenClear();
     pspDebugScreenSetXY(0, 0);
-    pspDebugScreenPrintf("%s", gsh_text("PSP GameShelf 1.06 - hardware test\n"));
+    pspDebugScreenPrintf("%s", gsh_text("PSP GameShelf 1.07 - hardware test\n"));
     pspDebugScreenPrintf("PSP-3004 / TA-095v2 / FW 6.61\n\n");
     if (view_mode == 0) {
         pspDebugScreenPrintf(gsh_text("%s  View: PSP ISO / CSO (%d)\n"), platform_badge(), iso_count);
@@ -1051,7 +1048,7 @@ int main(void)
     SceCtrlData pad;
 
     pspDebugScreenInit();
-    pspDebugScreenPrintf("GameShelf 1.06\nStarting...\n");
+    pspDebugScreenClear();
     sceDisplayWaitVblankStart();
 
     {
@@ -1067,11 +1064,13 @@ int main(void)
         memcpy(name, (const void *)xmb_target.rom, sizeof(name));
         name[255] = '\0';
         setup_callbacks();
-        if ((mode == 3 || mode == 9) && name[0] &&
+        if ((mode == 3 || mode == 4 || mode == 5 || mode == 9) && name[0] &&
             !strchr(name, '/') && !strchr(name, ':') && !strchr(name, '\\')) {
             view_mode = mode;
             cursor = 0;
             if (mode == 3) { strcpy(gba_roms[0], name); gba_count = 1; }
+            else if(mode==4) { strcpy(gb_roms[0],name); gb_count=1; }
+            else if(mode==5) { strcpy(gbc_roms[0],name); gbc_count=1; }
             else { strcpy(nes_roms[0], name); nes_count = 1; }
             gsh_launch_begin(name);
             launch_selected();
@@ -1081,7 +1080,7 @@ int main(void)
         sceKernelExitGame();
         return 0;
     }
-    pspDebugScreenPrintf("%s", gsh_text("GameShelf 1.06\nX: create/update NES/GBA Memory Stick entries\nCircle: legacy catalog   HOME: exit\n"));
+    pspDebugScreenPrintf("%s", gsh_text("GameShelf 1.07\nX: create/update NES/GBA/GB/GBC entries\nCircle: legacy catalog   HOME: exit\n"));
     setup_callbacks();
     for (;;) {
         sceCtrlReadBufferPositive(&pad, 1);

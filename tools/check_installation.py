@@ -43,7 +43,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--sd-root', type=Path, required=True)
     args = parser.parse_args()
-    package = Path(__file__).resolve().parents[1] / 'candidates/1.06'
+    package = Path(__file__).resolve().parents[1] / 'releases/v1/06'
     issues = check_installation(args.sd_root, package)
     for issue in issues: print('ERROR:', issue)
     if not issues: print('PASS: required folders, executables, support modules and BIOS size. No files changed.')

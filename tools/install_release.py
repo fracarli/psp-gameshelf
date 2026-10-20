@@ -16,7 +16,7 @@ def digest(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--sd-root', required=True, type=Path)
-    parser.add_argument('--version', choices=('1.00', '1.01', '1.02', '1.03', '1.04', '1.05', '1.06'), default='1.06')
+    parser.add_argument('--version', choices=('1.00', '1.01', '1.02', '1.03', '1.04', '1.05', '1.06', '1.07'), default='1.06')
     parser.add_argument('--backup-root', type=Path)
     parser.add_argument('--check', action='store_true', help='check prerequisites without writing to the card')
     args = parser.parse_args()
@@ -41,17 +41,21 @@ def main():
     version_file = shelf / 'INSTALL_VERSION.TXT'
     if not target.is_file():
         raise RuntimeError('Existing GameShelf installation not found')
-    if version_file.exists() and version_file.read_text().strip() in ('1.04', '1.05', '1.06') and args.version not in ('1.04', '1.05', '1.06'):
+    if version_file.exists() and version_file.read_text().strip() in ('1.04', '1.05', '1.06', '1.07') and args.version not in ('1.04', '1.05', '1.06', '1.07'):
         raise RuntimeError('To roll back the save-isolation runtime, restore the complete backup, including TempGBA and generated entries')
     updates = [(package / 'EBOOT.PBP', target)]
     entries = []
-    if args.version in ('1.04', '1.05', '1.06'):
+    if args.version in ('1.04', '1.05', '1.06', '1.07'):
         runtime = shelf / 'TempGBA/EBOOT.PBP'
         if not runtime.is_file():
             raise RuntimeError('Existing integrated TempGBA runtime not found')
         updates.append((package / 'TempGBA/EBOOT.PBP', runtime))
         for support in (package / 'TempGBA').glob('*.prx'):
             updates.append((support, shelf / 'TempGBA' / support.name))
+        if args.version == '1.07':
+            for source in (package / 'GBAdhoc').iterdir():
+                if source.suffix.lower() in ('.pbp', '.prx'):
+                    updates.append((source, shelf / 'GBAdhoc' / source.name))
         # Old generated entries contain the old launcher. Back them up and
         # remove only verified GameShelf GBA entry folders, requiring regeneration.
         for entry in game.glob('GSH_GBA_*/EBOOT.PBP'):
@@ -75,6 +79,7 @@ def main():
         # Prepare and verify BOTH executable writes before replacing either.
         for source, dest in updates:
             temp = dest.with_name(dest.name + '.GSH_TMP')
+            dest.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(source, temp)
             if digest(temp) != digest(source):
                 raise RuntimeError('SD write verification failed: ' + str(dest))
@@ -85,7 +90,7 @@ def main():
                 raise RuntimeError('Installed EBOOT verification failed: ' + str(dest))
         for folder in entries:
             shutil.rmtree(folder)
-        if args.version in ('1.04', '1.05', '1.06'):
+        if args.version in ('1.04', '1.05', '1.06', '1.07'):
             (shelf / 'TempGBA/SAVE_ID.TXT').unlink(missing_ok=True)
         version_file.write_text(args.version + '\n')
     except Exception:

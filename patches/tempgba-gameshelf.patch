@@ -105,7 +105,7 @@ index df1169b..9c196f4 100644
  }
 -
 diff --git a/source/src/main.c b/source/src/main.c
-index 01aecae..aa029c4 100644
+index 01aecae..a75779a 100644
 --- a/source/src/main.c
 +++ b/source/src/main.c
 @@ -51,6 +51,14 @@ u32 option_clock_speed = PSP_CLOCK_333;
@@ -151,12 +151,13 @@ index 01aecae..aa029c4 100644
  }
  
  static void load_bios_file(void)
-@@ -751,20 +762,25 @@ static void setup_main(void)
+@@ -751,20 +762,26 @@ static void setup_main(void)
    init_input();
    init_video(devkit_version);
    video_resolution_large();
 +  clear_screen(COLOR32_BLACK);
-+  print_string("Starting emulator...", X_POS_CENTER, 100, COLOR15_WHITE, BG_NO_FILL);
++  draw_box_fill(110, 129, 369, 142, COLOR15(4, 4, 4));
++  draw_box_fill(110, 129, 322, 142, COLOR15(11, 23, 28));
 +  flip_screen(1);
  
 -  // Copy the directory path of the executable into main_path
@@ -184,7 +185,7 @@ index 01aecae..aa029c4 100644
  
    load_config_file();
    init_input();
-@@ -821,8 +837,8 @@ int user_main(int argc, char *argv[])
+@@ -821,8 +838,8 @@ int user_main(int argc, char *argv[])
      if (load_gamepak(load_filename) < 0)
      {
        clear_screen(COLOR32_BLACK);
@@ -195,13 +196,13 @@ index 01aecae..aa029c4 100644
      } 
    }
  
-@@ -1144,4 +1160,3 @@ void main_write_mem_savestate(SceUID savestate_file)
+@@ -1144,4 +1161,3 @@ void main_write_mem_savestate(SceUID savestate_file)
  {
    MAIN_SAVESTATE_BODY(WRITE_MEM);
  }
 -
 diff --git a/source/src/memory.c b/source/src/memory.c
-index 349a393..96c7f4a 100644
+index 349a393..fe3dd90 100644
 --- a/source/src/memory.c
 +++ b/source/src/memory.c
 @@ -19,6 +19,7 @@
@@ -249,17 +250,18 @@ index 349a393..96c7f4a 100644
                      break;
                    }
                  }
-@@ -3419,6 +3420,9 @@ s32 load_gamepak(char *name)
+@@ -3419,6 +3420,10 @@ s32 load_gamepak(char *name)
  
    scePowerLock(0);
    set_cpu_clock(PSP_CLOCK_333);
 +  clear_screen(COLOR32_BLACK);
-+  print_string("Loading game...", X_POS_CENTER, 100, COLOR15_WHITE, BG_NO_FILL);
++  draw_box_fill(110, 129, 369, 142, COLOR15(4, 4, 4));
++  draw_box_fill(110, 129, 348, 142, COLOR15(11, 23, 28));
 +  flip_screen(1);
  
    if (!strcasecmp(dot_position, ".zip") || !strcasecmp(dot_position, ".gbz"))
    {
-@@ -3444,7 +3448,18 @@ s32 load_gamepak(char *name)
+@@ -3444,7 +3449,18 @@ s32 load_gamepak(char *name)
      if (p != NULL)
        name = p + 1;
  
@@ -279,7 +281,7 @@ index 349a393..96c7f4a 100644
  
      char game_title[13];
      char game_code[5];
-@@ -3616,4 +3631,3 @@ static void memory_write_mem_savestate(SceUID savestate_file)
+@@ -3616,4 +3632,3 @@ static void memory_write_mem_savestate(SceUID savestate_file)
  {
    MEMORY_SAVESTATE_BODY(WRITE_MEM);
  }

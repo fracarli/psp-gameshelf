@@ -5,3 +5,6 @@
 [submodule "third_party/TempGBA4PSP-Single-game"]
 	path = third_party/TempGBA4PSP-Single-game
 	url = https://github.com/GrabowskiDev/TempGBA4PSP-Single-game.git
+[submodule "third_party/GBAdhoc"]
+	path = third_party/GBAdhoc
+	url = https://github.com/ShoshinFauteux/GBAdhoc.git

@@ -4,7 +4,7 @@ Core source headers credit Exophase and takka and specify GPL version 2 or later
 
 Corresponding source in this repository:
 - third_party/TempGBA4PSP-Single-game at the recorded submodule commit.
-- patches/tempgba-gameshelf.patch, applied inside that submodule.
+- releases/v1/06/tempgba-gameshelf.patch, applied inside that submodule.
 - shared/gba_identity.h (included by the patched memory.c).
 The patch includes the Makefile used to build this runtime. The source tree
 must remain under the parent GameShelf repository for the shared header path.
