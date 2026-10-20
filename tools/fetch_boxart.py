@@ -65,7 +65,7 @@ def find_remote_name(index: dict[str, str], title: str) -> str | None:
 def list_boxarts(playlist: str) -> dict[str, str]:
     """Return normalized filename -> original filename from the remote index."""
     index_url = f"{BASE_URL}/{quote(playlist)}/Named_Boxarts/"
-    request = Request(index_url, headers={"User-Agent": "PSP-GameShelf/1.02"})
+    request = Request(index_url, headers={"User-Agent": "PSP-GameShelf/1.03"})
     with urlopen(request, timeout=20) as response:
         html = response.read().decode("utf-8", errors="replace")
     names = re.findall(r'href="([^"]+\.png)"', html, flags=re.IGNORECASE)
@@ -74,19 +74,14 @@ def list_boxarts(playlist: str) -> dict[str, str]:
 
 def download_cover(playlist: str, remote_name: str, destination: Path) -> None:
     url = f"{BASE_URL}/{quote(playlist)}/Named_Boxarts/{quote(remote_name)}"
-    request = Request(url, headers={"User-Agent": "PSP-GameShelf/1.02"})
+    request = Request(url, headers={"User-Agent": "PSP-GameShelf/1.03"})
     with urlopen(request, timeout=30) as response:
         data = response.read()
     destination.write_bytes(data)
 
 
-def png_to_gsh(source: Path, destination: Path, width: int = 128, height: int = 160, square_crop: bool = False) -> None:
-    """Convert a simple RGB/RGBA PNG to a PSP-friendly 16-bit texture.
-
-    The PSP launcher deliberately reads this tiny raw format instead of
-    decoding PNG at runtime.  This keeps the EBOOT small and avoids the
-    instability that previously affected the launcher on real hardware.
-    """
+def decode_cover_png(source: Path) -> tuple[int, int, int, list[bytes]]:
+    """Decode supported RGB/RGBA cover PNGs for local asset preparation."""
     data = source.read_bytes()
     if data[:8] != b"\x89PNG\r\n\x1a\n":
         raise ValueError("formato PNG non riconosciuto")
@@ -139,6 +134,17 @@ def png_to_gsh(source: Path, destination: Path, width: int = 128, height: int = 
         rows.append(bytes(current))
         previous = current
 
+    return image_width, image_height, channels, rows
+
+
+def png_to_gsh(source: Path, destination: Path, width: int = 128, height: int = 160, square_crop: bool = False) -> None:
+    """Convert a simple RGB/RGBA PNG to a PSP-friendly 16-bit texture.
+
+    The PSP launcher deliberately reads this tiny raw format instead of
+    decoding PNG at runtime.  This keeps the EBOOT small and avoids the
+    instability that previously affected the launcher on real hardware.
+    """
+    image_width, image_height, channels, rows = decode_cover_png(source)
     crop_width = crop_height = min(image_width, image_height)
     source_left = (image_width - crop_width) // 2 if square_crop else 0
     source_top = (image_height - crop_height) // 2 if square_crop else 0
@@ -155,6 +161,28 @@ def png_to_gsh(source: Path, destination: Path, width: int = 128, height: int = 
             value = ((red >> 3) << 11) | ((green >> 2) << 5) | (blue >> 3)
             output[(y * width + x) * 2:(y * width + x) * 2 + 2] = struct.pack("<H", value)
     destination.write_bytes(output)
+
+
+def png_to_pic1(source: Path, destination: Path) -> None:
+    """Prepare a 480x272 full-screen cover crop, darkened for XMB readability."""
+    width, height, channels, rows = decode_cover_png(source)
+    scale = max(480 / width, 272 / height)
+    visible_width, visible_height = 480 / scale, 272 / scale
+    left, top = (width - visible_width) / 2, (height - visible_height) / 2
+    raw = bytearray()
+    for y in range(272):
+        raw.append(0)
+        sy = min(height-1, int(top + y / scale))
+        for x in range(480):
+            sx = min(width-1, int(left + x / scale))
+            pixel = rows[sy][sx*channels:sx*channels+3]
+            raw.extend(value * 7 // 10 for value in pixel)
+    def chunk(kind: bytes, payload: bytes) -> bytes:
+        return struct.pack(">I", len(payload)) + kind + payload + struct.pack(">I", zlib.crc32(kind+payload))
+    png = b"\x89PNG\r\n\x1a\n"
+    png += chunk(b"IHDR", struct.pack(">IIBBBBB",480,272,8,2,0,0,0))
+    png += chunk(b"IDAT", zlib.compress(raw, 9)) + chunk(b"IEND", b"")
+    destination.write_bytes(png)
 
 
 def scan_roms(sd_root: Path) -> list[tuple[str, str, Path]]:
@@ -200,6 +228,7 @@ def main() -> int:
         destination = covers_root / platform / f"{title}.png"
         texture = covers_root / platform / f"{title}.gsh"
         square_texture = covers_root / platform / f"{title}.xmb.gsh"
+        background = covers_root / platform / f"{title}.pic1.png"
         destination.parent.mkdir(parents=True, exist_ok=True)
         if destination.exists() and not args.force:
             if not texture.exists():
@@ -210,6 +239,7 @@ def main() -> int:
                     print(f"ERR   texture {destination.name} ({error})", file=sys.stderr)
             try:
                 png_to_gsh(destination, square_texture, 80, 80, square_crop=True)
+                png_to_pic1(destination, background)
                 print(f"SQUARE {square_texture.relative_to(sd_root)}")
             except (OSError, ValueError, zlib.error) as error:
                 print(f"ERR   square {destination.name} ({error})", file=sys.stderr)
@@ -227,6 +257,7 @@ def main() -> int:
             download_cover(playlist, remote_name, destination)
             png_to_gsh(destination, texture)
             png_to_gsh(destination, square_texture, 80, 80, square_crop=True)
+            png_to_pic1(destination, background)
             print(f"OK    {destination.relative_to(sd_root)}")
             print(f"MAKE  {texture.relative_to(sd_root)}")
             downloaded += 1

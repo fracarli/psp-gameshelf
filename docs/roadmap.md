@@ -1,56 +1,37 @@
-# Roadmap
+# Next steps
 
-## v0.1 — foundation
+## Confirmed on PSP
 
-- PSP SDK project skeleton
-- startup screen
-- clean repository layout
+- NES and GBA launch directly from their generated Memory Stick entries.
+- Version 1.01 displays game-specific cover icons.
+- Version 1.02 displays borderless square cover icons.
 
-## v0.2 — scanner
+## Current candidate: 1.03
 
-- scan PSP ISO files
-- scan `PSP/GAME`
-- detect platform from paths and extensions
-- display a scrollable list
+Add a full-screen PIC1 background generated from each existing cover.
+Confirm that selecting an entry displays the background and that the game
+still starts normally, for both NES and GBA. Until confirmed, 1.02 remains
+the stable fallback.
 
-## v0.3 — emulator routing
+## Before adding more systems
 
-- map each platform to an emulator
-- launch homebrew and PS1 entries
-- add user-editable configuration
+1. Verify GBA save isolation between two games using the shared temporary
+   `game.gba` runtime. Add per-ROM save routing if necessary, retaining backups.
+2. Make installation and regeneration predictable: clear missing-file errors,
+   automatic removal of stale entries owned by GameShelf, and a documented
+   recovery procedure.
+3. Check third-party license notices and corresponding emulator sources for
+   the distributed binaries before wider promotion. No license change is assumed.
 
-## v0.4 — library experience
+## Expansion
 
-- categories
-- favourites
-- recently played
-- cover art and metadata
-- free-space indicator
+Add one direct-ROM emulator adapter at a time, beginning with GB/GBC or Atari
+according to user preference. Existing catalog entries that only open emulator
+menus must not be presented as working direct launch adapters.
 
-## Current status
+## Public demonstration
 
-v0.51 is stable on the target PSP for NES and GBA. NES uses the patched
-NesterJ launcher and GBA uses the source-integrated TempGBA runtime. The
-firmware HOME popup is intentionally disabled for GBA; the emulator's own
-Quit/Exit menu is the safe exit path.
-
-## Current development sequence
-
-1. Improve the v0.54 cover layout and replace text badges with bitmap icons
-   where supported.
-2. Add Atari, Mega Drive and SNES adapters one at a time, preserving a stable
-   fallback for every failure. Game Boy and Game Boy Color are covered by
-   v0.56 through GBAdhoc.
-3. Add a safe return from TempGBA to GameShelf.
-4. Add favourites, recently played entries and free-space information.
-5. Add an installer/checker that validates emulator files, BIOS files and
-   directory structure.
-6. Prepare the v1.0 release package, documentation, screenshots and demo.
-
-## v1.0 — release
-
-- safe read-only diagnostics
-- polished theme
-- release package
-- screenshots and demo video
-- English documentation
+After confirming 1.03 and save behavior, record a short PSP demonstration:
+Memory Stick, icon and background, then direct NES and GBA launch. Provide a
+small installation guide, exact tested firmware, credits and known limitations.
+Use community feedback to choose the next emulator integration.

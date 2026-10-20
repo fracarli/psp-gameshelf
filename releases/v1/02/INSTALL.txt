@@ -1,4 +1,4 @@
-PSP GameShelf 1.02 - icone quadrate, da provare su PSP
+PSP GameShelf 1.02 - icone quadrate, confermate funzionanti su PSP
 
 1. Mantieni emulatori, ROM, BIOS e salvataggi esistenti.
 2. Sostituisci PSP/GAME/GAMESHELF/EBOOT.PBP con il nuovo EBOOT.PBP.

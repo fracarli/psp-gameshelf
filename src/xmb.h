@@ -1,4 +1,4 @@
-/* GameShelf 1.02: generate per-ROM XMB EBOOTs, no emulator duplication. */
+/* GameShelf 1.03: generate per-ROM XMB EBOOTs, no emulator duplication. */
 static unsigned int read32(const unsigned char *p)
 {
     return p[0] | ((unsigned int)p[1]<<8) | ((unsigned int)p[2]<<16) | ((unsigned int)p[3]<<24);
@@ -14,6 +14,23 @@ static unsigned int rom_id(const char *s, int mode)
     return h;
 }
 #include "xmb_icon.h"
+
+static int xmb_replace_section(unsigned char **buffer, unsigned int *size,
+                               unsigned int section, const unsigned char *data, unsigned int length)
+{
+    unsigned char *b=*buffer, *expanded;
+    unsigned int start=read32(b+8+section*4), end=read32(b+12+section*4), i;
+    unsigned int new_size;
+    if(section>=7 || start<40 || end<start || end>*size) return -1;
+    new_size=*size-(end-start)+length;
+    expanded=realloc(b,new_size>*size?new_size:*size);
+    if(!expanded)return -1;
+    b=expanded;*buffer=b;
+    memmove(b+start+length,b+end,*size-end);
+    memcpy(b+start,data,length);
+    for(i=section+1;i<8;i++)put32(b+8+i*4,read32(b+8+i*4)-(end-start)+length);
+    *size=new_size;return 0;
+}
 
 static int make_xmb_entry(const char *rom, int mode)
 {
@@ -62,20 +79,16 @@ static int make_xmb_entry(const char *rom, int mode)
     memset(b+value,0,128); strcpy((char *)b+value,title);
     put32(b+title_entry+4,strlen(title)+1); put32(b+title_entry+8,128);
     {
-        unsigned int icon_size=0, start=read32(b+12), finish=read32(b+16);
-        unsigned char *icon=xmb_cover_png(rom,mode,&icon_size);
-        if(icon) {
-            unsigned int old_size, new_size;
-            unsigned char *expanded;
-            if(finish<start || finish>size) { free(icon); goto fail; }
-            old_size=finish-start;new_size=size-old_size+icon_size;
-            expanded=realloc(b,new_size>size?new_size:size);
-            if(!expanded) { free(icon);goto fail; }
-            b=expanded;
-            memmove(b+start+icon_size,b+finish,size-finish);
-            memcpy(b+start,icon,icon_size);free(icon);
-            for(i=2;i<8;i++) put32(b+8+i*4,read32(b+8+i*4)-old_size+icon_size);
-            size=new_size;
+        unsigned int image_size=0;
+        unsigned char *image=xmb_cover_png(rom,mode,&image_size);
+        if(image) {
+            int result=xmb_replace_section(&b,&size,1,image,image_size);
+            free(image);if(result<0)goto fail;
+        }
+        image=xmb_background_png(rom,mode,&image_size);
+        if(image) {
+            int result=xmb_replace_section(&b,&size,4,image,image_size);
+            free(image);if(result<0)goto fail;
         }
     }
     snprintf(dir,sizeof(dir),"ms0:/PSP/GAME/GSH_%s_%08X",mode==3?"GBA":"NES",rom_id(rom,mode));

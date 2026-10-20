@@ -1,0 +1,18 @@
+PSP GameShelf 1.03 - sfondi XMB, da confermare su PSP
+
+1. Mantieni gli emulatori, ROM, BIOS e salvataggi esistenti.
+2. Sostituisci PSP/GAME/GAMESHELF/EBOOT.PBP con il nuovo EBOOT.PBP.
+3. Prepara sfondi e icone dai PNG sulla scheda:
+   python3 tools/fetch_boxart.py --sd-root /Volumes/SD-FAT32 --platform nes --platform gba
+   I PNG già presenti sono riutilizzati. Per ciascuna copertina viene creato
+   anche il file NOME.pic1.png a 480x272 pixel.
+4. Avvia GameShelf 1.03 sulla PSP e premi X per aggiornare le voci.
+5. Torna in Gioco > Memory Stick e rimani sul gioco selezionato:
+   la XMB gestisce la visualizzazione dello sfondo PIC1.
+
+Lo sfondo ingrandisce e ritaglia al centro la copertina, senza deformazioni;
+è leggermente scurito per mantenere leggibile il testo della XMB.
+Le icone quadrate della 1.02 rimangono. Senza uno sfondo valido il gioco
+mantiene l’icona e resta avviabile. Non sono inclusi video o musica.
+
+Per tornare alla 1.02 installa releases/v1/02/EBOOT.PBP e rigenera le voci.

@@ -135,6 +135,28 @@ with tempfile.TemporaryDirectory() as temp:
     helper.png_to_gsh(temp/'crop.png', temp/'crop.xmb.gsh',80,80,square_crop=True)
     assert (temp/'crop.xmb.gsh').read_bytes() == struct.pack('<H',0x07e0)*80*80
 
+    # Prepare a real full-screen PNG and embed it in the native PIC1 section.
+    background = covers/'Example Adventure.pic1.png'
+    helper.png_to_pic1(temp/'crop.png',background)
+    width,height,channels,rows = helper.decode_cover_png(background)
+    assert (width,height,channels) == (480,272,3)
+    assert rows[136][240*3:241*3] == bytes([0,178,0])
+    assert subprocess.run([str(temp/'test'), 'Example Adventure.gba', '3'], cwd=temp).returncode == 2
+    b=gba_file.read_bytes()
+    offsets=struct.unpack_from('<8I',b,8)
+    assert list(offsets)==sorted(offsets) and offsets[-1]==len(b)
+    assert b[offsets[4]:offsets[5]] == background.read_bytes()
+    old_exec=bytearray(original[u32(original,32):u32(original,36)])
+    new_exec=bytearray(b[offsets[6]:offsets[7]])
+    pos=old_exec.index(b'GSHXMB100TARGET!')
+    new_exec[pos+16:pos+276]=old_exec[pos+16:pos+276]
+    assert old_exec==new_exec
+    # Invalid optional background falls back safely to an icon-only entry.
+    background.write_bytes(background.read_bytes()[:-1]+b'X')
+    assert subprocess.run([str(temp/'test'), 'Example Adventure.gba', '3'], cwd=temp).returncode == 2
+    b=gba_file.read_bytes()
+    assert u32(b,24)==u32(b,28)
+
     # Refuse overwriting an unrelated EBOOT with the same generated folder name.
     victim = generated[0]
     victim.write_bytes(b'unrelated application')
@@ -144,4 +166,4 @@ with tempfile.TemporaryDirectory() as temp:
     assert victim.read_bytes() == b'unrelated application'
     (base/'EBOOT.PBP').write_bytes(b'bad template')
     assert subprocess.run([str(temp/'test'), 'Other.nes', '9'], cwd=temp).returncode == 0
-print('PASS: actual C generator, NES/GBA metadata, executable preservation, 1.00 upgrades, PNG CRC/pixels, missing-cover fallback, collisions, invalid paths and corrupt template')
+print('PASS: actual C generator, NES/GBA metadata, executable preservation, 1.00 upgrades, PNG CRC/pixels, PIC1 background/integrity, invalid-background fallback, missing-cover fallback, collisions, invalid paths and corrupt template')

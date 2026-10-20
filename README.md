@@ -15,18 +15,19 @@ Dopo uno spegnimento completo può essere necessario eseguire FastRecovery.
 | [0](releases/v0/00/) | Base stabile | Avvio dal catalogo, precedentemente v0.51.0 |
 | [1.00](releases/v1/00/) | Stabile: NES e GBA provati su PSP | Generazione delle singole voci nella Memory Stick |
 | [1.01](releases/v1/01/) | Copertine confermate su PSP | Copertina del gioco nell’icona XMB; aggiornamento delle voci 1.00 |
-| [1.02](candidates/1.02/) | Da confermare su PSP | Icone quadrate senza cornice rettangolare |
+| [1.02](releases/v1/02/) | Confermata su PSP | Icone quadrate senza cornice rettangolare |
+| [1.03](candidates/1.03/) | Da confermare su PSP | Sfondo a schermo intero alla selezione del gioco |
 
 `releases/` contiene soltanto le versioni stabili e l’adattatore NesterJ
 funzionante. Le build in prova sono separate in `candidates/`.
 Le vecchie build sono state rimosse dalla struttura corrente; quelle tracciate
-restano nella cronologia Git. La numerazione prosegue con 1.02, 1.03, ecc.
+restano nella cronologia Git. La numerazione prosegue con 1.04, 1.05, ecc.
 
 ## Utilizzo
 
 1. Installa la [1.00 seguendo le istruzioni](releases/v1/00/INSTALL.txt).
 2. Per provare le copertine, sostituisci l’EBOOT principale con quello della
-   [1.02](candidates/1.02/INSTALL.txt). Gli emulatori rimangono condivisi.
+   [1.03](candidates/1.03/INSTALL.txt). Gli emulatori rimangono condivisi.
 3. Apri GameShelf e premi **X** per creare o aggiornare le voci dei giochi.
 4. Al termine premi **X** per tornare alla home e apri **Gioco → Memory Stick**.
 5. Seleziona direttamente il gioco. Le voci persistono dopo il riavvio.
@@ -41,7 +42,7 @@ Con **Cerchio** dalla schermata iniziale puoi ancora aprire il vecchio catalogo.
 Non sostituire gli emulatori adattati con gli eseguibili standard:
 la selezione automatica dipende dagli adattamenti inclusi nel progetto.
 
-## Copertine nella 1.02
+## Copertine e sfondi nella 1.03
 
 Sul Mac, con la scheda montata:
 
@@ -52,12 +53,12 @@ python3 tools/fetch_boxart.py --sd-root /Volumes/SD-FAT32 --platform nes --platf
 Per aggiornare solo l’EBOOT dalla scheda collegata, con backup automatico:
 
 ```sh
-python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --version 1.02 --backup-root ../PSP_BACKUP
+python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --version 1.03 --backup-root ../PSP_BACKUP
 ```
 
 Il programma delle copertine recupera le immagini disponibili e crea le texture `.gsh` in
 `PSP/GAME/GAMESHELF/boxart/{nes,gba}/`. Il nome deve coincidere con quello
-della ROM senza estensione. Poi avvia GameShelf 1.02 sulla PSP e premi X:
+della ROM senza estensione. Poi avvia GameShelf 1.03 sulla PSP e premi X:
 aggiorna anche i collegamenti creati con la 1.00.
 
 La copertina appare come icona quadrata PNG 80×80 senza cornice rettangolare.
@@ -65,6 +66,12 @@ Le immagini quadrate riempiono l’icona; quelle rettangolari vengono ritagliate
 al centro senza deformazioni. Le texture dedicate sono i file `.xmb.gsh`.
 Per i titoli senza un’immagine corrispondente rimane l’icona GameShelf;
 gli hack possono richiedere una copertina fornita manualmente.
+La 1.03 inserisce anche un’immagine **PIC1 a 480×272** nel collegamento:
+quando resti sul gioco selezionato, la XMB può mostrarla a schermo intero.
+È un ingrandimento della copertina, ritagliato senza deformazioni e scurito
+per la leggibilità. Il file preparato dal helper è `NOME.pic1.png`.
+Senza un’immagine valida il collegamento conserva l’icona e rimane avviabile.
+
 Le immagini scaricate rimangono sulla scheda e non fanno parte del repository.
 
 ## Limiti attuali
@@ -92,12 +99,12 @@ python3 tools/verify_xmb.py
 ```
 
 Il Makefile usa `~/pspdev` per impostazione predefinita; puoi impostare `PSPDEV`
-per un’altra installazione. Il sorgente corrente genera la versione 1.02.
+per un’altra installazione. Il sorgente corrente genera la versione 1.03.
 
 I test eseguono il generatore C sul computer e controllano: aggiornamento delle
 voci 1.00, metadati PBP/SFO, integrità dell’eseguibile, PNG e colori delle
 copertine, fallback senza immagini e rifiuto di collisioni e input invalidi.
-Questi controlli non sostituiscono la prova della 1.02 sulla console.
+Questi controlli non sostituiscono la prova della 1.03 sulla console.
 
 Gli emulatori sono submodule dei progetti originali; gli adattamenti del codice
 sono conservati in [patches/](patches/README.md).

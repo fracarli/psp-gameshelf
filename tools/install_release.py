@@ -14,11 +14,11 @@ import shutil
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--sd-root', required=True, type=Path)
-    parser.add_argument('--version', choices=('1.00', '1.01', '1.02'), default='1.02')
+    parser.add_argument('--version', choices=('1.00', '1.01', '1.02', '1.03'), default='1.03')
     parser.add_argument('--backup-root', required=True, type=Path)
     args = parser.parse_args()
     project = Path(__file__).resolve().parents[1]
-    package = project / ('candidates/1.02' if args.version == '1.02' else 'releases/v1/' + args.version.split('.')[1])
+    package = project / ('candidates/1.03' if args.version == '1.03' else 'releases/v1/' + args.version.split('.')[1])
     source = package / 'EBOOT.PBP'
     for line in (package / 'SHA256SUMS.txt').read_text().splitlines():
         digest, name = line.split('  ', 1)

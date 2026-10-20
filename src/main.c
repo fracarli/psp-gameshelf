@@ -11,7 +11,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-PSP_MODULE_INFO("GameShelf", 0, 1, 2);
+PSP_MODULE_INFO("GameShelf", 0, 1, 3);
 PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER | THREAD_ATTR_VFPU);
 
 #define MAX_ENTRIES 32
@@ -909,7 +909,7 @@ static void draw_screen(void)
 
     pspDebugScreenClear();
     pspDebugScreenSetXY(0, 0);
-    pspDebugScreenPrintf("PSP GameShelf 1.02 - test PSP\n");
+    pspDebugScreenPrintf("PSP GameShelf 1.03 - test PSP\n");
     pspDebugScreenPrintf("PSP-3004 / TA-095v2 / FW 6.61\n\n");
     if (view_mode == 0) {
         pspDebugScreenPrintf("%s  Vista: PSP ISO / CSO (%d)\n", platform_badge(), iso_count);
@@ -1013,7 +1013,7 @@ int main(void)
         sceKernelExitGame();
         return 0;
     }
-    pspDebugScreenPrintf("GameShelf 1.02\nX: crea giochi NES/GBA nella Memory Stick\nCerchio: catalogo precedente   HOME: esci\n");
+    pspDebugScreenPrintf("GameShelf 1.03\nX: crea giochi NES/GBA nella Memory Stick\nCerchio: catalogo precedente   HOME: esci\n");
     setup_callbacks();
     for (;;) {
         sceCtrlReadBufferPositive(&pad, 1);

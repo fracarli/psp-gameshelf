@@ -82,3 +82,44 @@ static unsigned char *xmb_cover_png(const char *rom, int mode, unsigned int *len
 fail:
     free(texture);free(raw);free(compressed);free(png);return NULL;
 }
+
+static unsigned int png_read_be32(const unsigned char *p)
+{
+    return ((unsigned int)p[0]<<24)|((unsigned int)p[1]<<16)|((unsigned int)p[2]<<8)|p[3];
+}
+/* PIC1 is an optional native XMB background, prepared from the same cover. */
+static unsigned char *xmb_background_png(const char *rom, int mode, unsigned int *length)
+{
+    char name[256], path[384];
+    SceIoStat st;
+    SceUID file;
+    unsigned char *png;
+    unsigned int size, pos=8, has_data=0;
+    *length=0;
+    strncpy(name,rom,sizeof(name)-1);name[255]=0;
+    { char *dot=strrchr(name,'.');if(dot)*dot=0; }
+    snprintf(path,sizeof(path),"ms0:/PSP/GAME/GAMESHELF/boxart/%s/%s.pic1.png",mode==3?"gba":"nes",name);
+    if(sceIoGetstat(path,&st)<0 || st.st_size<57 || st.st_size>524288) return NULL;
+    size=st.st_size;png=malloc(size);
+    if(!png)return NULL;
+    file=sceIoOpen(path,PSP_O_RDONLY,0);
+    if(file<0) { free(png);return NULL; }
+    pos=sceIoRead(file,png,size);sceIoClose(file);
+    if(pos!=size || memcmp(png,"\x89PNG\r\n\x1a\n",8)!=0 ||
+       png_read_be32(png+8)!=13 || memcmp(png+12,"IHDR",4)!=0 ||
+       png_read_be32(png+16)!=480 || png_read_be32(png+20)!=272 ||
+       png[24]!=8 || png[25]!=2 || png[26] || png[27] || png[28]) goto invalid;
+    pos=8;
+    while(pos<=size-12) {
+        unsigned int chunk=png_read_be32(png+pos);
+        if(chunk>size-pos-12 || png_crc(png+pos+4,chunk+4)!=png_read_be32(png+pos+8+chunk)) goto invalid;
+        if(memcmp(png+pos+4,"IDAT",4)==0)has_data=1;
+        if(memcmp(png+pos+4,"IEND",4)==0) {
+            if(chunk || pos+12!=size || !has_data)goto invalid;
+            *length=size;return png;
+        }
+        pos+=chunk+12;
+    }
+invalid:
+    free(png);return NULL;
+}
