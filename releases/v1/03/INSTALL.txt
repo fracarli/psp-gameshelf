@@ -1,18 +1,19 @@
-PSP GameShelf 1.03 - sfondi XMB, sfondi confermati su PSP
+PSP GameShelf 1.03 - full-screen backgrounds confirmed on PSP
 
-1. Mantieni gli emulatori, ROM, BIOS e salvataggi esistenti.
-2. Sostituisci PSP/GAME/GAMESHELF/EBOOT.PBP con il nuovo EBOOT.PBP.
-3. Prepara sfondi e icone dai PNG sulla scheda:
+1. Preserve existing adapted emulators, ROMs, BIOS files and saves.
+2. Replace PSP/GAME/GAMESHELF/EBOOT.PBP with the supplied EBOOT.PBP.
+3. Prepare covers and backgrounds on your computer:
    python3 tools/fetch_boxart.py --sd-root /Volumes/SD-FAT32 --platform nes --platform gba
-   I PNG già presenti sono riutilizzati. Per ciascuna copertina viene creato
-   anche il file NOME.pic1.png a 480x272 pixel.
-4. Avvia GameShelf 1.03 sulla PSP e premi X per aggiornare le voci.
-5. Torna in Gioco > Memory Stick e rimani sul gioco selezionato:
-   la XMB gestisce la visualizzazione dello sfondo PIC1.
+   Existing PNG covers are reused to create Game.pic1.png at 480x272 pixels.
+4. Open GameShelf 1.03 and press X to update game entries.
+5. Open Game > Memory Stick and highlight a game. The XMB controls when
+   the embedded PIC1 background appears.
 
-Lo sfondo ingrandisce e ritaglia al centro la copertina, senza deformazioni;
-è leggermente scurito per mantenere leggibile il testo della XMB.
-Le icone quadrate della 1.02 rimangono. Senza uno sfondo valido il gioco
-mantiene l’icona e resta avviabile. Non sono inclusi video o musica.
+The background enlarges and centrally crops the cover without stretching.
+It is darkened slightly to keep XMB text readable. Square icons are retained.
+An entry without a valid background keeps its icon and remains launchable.
+No video or music is included.
 
-Per tornare alla 1.02 installa releases/v1/02/EBOOT.PBP e rigenera le voci.
+To restore 1.02, install releases/v1/02/EBOOT.PBP and regenerate entries.
+This package is a visual update; GBA save isolation is introduced in the
+separate 1.04 candidate, which requires a paired runtime update.

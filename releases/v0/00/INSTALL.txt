@@ -1,19 +1,13 @@
-VERSIONE 0 - base stabile, precedentemente v0.51.0
+VERSION 0 - stable baseline, previously v0.51.0
 
-PSP GameShelf v0.51.0
+This build avoids the firmware HOME popup crash in integrated TempGBA.
+1. Copy EBOOT.PBP to PSP/GAME/GAMESHELF/.
+2. Merge the supplied TempGBA directory into PSP/GAME/GAMESHELF/TempGBA/.
+3. Exit GBA games through TempGBA's internal Quit/Exit menu.
 
-Questa versione evita il crash del popup HOME durante TempGBA.
-
-1. Copia EBOOT.PBP in PSP/GAME/GAMESHELF/.
-2. Sostituisci l'intera cartella TempGBA in PSP/GAME/GAMESHELF/TempGBA/.
-3. Per uscire dal gioco usa il menu interno di TempGBA e la voce Quit/Exit.
-
-Il tasto HOME è disabilitato intenzionalmente in questa build per evitare lo
-spegnimento della PSP. Non cancellare le ROM e i salvataggi: ricopiali nelle
-cartelle roms, save e state dopo la sostituzione.
-
-Il pacchetto GitHub non include il BIOS GBA: deve essere aggiunto dall'utente
-nella cartella TempGBA prima dell'avvio.
+Preserve existing ROMs, BIOS files, saves and states when merging directories.
+The HOME popup is intentionally disabled to avoid the known crash.
+The GBA BIOS is not included; provide your own required BIOS file.
 
 MD5 GameShelf EBOOT.PBP: 58488e57c45cd3440677c71c958be20b
 MD5 TempGBA EBOOT.PBP:   b54c62d8df23f2930d437b9a699c5eba

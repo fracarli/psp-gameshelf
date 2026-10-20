@@ -1,146 +1,160 @@
 # PSP GameShelf
 
-I giochi NES e GBA direttamente in **Gioco → Memory Stick** sulla PSP:
-scegli un titolo e parte il relativo emulatore con il gioco già caricato,
-senza passare dal catalogo di GameShelf o dal menu dell’emulatore.
+Launch NES and GBA games directly from **Game → Memory Stick** on your PSP.
+Select a game and its emulator loads it automatically, without opening a
+separate game library or selecting the ROM again inside the emulator.
 
-**Avvio diretto NES e GBA confermato su PSP reale dall’utente.**
-Target del progetto: PSP-3004, firmware 6.61 con PRO-C attivo.
-Dopo uno spegnimento completo può essere necessario eseguire FastRecovery.
+**Direct NES and GBA launch has been confirmed on a real PSP.**
+Tested hardware: PSP-3004, firmware 6.61 with PRO-C enabled. After a full
+shutdown, FastRecovery may be needed before starting homebrew.
 
-## Versioni
+## Versions
 
-| Versione | Stato | Contenuto |
+| Version | Status | Features |
 | --- | --- | --- |
-| [0](releases/v0/00/) | Base stabile | Avvio dal catalogo, precedentemente v0.51.0 |
-| [1.00](releases/v1/00/) | Stabile: NES e GBA provati su PSP | Generazione delle singole voci nella Memory Stick |
-| [1.01](releases/v1/01/) | Copertine confermate su PSP | Copertina del gioco nell’icona XMB; aggiornamento delle voci 1.00 |
-| [1.02](releases/v1/02/) | Confermata su PSP | Icone quadrate senza cornice rettangolare |
-| [1.03](releases/v1/03/) | Sfondi confermati su PSP | Sfondo a schermo intero alla selezione del gioco |
-| [1.04](candidates/1.04/) | Da confermare su PSP | Salvataggi, stati e configurazioni GBA con il nome del gioco |
+| [0](releases/v0/00/) | Stable baseline | Launch from the catalog; previously v0.51.0 |
+| [1.00](releases/v1/00/) | NES/GBA launch confirmed on PSP | Individual game entries in the Memory Stick menu |
+| [1.01](releases/v1/01/) | Cover icons confirmed on PSP | Game-specific cover icons |
+| [1.02](releases/v1/02/) | Confirmed on PSP | Square icons without a rectangular frame |
+| [1.03](releases/v1/03/) | Backgrounds confirmed on PSP | Full-screen background when a game is highlighted |
+| [1.04](candidates/1.04/) | Awaiting hardware confirmation | Separate GBA save, state and configuration filenames |
 
-`releases/` contiene soltanto le versioni stabili e l’adattatore NesterJ
-funzionante. Le build in prova sono separate in `candidates/`.
-Le vecchie build sono state rimosse dalla struttura corrente; quelle tracciate
-restano nella cronologia Git. La numerazione prosegue con 1.04, 1.05, ecc.
+`releases/` contains hardware-confirmed builds and the working NesterJ adapter.
+Experimental builds are kept separately in `candidates/`. Obsolete packages
+have been removed from the current tree; tracked versions remain in Git history.
 
-## Utilizzo
+## Getting started
 
-1. Installa la [1.00 seguendo le istruzioni](releases/v1/00/INSTALL.txt).
-2. Per provare le copertine, sostituisci l’EBOOT principale con quello della
-   [1.03 stabile](releases/v1/03/INSTALL.txt). Gli emulatori rimangono condivisi.
-   La [1.04](candidates/1.04/INSTALL.txt) richiede invece di aggiornare anche il runtime TempGBA.
-3. Apri GameShelf e premi **X** per creare o aggiornare le voci dei giochi.
-4. Al termine premi **X** per tornare alla home e apri **Gioco → Memory Stick**.
-5. Seleziona direttamente il gioco. Le voci persistono dopo il riavvio.
+1. Follow the [1.00 installation instructions](releases/v1/00/INSTALL.txt).
+2. Install the [stable 1.03 launcher](releases/v1/03/INSTALL.txt) for square
+   cover icons and full-screen backgrounds. Emulators remain shared.
+3. Open GameShelf and press **X** to generate or update game entries.
+4. When finished, press **X** to return to the PSP home screen, then open
+   **Game → Memory Stick**.
+5. Select a game to start it directly. Generated entries persist after reboot.
 
-Con **Cerchio** dalla schermata iniziale puoi ancora aprire il vecchio catalogo.
+Press **Circle** on the initial GameShelf screen to open the legacy catalog.
 
-| Sistema | ROM | Emulatore richiesto |
+| System | ROM directory | Required emulator |
 | --- | --- | --- |
-| NES | `PSP/GAME/Nester_AoEX_R3/roms/*.nes` | NesterJ con adattamento autoload |
-| GBA | `PSP/GAME/TempGBA4PSP-Mod/roms/*.gba` | TempGBA integrato in `PSP/GAME/GAMESHELF/TempGBA/` |
+| NES | `PSP/GAME/Nester_AoEX_R3/roms/*.nes` | NesterJ with the autoload adapter |
+| GBA | `PSP/GAME/TempGBA4PSP-Mod/roms/*.gba` | Integrated TempGBA under `PSP/GAME/GAMESHELF/TempGBA/` |
 
-Non sostituire gli emulatori adattati con gli eseguibili standard:
-la selezione automatica dipende dagli adattamenti inclusi nel progetto.
+Keep the adapted emulator builds: standard upstream executables do not provide
+all the startup behavior required by GameShelf.
 
-## Copertine e sfondi nella 1.03
+## Covers and backgrounds
 
-Sul Mac, con la scheda montata:
+With your memory card mounted on your computer:
 
 ```sh
 python3 tools/fetch_boxart.py --sd-root /Volumes/SD-FAT32 --platform nes --platform gba
 ```
 
-Per aggiornare solo l’EBOOT dalla scheda collegata, con backup automatico:
+The helper downloads available covers and prepares these assets under
+`PSP/GAME/GAMESHELF/boxart/{nes,gba}/`:
+
+- `Game.gsh`: legacy catalog texture.
+- `Game.xmb.gsh`: square cover texture for an 80×80 XMB icon.
+- `Game.pic1.png`: 480×272 full-screen background.
+
+Asset names must match the ROM filename without its extension. Square images
+fill the icon; rectangular images are cropped centrally without stretching.
+The background is an enlarged cover crop, darkened to keep XMB text readable.
+Highlight a game and wait for the XMB to display its background.
+
+Games without matching art retain the default GameShelf icon. ROM hacks may
+need manually supplied artwork. Downloaded images stay on the memory card
+and are not included in this repository.
+
+To update the stable launcher with an automatic backup:
 
 ```sh
 python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --version 1.03 --backup-root ../PSP_BACKUP
 ```
 
-Il programma delle copertine recupera le immagini disponibili e crea le texture `.gsh` in
-`PSP/GAME/GAMESHELF/boxart/{nes,gba}/`. Il nome deve coincidere con quello
-della ROM senza estensione. Poi avvia GameShelf 1.03 sulla PSP e premi X:
-aggiorna anche i collegamenti creati con la 1.00.
+This is an update helper; emulator runtimes must already be installed.
 
-La copertina appare come icona quadrata PNG 80×80 senza cornice rettangolare.
-Le immagini quadrate riempiono l’icona; quelle rettangolari vengono ritagliate
-al centro senza deformazioni. Le texture dedicate sono i file `.xmb.gsh`.
-Per i titoli senza un’immagine corrispondente rimane l’icona GameShelf;
-gli hack possono richiedere una copertina fornita manualmente.
-La 1.03 inserisce anche un’immagine **PIC1 a 480×272** nel collegamento:
-quando resti sul gioco selezionato, la XMB può mostrarla a schermo intero.
-È un ingrandimento della copertina, ritagliato senza deformazioni e scurito
-per la leggibilità. Il file preparato dal helper è `NOME.pic1.png`.
-Senza un’immagine valida il collegamento conserva l’icona e rimane avviabile.
+## GBA save isolation in 1.04 — experimental
 
-Le immagini scaricate rimangono sulla scheda e non fanno parte del repository.
-
-## Salvataggi GBA nella 1.04 (in prova)
-
-La 1.04 aggiorna insieme launcher e runtime TempGBA. L’installer crea un backup
-completo e archivia le vecchie voci GBA prima di rimuoverle; aprire GameShelf
-sulla PSP e premere X per rigenerarle con il nuovo protocollo.
+Version 1.04 must update **both GameShelf and the integrated TempGBA runtime**:
 
 ```sh
 python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --version 1.04 --backup-root ../PSP_BACKUP
 ```
 
-La ROM temporanea rimane `game.gba`, ma l’emulatore riceve il nome originale
-attraverso `SAVE_ID.TXT` e lo verifica contro dimensione e header della ROM.
-Ogni gioco usa il proprio `.sav`, stato, configurazione e screenshot nelle
-cartelle esistenti di `GAMESHELF/TempGBA/`. Il nome della ROM è limitato a
-180 byte; rinominarla cambia anche il nome del salvataggio associato.
+The installer creates a complete backup, then backs up and removes old GBA
+entries because each entry contains the previous launcher. Open GameShelf on
+the PSP and press **X** to regenerate them before playing.
 
-I vecchi `game.sav` e stati condivisi restano conservati, senza assegnarli
-automaticamente a un titolo. Per ripristinare la 1.03 bisogna usare il backup
-completo di launcher, runtime e voci GBA: il downgrade del solo EBOOT è rifiutato.
-La prova richiesta è **A → salva → B → salva → A**, poi di nuovo B, verificando
-anche gli stati. Finché non viene confermata su console, la 1.03 resta stabile.
+The staged ROM remains `game.gba`, but TempGBA receives the original ROM name
+through `SAVE_ID.TXT`, checked against the loaded ROM's size and header.
+Saves, states, game settings and screenshots use the original name in the
+existing `GAMESHELF/TempGBA/` directories. ROM names are limited to 180 bytes;
+renaming a ROM also changes its associated save filename.
 
-## Limiti attuali
+Existing shared saves such as `game.sav` and old states are preserved without
+automatically assigning them to a game. Identifying the correct title is
+required before transferring an old shared save.
 
-- Massimo 32 ROM per sistema, nella cartella prevista e senza sottocartelle.
-- Le voci usano una piccola copia del launcher; gli emulatori restano condivisi.
-- Le voci di ROM eliminate vanno rimosse manualmente dalle cartelle
-  `PSP/GAME/GSH_GBA_*` o `GSH_NES_*`.
-- Per GBA usa il menu interno **Quit/Exit**: permane la limitazione del popup HOME.
-- Nelle versioni fino alla 1.03 i salvataggi GBA possono condividere il nome
-  `game.sav`; la 1.04 introduce nomi separati, ancora da verificare su console.
-- ISO e PS1 si avviano normalmente dalla XMB, ma il loro avvio attraverso
-  GameShelf rimane irrisolto sul PRO-C provato.
-- GB/GBC, Atari, Mega Drive e SNES restano nel vecchio catalogo: per questi
-  sistemi manca ancora la selezione automatica della ROM nell’emulatore.
+Test on hardware: **game A → save → game B → save → reopen A**, then reopen B.
+Check each game's normal saves and save states. Version 1.03 remains the stable
+reference until this sequence is confirmed on a PSP.
 
-## Sorgenti e verifica
+To roll back, restore the complete backup of GameShelf, TempGBA and generated
+GBA entries. The installer rejects a launcher-only downgrade from 1.04.
+
+## Language
+
+Project documentation and computer tools use English. The 1.04 candidate PSP launcher
+reads the console's system language: English and Italian are supported, with
+English as the fallback for all other languages or a failed settings read.
+Emulator menus retain the language options provided by their upstream projects.
+
+## Current limitations
+
+- Up to 32 ROMs per system, scanned from the expected directory without recursion.
+- Each game entry contains a small copy of the launcher; emulator runtimes are shared.
+- Entries for deleted ROMs must be removed manually from `PSP/GAME/GSH_GBA_*`
+  or `GSH_NES_*`.
+- Exit GBA games through the emulator's **Quit/Exit** menu. The firmware HOME
+  popup remains disabled in the integrated runtime.
+- Versions through 1.03 may share the GBA save filename `game.sav`.
+  Separate filenames in 1.04 still require hardware confirmation.
+- PSP ISO and PS1 games work through the normal XMB, but launching them through
+  GameShelf remains unresolved on the tested PRO-C installation.
+- GB/GBC, Atari, Mega Drive and SNES appear in the legacy catalog; automatic
+  ROM selection inside those emulators is not implemented yet.
+
+## Source and verification
 
 ```sh
 git clone --recurse-submodules https://github.com/fracarli/psp-gameshelf.git
 cd psp-gameshelf
-# Con PSPDEV/PSPSDK installato e i tool nel PATH:
+# Install PSPDEV/PSPSDK and put its tools on PATH first.
 make
 python3 tools/verify_xmb.py
 python3 tools/verify_gba_saves.py
 python3 tools/verify_install.py
+python3 tools/verify_language.py
 ```
 
-Il Makefile usa `~/pspdev` per impostazione predefinita; puoi impostare `PSPDEV`
-per un’altra installazione. Il sorgente corrente genera la versione 1.04.
+The Makefile defaults to `~/pspdev`; set `PSPDEV` for a different installation.
+The current source builds the 1.04 candidate. Tests cover generated PBP/SFO
+metadata, executable preservation, cover and background PNGs, invalid inputs,
+per-game save identity, paired installation and rollback, and language selection.
+Computer tests do not replace testing on a real PSP.
 
-I test eseguono il generatore C sul computer e controllano: aggiornamento delle
-voci 1.00, metadati PBP/SFO, integrità dell’eseguibile, PNG e colori delle
-copertine, fallback senza immagini e rifiuto di collisioni e input invalidi.
-Gli sfondi della 1.03 sono stati confermati sulla console dall’utente.
+Emulator sources are tracked as upstream submodules. The adaptations used by
+this project are in [patches/](patches/README.md).
+See the [version 0 technical history](docs/history-v0.md) and
+[roadmap](docs/roadmap.md) for background and next steps.
 
-Gli emulatori sono submodule dei progetti originali; gli adattamenti del codice
-sono conservati in [patches/](patches/README.md).
-[Storia tecnica della versione 0](docs/history-v0.md).
+## Published contents and licenses
 
-## Contenuti pubblicati
+This repository contains only PSP GameShelf code, documentation and release
+packages. It excludes ROMs, ISO images, BIOS files, saves, downloaded artwork,
+memory-card backups and unrelated files from the developer's computer.
 
-Questo repository contiene esclusivamente codice, documentazione e pacchetti
-PSP GameShelf. Non contiene ROM, ISO, BIOS, salvataggi, copertine scaricate,
-backup della scheda o altri file del Desktop.
-
-Codice GameShelf: [MIT](LICENSE). Gli emulatori conservano le licenze dei
-rispettivi progetti originali.
+GameShelf code: [MIT](LICENSE). Third-party emulators retain their upstream
+licenses; the 1.04 TempGBA package includes its GPL text and source references.

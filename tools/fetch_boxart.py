@@ -84,7 +84,7 @@ def decode_cover_png(source: Path) -> tuple[int, int, int, list[bytes]]:
     """Decode supported RGB/RGBA cover PNGs for local asset preparation."""
     data = source.read_bytes()
     if data[:8] != b"\x89PNG\r\n\x1a\n":
-        raise ValueError("formato PNG non riconosciuto")
+        raise ValueError("unrecognized PNG format")
     pos = 8
     idat = bytearray()
     image_width = image_height = color_type = bit_depth = None
@@ -96,13 +96,13 @@ def decode_cover_png(source: Path) -> tuple[int, int, int, list[bytes]]:
         if kind == b"IHDR":
             image_width, image_height, bit_depth, color_type, _, _, interlace = struct.unpack(">IIBBBBB", payload)
             if bit_depth != 8 or interlace != 0 or color_type not in (2, 6):
-                raise ValueError("PNG non supportato: usare RGB/RGBA non interlacciato")
+                raise ValueError("unsupported PNG: use non-interlaced RGB/RGBA")
         elif kind == b"IDAT":
             idat.extend(payload)
         elif kind == b"IEND":
             break
     if image_width is None or image_height is None:
-        raise ValueError("PNG senza IHDR")
+        raise ValueError("PNG has no IHDR chunk")
     channels = 4 if color_type == 6 else 3
     stride = image_width * channels
     decoded = zlib.decompress(bytes(idat))
@@ -130,7 +130,7 @@ def decode_cover_png(source: Path) -> tuple[int, int, int, list[bytes]]:
                 predictor = (left, up, upper_left)[distances.index(min(distances))]
                 current[index] = (current[index] + predictor) & 0xFF
             elif filter_type != 0:
-                raise ValueError(f"filtro PNG non supportato: {filter_type}")
+                raise ValueError(f"unsupported PNG filter: {filter_type}")
         rows.append(bytes(current))
         previous = current
 
@@ -209,7 +209,7 @@ def main() -> int:
 
     sd_root = args.sd_root.expanduser().resolve()
     if not sd_root.is_dir():
-        print(f"Scheda SD non trovata: {sd_root}", file=sys.stderr)
+        print(f"Memory card not found: {sd_root}", file=sys.stderr)
         return 2
 
     covers_root = sd_root / "PSP/GAME/GAMESHELF/boxart"
@@ -217,7 +217,7 @@ def main() -> int:
     if args.platform:
         roms = [item for item in roms if item[0] in args.platform]
     if not roms:
-        print("Nessuna ROM supportata trovata sulla scheda.")
+        print("No supported ROMs found on the memory card.")
         return 0
 
     indexes: dict[str, dict[str, str]] = {}
@@ -247,7 +247,7 @@ def main() -> int:
             continue
         try:
             if playlist not in indexes:
-                print(f"Indice {playlist}...")
+                print(f"Loading index: {playlist}...")
                 indexes[playlist] = list_boxarts(playlist)
             remote_name = find_remote_name(indexes[playlist], title)
             if remote_name is None:
@@ -264,7 +264,7 @@ def main() -> int:
         except (HTTPError, URLError, TimeoutError, OSError) as error:
             print(f"ERR   {platform}: {rom_path.name} ({error})", file=sys.stderr)
 
-    print(f"Completato: {downloaded} scaricate, {missing} non trovate.")
+    print(f"Finished: {downloaded} downloaded, {missing} not found.")
     return 0
 
 

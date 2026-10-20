@@ -1,23 +1,21 @@
-PSP GameShelf 1.01 - copertine XMB, copertine confermate su PSP
+PSP GameShelf 1.01 - XMB cover icons confirmed on PSP
 
-Aggiornamento da 1.00:
-1. Conserva una copia di PSP/GAME/GAMESHELF/EBOOT.PBP.
-2. Sostituiscilo con l’EBOOT.PBP di questa cartella.
-3. Mantieni gli emulatori, le ROM e i salvataggi già installati.
-4. Sul Mac puoi recuperare le copertine con:
+Update from 1.00:
+1. Back up PSP/GAME/GAMESHELF/EBOOT.PBP.
+2. Replace it with this package's EBOOT.PBP.
+3. Keep the existing adapted emulators, ROMs, BIOS files and saves.
+4. On your computer, prepare available covers:
    python3 tools/fetch_boxart.py --sd-root /Volumes/SD-FAT32 --platform nes --platform gba
-5. Apri GameShelf 1.01 sulla PSP e premi X: aggiorna le voci esistenti.
-6. Premi nuovamente X per tornare alla home; rientra in Memory Stick.
+5. Open GameShelf 1.01 on the PSP and press X to update existing game entries.
+6. Press X again to return home, then open Game > Memory Stick.
 
-La copertina viene inserita come icona PNG 144x80, senza deformarla.
-Le immagini .gsh vengono lette da PSP/GAME/GAMESHELF/boxart/nes o gba,
-con lo stesso nome della ROM e senza estensione (esempio: Gioco.gsh).
-Se l’immagine manca o non è valida resta l’icona predefinita GameShelf.
-Gli hack senza una copertina corrispondente possono richiedere un PNG fornito
-manualmente e convertito con png_to_gsh di tools/fetch_boxart.py.
+Version 1.01 displays a cover fitted inside a 144x80 PNG icon.
+Cover textures are read from PSP/GAME/GAMESHELF/boxart/nes or gba.
+Match the ROM basename, for example Game.gsh for Game.gba.
+Missing or invalid artwork falls back to the common GameShelf icon.
+ROM hacks may require manually provided covers.
 
-Per la prima installazione installa prima il pacchetto stabile 1.00 e poi
-sostituisci soltanto l’EBOOT principale con questo.
-Per ripristinare copia l’EBOOT della 1.00 e rimuovi soltanto i collegamenti
-GSH_GBA_* / GSH_NES_* prima di rigenerarli con la 1.00.
-Copertine della 1.01 confermate dall’utente sulla console. La 1.02 amplia le icone.
+For a first installation, install 1.00 before updating the main EBOOT.
+To restore 1.00, replace the main EBOOT, remove generated GSH_GBA_* and
+GSH_NES_* entries, and regenerate them with 1.00.
+Square borderless icons are available in 1.02 and later.

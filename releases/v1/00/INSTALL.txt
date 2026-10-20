@@ -1,29 +1,26 @@
-PSP GameShelf 1.00 - AVVIO NES E GBA CONFERMATO SU PSP
+PSP GameShelf 1.00 - NES and GBA direct launch confirmed on PSP
 
-Target: PSP-3004, firmware 6.61 PRO-C attivo (FastRecovery se necessario).
+Tested target: PSP-3004, firmware 6.61 with PRO-C enabled.
+Run FastRecovery after a full shutdown if required.
 
-1. Conserva una copia della cartella GAMESHELF attualmente installata.
-2. Copia EBOOT.PBP in PSP/GAME/GAMESHELF/EBOOT.PBP.
-3. Unisci i file di TempGBA/ a PSP/GAME/GAMESHELF/TempGBA/.
-   Non cancellare cartelle, BIOS, ROM o salvataggi esistenti.
-4. NesterJ modificato deve essere in PSP/GAME/Nester_AoEX_R3/EBOOT.PBP.
-   Se necessario copia NesterJ-EBOOT.PBP in quella posizione rinominandolo
-   EBOOT.PBP, conservando prima il precedente eseguibile.
-5. Lascia BIOS e moduli originali in PSP/GAME/TempGBA4PSP-Mod/.
-6. Per la prima prova usa una ROM .nes e una .gba nelle rispettive cartelle
-   roms. Il generatore considera al massimo 32 file per sistema.
-7. Apri GameShelf dalla Memory Stick, premi X, leggi il riepilogo e premi X
-   per tornare alla home. Rientra in Gioco > Memory Stick.
-8. Prova una voce [NES] e una [GBA]: devono caricare il titolo scelto senza menu.
-   In GBA usa il menu interno Quit/Exit: permane la limitazione del popup HOME.
+1. Back up your existing PSP/GAME/GAMESHELF directory.
+2. Copy EBOOT.PBP to PSP/GAME/GAMESHELF/EBOOT.PBP.
+3. Merge TempGBA/ into PSP/GAME/GAMESHELF/TempGBA/.
+   Preserve existing ROMs, BIOS files, saves and states.
+4. Keep the adapted NesterJ at PSP/GAME/Nester_AoEX_R3/EBOOT.PBP.
+   If needed, copy NesterJ-EBOOT.PBP there as EBOOT.PBP after backing up
+   the previous executable.
+5. Keep the original BIOS and support modules in PSP/GAME/TempGBA4PSP-Mod/.
+6. NES ROMs belong in Nester_AoEX_R3/roms; GBA ROMs belong in
+   TempGBA4PSP-Mod/roms. Up to 32 ROMs are scanned per system.
+7. Open GameShelf, press X, review the summary and press X to return home.
+8. Open Game > Memory Stick and launch an [NES] or [GBA] game directly.
+   Exit GBA through its internal Quit/Exit menu, not the firmware HOME popup.
 
-Le voci hanno per ora l’icona comune GameShelf. Gli emulatori sono condivisi.
-La preparazione GBA mantiene il meccanismo precedente di ROM temporanea game.gba.
-Verificare anche salvataggi e uscita prima di usare abitualmente questa build.
-I giochi, BIOS e salvataggi non sono inclusi nel pacchetto.
+Version 1.00 uses the common GameShelf icon. Emulators remain shared.
+The staged GBA ROM is named game.gba; check save behavior before regular use.
+Games, BIOS files and save data are not included in this package.
 
-Per ripristinare: copia la versione 0 da releases/v0/00 sopra GAMESHELF.
-Le sole cartelle GSH_GBA_* e GSH_NES_* create dal generatore possono essere
-rimosse per eliminare i collegamenti. Non eliminare le cartelle degli emulatori.
-
-Nessuna SD era montata durante la preparazione: pacchetto non installato.
+To restore the baseline, copy releases/v0/00 over GAMESHELF, preserving user data.
+Generated GSH_GBA_* and GSH_NES_* directories contain the individual game entries.
+Remove only those directories to remove entries; keep the emulator directories.

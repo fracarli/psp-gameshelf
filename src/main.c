@@ -5,6 +5,8 @@
 #include <pspiofilemgr.h>
 #include <pspdisplay.h>
 #include <pspinit.h>
+#include <psputility_sysparam.h>
+#include "language.h"
 #include <systemctrl.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -60,7 +62,7 @@ static int atari_scanned = 0;
 static int megadrive_scanned = 0;
 static int snes_scanned = 0;
 static int nes_scanned = 0;
-static char status_message[STATUS_LENGTH] = "Pronto.";
+static char status_message[STATUS_LENGTH] = "Ready.";
 #define COVER_WIDTH 128
 #define COVER_HEIGHT 160
 static unsigned short cover_pixels[COVER_WIDTH * COVER_HEIGHT];
@@ -703,7 +705,7 @@ static void add_diagnostic_line(char *log, int *used, const char *label,
 {
     int present = diagnostic_exists(path, directory);
     int written = snprintf(log + *used, 2048 - *used, "%s: %s\n  %s\n",
-                           label, present ? "OK" : "MANCANTE", path);
+                           label, present ? "OK" : "MISSING", path);
     if (written > 0) *used += written;
     if (*used >= 2048) *used = 2047;
 }
@@ -749,9 +751,9 @@ static void write_gba_diagnostics(void)
     if (file >= 0) {
         sceIoWrite(file, log, used < 2048 ? used : 2047);
         sceIoClose(file);
-        set_status("Diagnostica salvata in GBA_DIAG.TXT");
+        set_status(gsh_text("Diagnostics saved to GBA_DIAG.TXT"));
     } else {
-        set_status("Impossibile salvare GBA_DIAG.TXT");
+        set_status(gsh_text("Cannot save GBA_DIAG.TXT"));
     }
 }
 
@@ -767,11 +769,11 @@ static void launch_selected(void)
 
     if (view_mode == 3) {
         if (cursor >= gba_count) {
-            set_status("Nessuna ROM GBA selezionata.");
+            set_status(gsh_text("No GBA ROM selected."));
             return;
         }
         if (prepare_gba_runtime(gba_roms[cursor]) < 0) {
-            set_status("Preparazione GBA fallita: usa GBA_DIAG.TXT");
+            set_status(gsh_text("GBA setup failed: check GBA_DIAG.TXT"));
             write_gba_diagnostics();
             return;
         }
@@ -789,7 +791,7 @@ static void launch_selected(void)
 
         if ((view_mode == 4 && cursor >= gb_count) ||
             (view_mode == 5 && cursor >= gbc_count)) {
-            set_status("Nessuna ROM Game Boy selezionata.");
+            set_status(gsh_text("No Game Boy ROM selected."));
             return;
         }
         rom_name = view_mode == 4 ? gb_roms[cursor] : gbc_roms[cursor];
@@ -798,7 +800,7 @@ static void launch_selected(void)
         snprintf(destination, sizeof(destination),
                  "ms0:/PSP/GAME/GBAdhoc410/roms/%s", rom_name);
         if (strcmp(source, destination) != 0 && copy_file(source, destination) < 0) {
-            set_status("Copia ROM GBAdhoc fallita.");
+            set_status(gsh_text("Failed to copy the GBAdhoc ROM."));
             return;
         }
         snprintf(path, sizeof(path),
@@ -817,19 +819,19 @@ static void launch_selected(void)
         char destination[ENTRY_LENGTH];
 
         if (view_mode == 6) {
-            if (cursor >= atari_count) { set_status("Nessun gioco Atari selezionato."); return; }
+            if (cursor >= atari_count) { set_status(gsh_text("No Atari game selected.")); return; }
             rom_name = atari_roms[cursor];
             source_dir = "ms0:/PSP/GAME/psp2600/roms/";
             destination_dir = "ms0:/PSP/GAME/psp2600/roms/";
             emulator_dir = "psp2600";
         } else if (view_mode == 7) {
-            if (cursor >= megadrive_count) { set_status("Nessun gioco Mega Drive selezionato."); return; }
+            if (cursor >= megadrive_count) { set_status(gsh_text("No Mega Drive game selected.")); return; }
             rom_name = megadrive_roms[cursor];
             source_dir = "ms0:/PSP/GAME/PicoDrive/roms/";
             destination_dir = "ms0:/PSP/GAME/PicoDrive/roms/";
             emulator_dir = "PicoDrive";
         } else {
-            if (cursor >= snes_count) { set_status("Nessun gioco SNES selezionato."); return; }
+            if (cursor >= snes_count) { set_status(gsh_text("No SNES game selected.")); return; }
             rom_name = snes_roms[cursor];
             destination_dir = "ms0:/PSP/GAME/s9xTYLme_mod/roms/";
             emulator_dir = "s9xTYLme_mod";
@@ -838,7 +840,7 @@ static void launch_selected(void)
         snprintf(destination, sizeof(destination), "%s%s", destination_dir, rom_name);
         sceIoMkdir(destination_dir, 0777);
         if (copy_file(source, destination) < 0) {
-            set_status("Copia ROM emulatore fallita.");
+            set_status(gsh_text("Failed to copy the emulator ROM."));
             return;
         }
         snprintf(path, sizeof(path), "ms0:/PSP/GAME/%s/EBOOT.PBP", emulator_dir);
@@ -859,30 +861,30 @@ static void launch_selected(void)
 
     if (view_mode == 0) {
         if (cursor >= iso_count) {
-            set_status("Nessun ISO selezionato.");
+            set_status(gsh_text("No ISO selected."));
             return;
         }
         snprintf(path, sizeof(path), "ms0:/ISO/%s", iso_games[cursor]);
         if (!diagnostic_exists(path, 0)) {
-            set_status("ISO non trovato sulla scheda SD.");
+            set_status(gsh_text("ISO not found on the memory card."));
             write_iso_status(path, "file missing");
             return;
         }
         if (write_launch_request(path) == 0) {
-            set_status("Richiesta ISO salvata. Loader CFW pronto.");
+            set_status(gsh_text("ISO launch request saved for the CFW loader."));
             write_iso_status(path, "request written");
         } else {
-            set_status("Impossibile scrivere LAUNCH.TXT.");
+            set_status(gsh_text("Cannot write LAUNCH.TXT."));
             write_iso_status(path, "request write failed");
         }
         return;
     }
 
     if (view_mode == 1) {
-        if (cursor >= ps1_count) { set_status("Nessun gioco PS1 selezionato."); return; }
+        if (cursor >= ps1_count) { set_status(gsh_text("No PS1 game selected.")); return; }
         snprintf(path, sizeof(path), "ms0:/PSP/GAME/%s/EBOOT.PBP", ps1_games[cursor]);
         if (!diagnostic_exists(path, 0)) {
-            set_status("EBOOT PS1 non trovato.");
+            set_status(gsh_text("PS1 EBOOT not found."));
             write_ps1_status(ps1_games[cursor], path);
             return;
         }
@@ -897,7 +899,7 @@ static void launch_selected(void)
         goto launch_application;
     }
     if (cursor >= homebrew_count) {
-        set_status("Nessun titolo selezionato.");
+        set_status(gsh_text("No title selected."));
         return;
     }
     snprintf(path, sizeof(path), "ms0:/PSP/GAME/%s/EBOOT.PBP",
@@ -912,7 +914,7 @@ launch_application:
     param.key = launch_ps1 ? "pops" : "game";
     result = sctrlKernelLoadExecVSHWithApitype(launch_apitype, path, &param);
     if (result < 0) {
-        snprintf(status_message, STATUS_LENGTH, "Errore loader: 0x%08X",
+        snprintf(status_message, STATUS_LENGTH, gsh_text("Loader error: 0x%08X"),
                  (unsigned int)result);
     }
 }
@@ -936,65 +938,65 @@ static void draw_screen(void)
 
     pspDebugScreenClear();
     pspDebugScreenSetXY(0, 0);
-    pspDebugScreenPrintf("PSP GameShelf 1.04 - test PSP\n");
+    pspDebugScreenPrintf("%s", gsh_text("PSP GameShelf 1.04 - hardware test\n"));
     pspDebugScreenPrintf("PSP-3004 / TA-095v2 / FW 6.61\n\n");
     if (view_mode == 0) {
-        pspDebugScreenPrintf("%s  Vista: PSP ISO / CSO (%d)\n", platform_badge(), iso_count);
+        pspDebugScreenPrintf(gsh_text("%s  View: PSP ISO / CSO (%d)\n"), platform_badge(), iso_count);
         for (index = list_offset; index < iso_count && index < list_offset + 18; index++) {
             pspDebugScreenPrintf("%c %02d. %s\n", cursor == index ? '>' : ' ', index + 1, iso_games[index]);
         }
     } else if (view_mode == 1) {
-        pspDebugScreenPrintf("%s  Vista: PlayStation 1 (%d)\n", platform_badge(), ps1_count);
+        pspDebugScreenPrintf(gsh_text("%s  View: PlayStation 1 (%d)\n"), platform_badge(), ps1_count);
         for (index = list_offset; index < ps1_count && index < list_offset + 18; index++) {
             pspDebugScreenPrintf("%c %02d. %s\n", cursor == index ? '>' : ' ', index + 1, ps1_games[index]);
         }
     } else if (view_mode == 2) {
-        pspDebugScreenPrintf("%s  Vista: Applicazioni / Homebrew (%d)\n", platform_badge(), homebrew_count);
+        pspDebugScreenPrintf(gsh_text("%s  View: Applications / Homebrew (%d)\n"), platform_badge(), homebrew_count);
         for (index = list_offset; index < homebrew_count && index < list_offset + 18; index++) {
             pspDebugScreenPrintf("%c %02d. %s\n", cursor == index ? '>' : ' ', index + 1, homebrew[index]);
         }
     } else if (view_mode == 3) {
-        pspDebugScreenPrintf("%s  Vista: Game Boy Advance (%d)\n", platform_badge(), gba_count);
+        pspDebugScreenPrintf(gsh_text("%s  View: Game Boy Advance (%d)\n"), platform_badge(), gba_count);
         for (index = list_offset; index < gba_count && index < list_offset + 18; index++) {
             pspDebugScreenPrintf("%c %02d. %s\n", cursor == index ? '>' : ' ', index + 1, gba_roms[index]);
         }
     } else if (view_mode == 4) {
-        pspDebugScreenPrintf("%s  Vista: Game Boy (%d)\n", platform_badge(), gb_count);
+        pspDebugScreenPrintf(gsh_text("%s  View: Game Boy (%d)\n"), platform_badge(), gb_count);
         for (index = list_offset; index < gb_count && index < list_offset + 18; index++) {
             pspDebugScreenPrintf("%c %02d. %s\n", cursor == index ? '>' : ' ', index + 1, gb_roms[index]);
         }
     } else if (view_mode == 5) {
-        pspDebugScreenPrintf("%s  Vista: Game Boy Color (%d)\n", platform_badge(), gbc_count);
+        pspDebugScreenPrintf(gsh_text("%s  View: Game Boy Color (%d)\n"), platform_badge(), gbc_count);
         for (index = list_offset; index < gbc_count && index < list_offset + 18; index++) {
             pspDebugScreenPrintf("%c %02d. %s\n", cursor == index ? '>' : ' ', index + 1, gbc_roms[index]);
         }
     } else if (view_mode == 6) {
-        pspDebugScreenPrintf("%s  Vista: Atari 2600 (%d)\n", platform_badge(), atari_count);
+        pspDebugScreenPrintf(gsh_text("%s  View: Atari 2600 (%d)\n"), platform_badge(), atari_count);
         for (index = list_offset; index < atari_count && index < list_offset + 18; index++)
             pspDebugScreenPrintf("%c %02d. %s\n", cursor == index ? '>' : ' ', index + 1, atari_roms[index]);
     } else if (view_mode == 7) {
-        pspDebugScreenPrintf("%s  Vista: Mega Drive (%d)\n", platform_badge(), megadrive_count);
+        pspDebugScreenPrintf(gsh_text("%s  View: Mega Drive (%d)\n"), platform_badge(), megadrive_count);
         for (index = list_offset; index < megadrive_count && index < list_offset + 18; index++)
             pspDebugScreenPrintf("%c %02d. %s\n", cursor == index ? '>' : ' ', index + 1, megadrive_roms[index]);
     } else if (view_mode == 8) {
-        pspDebugScreenPrintf("%s  Vista: Super Nintendo (%d)\n", platform_badge(), snes_count);
+        pspDebugScreenPrintf(gsh_text("%s  View: Super Nintendo (%d)\n"), platform_badge(), snes_count);
         for (index = list_offset; index < snes_count && index < list_offset + 18; index++)
             pspDebugScreenPrintf("%c %02d. %s\n", cursor == index ? '>' : ' ', index + 1, snes_roms[index]);
     } else {
-        pspDebugScreenPrintf("%s  Vista: Nintendo Entertainment System (%d)\n", platform_badge(), nes_count);
+        pspDebugScreenPrintf(gsh_text("%s  View: Nintendo Entertainment System (%d)\n"), platform_badge(), nes_count);
         for (index = list_offset; index < nes_count && index < list_offset + 18; index++) {
             pspDebugScreenPrintf("%c %02d. %s\n", cursor == index ? '>' : ' ', index + 1, nes_roms[index]);
         }
     }
     last_index = total < list_offset + 18 ? total : list_offset + 18;
     if (total > 18) {
-        pspDebugScreenPrintf("Elementi %d-%d di %d\n", list_offset + 1,
+        pspDebugScreenPrintf(gsh_text("Entries %d-%d of %d\n"), list_offset + 1,
                              last_index, total);
     }
-    pspDebugScreenPrintf("\nSinistra/Destra: cambia vista\n");
-    pspDebugScreenPrintf("Su/Giu: scegli   X: seleziona/diagnostica\n");
-    pspDebugScreenPrintf("Triangolo: aggiorna   HOME: esci\n");
-    pspDebugScreenPrintf("Copertine: PSP/GAME/GAMESHELF/boxart/%s/\n",
+    pspDebugScreenPrintf("%s", gsh_text("\nLeft/Right: change view\n"));
+    pspDebugScreenPrintf("%s", gsh_text("Up/Down: choose   X: select/diagnose\n"));
+    pspDebugScreenPrintf("%s", gsh_text("Triangle: refresh   HOME: exit\n"));
+    pspDebugScreenPrintf(gsh_text("Covers: PSP/GAME/GAMESHELF/boxart/%s/\n"),
                          view_mode == 0 ? "psp" :
                          (view_mode == 1 ? "ps1" :
                           (view_mode == 2 ? "homebrew" :
@@ -1007,12 +1009,12 @@ static void draw_screen(void)
     {
         char cover_path[ENTRY_LENGTH + 96];
         if (selected_cover_exists(cover_path, sizeof(cover_path)))
-            pspDebugScreenPrintf("Copertina selezionata: OK\n");
+            pspDebugScreenPrintf("%s", gsh_text("Selected cover: OK\n"));
         else
-            pspDebugScreenPrintf("Copertina selezionata: assente\n");
+            pspDebugScreenPrintf("%s", gsh_text("Selected cover: missing\n"));
     }
-    pspDebugScreenPrintf("Stato: %s\n", status_message);
-    if (selected >= 0 && selected < total) pspDebugScreenPrintf("Selezionato.\n");
+    pspDebugScreenPrintf(gsh_text("Status: %s\n"), status_message);
+    if (selected >= 0 && selected < total) pspDebugScreenPrintf("%s", gsh_text("Selected.\n"));
     draw_selected_cover();
 }
 
@@ -1020,6 +1022,13 @@ int main(void)
 {
     SceCtrlData pad;
 
+    {
+        int language = PSP_SYSTEMPARAM_LANGUAGE_ENGLISH;
+        if (sceUtilityGetSystemParamInt(PSP_SYSTEMPARAM_ID_INT_LANGUAGE, &language) < 0)
+            language = PSP_SYSTEMPARAM_LANGUAGE_ENGLISH;
+        gsh_set_language(language);
+        set_status(gsh_text("Ready."));
+    }
     pspDebugScreenInit();
     if (xmb_target.mode != 0) {
         char name[256];
@@ -1034,20 +1043,20 @@ int main(void)
             if (mode == 3) { strcpy(gba_roms[0], name); gba_count = 1; }
             else { strcpy(nes_roms[0], name); nes_count = 1; }
             launch_selected();
-        } else set_status("Collegamento non valido.");
-        pspDebugScreenPrintf("%s\nPremi HOME per uscire.\n", status_message);
+        } else set_status(gsh_text("Invalid game entry."));
+        pspDebugScreenPrintf(gsh_text("%s\nPress HOME to exit.\n"), status_message);
         while (!done) sceKernelDelayThread(16000);
         sceKernelExitGame();
         return 0;
     }
-    pspDebugScreenPrintf("GameShelf 1.04\nX: crea giochi NES/GBA nella Memory Stick\nCerchio: catalogo precedente   HOME: esci\n");
+    pspDebugScreenPrintf("%s", gsh_text("GameShelf 1.04\nX: create/update NES/GBA Memory Stick entries\nCircle: legacy catalog   HOME: exit\n"));
     setup_callbacks();
     for (;;) {
         sceCtrlReadBufferPositive(&pad, 1);
         if (done) { sceKernelExitGame(); return 0; }
         if (pad.Buttons & PSP_CTRL_CROSS) {
             generate_xmb();
-            pspDebugScreenPrintf("\nPremi X per tornare alla home.\n");
+            pspDebugScreenPrintf("%s", gsh_text("\nPress X to return to the home screen.\n"));
             do { sceCtrlReadBufferPositive(&pad, 1); sceKernelDelayThread(16000); }
             while (pad.Buttons & PSP_CTRL_CROSS);
             do { sceCtrlReadBufferPositive(&pad, 1); sceKernelDelayThread(16000); }
@@ -1123,7 +1132,7 @@ int main(void)
             launch_selected();
         }
         if (pressed & PSP_CTRL_TRIANGLE) {
-            set_status("Aggiornamento disponibile al prossimo avvio.");
+            set_status(gsh_text("The library refreshes at the next startup."));
         }
         if (refresh) {
             scan_library();

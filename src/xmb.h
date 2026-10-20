@@ -1,3 +1,4 @@
+#include "language.h"
 /* GameShelf 1.04: generate per-ROM XMB EBOOTs, no emulator duplication. */
 static unsigned int read32(const unsigned char *p)
 {
@@ -143,8 +144,8 @@ static void generate_xmb(void)
         if (!diagnostic_exists(runtime,0)) result=-1;
         else result=make_xmb_entry(rom,gba?3:9);
         if(result==0) created++; else if(result==1) existing++; else failed++;
-        pspDebugScreenPrintf("%s: %.45s\n",result<0?"ERRORE":result?"AGGIORNATO":"CREATO",rom);
+        pspDebugScreenPrintf("%s: %.45s\n",result<0?gsh_text("ERROR"):result?gsh_text("UPDATED"):gsh_text("CREATED"),rom);
     }
-    pspDebugScreenPrintf("\nCreati %d, aggiornati %d, errori %d.\n",created,existing,failed);
-    pspDebugScreenPrintf("Massimo 32 ROM per sistema in questa prova.\n");
+    pspDebugScreenPrintf(gsh_text("\nCreated %d, updated %d, errors %d.\n"),created,existing,failed);
+    pspDebugScreenPrintf("%s", gsh_text("Up to 32 ROMs per system in this build.\n"));
 }
