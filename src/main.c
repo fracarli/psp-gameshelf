@@ -15,7 +15,7 @@
 #include "../shared/gba_identity.h"
 #include "../shared/extra_launch.h"
 
-PSP_MODULE_INFO("GameShelf", 0, 1, 9);
+PSP_MODULE_INFO("GameShelf", 0, 1, 10);
 PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER | THREAD_ATTR_VFPU);
 
 #define MAX_ENTRIES 32
@@ -45,6 +45,7 @@ static char gbc_roms[MAX_ROM_ENTRIES][ENTRY_LENGTH];
 static char atari_roms[MAX_ROM_ENTRIES][ENTRY_LENGTH];
 static char megadrive_roms[MAX_ROM_ENTRIES][ENTRY_LENGTH];
 static char snes_roms[MAX_ROM_ENTRIES][ENTRY_LENGTH];
+static char n64_roms[MAX_ROM_ENTRIES][ENTRY_LENGTH];
 static char nes_roms[MAX_ROM_ENTRIES][ENTRY_LENGTH];
 static int iso_count;
 static int ps1_count;
@@ -55,6 +56,7 @@ static int gbc_count;
 static int atari_count;
 static int megadrive_count;
 static int snes_count;
+static int n64_count;
 static int nes_count;
 static int gba_scanned = 0;
 static int gb_scanned = 0;
@@ -62,6 +64,7 @@ static int gbc_scanned = 0;
 static int atari_scanned = 0;
 static int megadrive_scanned = 0;
 static int snes_scanned = 0;
+static int n64_scanned = 0;
 static int nes_scanned = 0;
 static char status_message[STATUS_LENGTH] = "Ready.";
 #define COVER_WIDTH 128
@@ -82,6 +85,7 @@ static const char *platform_badge(void)
     if (view_mode == 6) return "[ATARI]";
     if (view_mode == 7) return "[MD]";
     if (view_mode == 8) return "[SNES]";
+    if (view_mode == 10) return "[N64]";
     return "[NES]";
 }
 
@@ -97,6 +101,7 @@ static void prepare_boxart_dirs(void)
     sceIoMkdir("ms0:/PSP/GAME/GAMESHELF/boxart/atari", 0777);
     sceIoMkdir("ms0:/PSP/GAME/GAMESHELF/boxart/megadrive", 0777);
     sceIoMkdir("ms0:/PSP/GAME/GAMESHELF/boxart/snes", 0777);
+    sceIoMkdir("ms0:/PSP/GAME/GAMESHELF/boxart/n64", 0777);
 }
 
 static int selected_cover_exists(char *cover_path, size_t cover_path_size)
@@ -134,6 +139,9 @@ static int selected_cover_exists(char *cover_path, size_t cover_path_size)
     } else if (view_mode == 8 && cursor < snes_count) {
         entry = snes_roms[cursor];
         folder = "snes";
+    } else if (view_mode == 10 && cursor < n64_count) {
+        entry = n64_roms[cursor];
+        folder = "n64";
     } else if (view_mode == 9 && cursor < nes_count) {
         entry = nes_roms[cursor];
         folder = "nes";
@@ -851,6 +859,20 @@ static void launch_selected(void)
         goto launch_application;
     }
 
+    if (view_mode == 10) {
+        unsigned int offset;
+        if(cursor<0 || cursor>=n64_count) {set_status(gsh_text("No title selected."));return;}
+        snprintf(path,sizeof(path),"ms0:/PSP/GAME/DaedalusX64/EBOOT.PBP");
+        offset=strlen(path)+1;memcpy(argument,path,offset);
+        if(gsh_extra_path(argument+offset,sizeof(argument)-offset,10,n64_roms[cursor])<0 ||
+           !diagnostic_exists(argument+offset,0) || !diagnostic_exists(path,0)) {
+            set_status(gsh_text("Invalid game entry."));return;
+        }
+        argument_size=offset+strlen(argument+offset)+1;has_argument=1;
+        sceIoChdir("ms0:/PSP/GAME/DaedalusX64");
+        goto launch_application;
+    }
+
     if (view_mode == 9) {
         snprintf(path, sizeof(path),
                  "ms0:/PSP/GAME/Nester_AoEX_R3/EBOOT.PBP");
@@ -910,7 +932,7 @@ static void launch_selected(void)
     has_argument = 1;
 launch_application:
     if(gsh_launch_active){
-        const char *name=view_mode==3?gba_roms[cursor]:view_mode==4?gb_roms[cursor]:view_mode==5?gbc_roms[cursor]:view_mode==6?atari_roms[cursor]:view_mode==7?megadrive_roms[cursor]:view_mode==8?snes_roms[cursor]:nes_roms[cursor];
+        const char *name=view_mode==3?gba_roms[cursor]:view_mode==4?gb_roms[cursor]:view_mode==5?gbc_roms[cursor]:view_mode==6?atari_roms[cursor]:view_mode==7?megadrive_roms[cursor]:view_mode==8?snes_roms[cursor]:view_mode==10?n64_roms[cursor]:nes_roms[cursor];
         gsh_launch_stage("Starting emulator...");gsh_launch_log(name);
     }
     memset(&param, 0, sizeof(param));
@@ -940,11 +962,11 @@ static void draw_screen(void)
                     (view_mode == 5 ? gbc_count :
                      (view_mode == 6 ? atari_count :
                       (view_mode == 7 ? megadrive_count :
-                       (view_mode == 8 ? snes_count : nes_count))))))));
+                       (view_mode == 8 ? snes_count : view_mode == 10 ? n64_count : nes_count))))))));
 
     pspDebugScreenClear();
     pspDebugScreenSetXY(0, 0);
-    pspDebugScreenPrintf("%s", gsh_text("PSP GameShelf 1.09 - hardware test\n"));
+    pspDebugScreenPrintf("%s", gsh_text("PSP GameShelf 1.10 - hardware test\n"));
     pspDebugScreenPrintf("PSP-3004 / TA-095v2 / FW 6.61\n\n");
     if (view_mode == 0) {
         pspDebugScreenPrintf(gsh_text("%s  View: PSP ISO / CSO (%d)\n"), platform_badge(), iso_count);
@@ -988,6 +1010,10 @@ static void draw_screen(void)
         pspDebugScreenPrintf(gsh_text("%s  View: Super Nintendo (%d)\n"), platform_badge(), snes_count);
         for (index = list_offset; index < snes_count && index < list_offset + 18; index++)
             pspDebugScreenPrintf("%c %02d. %s\n", cursor == index ? '>' : ' ', index + 1, snes_roms[index]);
+    } else if (view_mode == 10) {
+        pspDebugScreenPrintf(gsh_text("%s  View: Nintendo 64 (%d)\n"), platform_badge(), n64_count);
+        for(index=list_offset;index<n64_count && index<list_offset+18;index++)
+            pspDebugScreenPrintf("%c %02d. %s\n",cursor==index?'>':' ',index+1,n64_roms[index]);
     } else {
         pspDebugScreenPrintf(gsh_text("%s  View: Nintendo Entertainment System (%d)\n"), platform_badge(), nes_count);
         for (index = list_offset; index < nes_count && index < list_offset + 18; index++) {
@@ -1011,7 +1037,7 @@ static void draw_screen(void)
                              (view_mode == 5 ? "gbc" :
                               (view_mode == 6 ? "atari" :
                                (view_mode == 7 ? "megadrive" :
-                                (view_mode == 8 ? "snes" : "nes")))))))));
+                                (view_mode == 8 ? "snes" : view_mode == 10 ? "n64" : "nes")))))))));
     {
         char cover_path[ENTRY_LENGTH + 96];
         if (selected_cover_exists(cover_path, sizeof(cover_path)))
@@ -1045,7 +1071,7 @@ int main(void)
         memcpy(name, (const void *)xmb_target.rom, sizeof(name));
         name[255] = '\0';
         setup_callbacks();
-        if ((mode >= 3 && mode <= 9) && name[0] &&
+        if ((mode >= 3 && mode <= 10) && name[0] &&
             !strchr(name, '/') && !strchr(name, ':') && !strchr(name, '\\')) {
             view_mode = mode;
             cursor = 0;
@@ -1055,6 +1081,7 @@ int main(void)
             else if(mode==6) { strcpy(atari_roms[0],name); atari_count=1; }
             else if(mode==7) { strcpy(megadrive_roms[0],name); megadrive_count=1; }
             else if(mode==8) { strcpy(snes_roms[0],name); snes_count=1; }
+            else if(mode==10) { strcpy(n64_roms[0],name); n64_count=1; }
             else { strcpy(nes_roms[0], name); nes_count = 1; }
             gsh_launch_begin(name);
             launch_selected();
@@ -1064,7 +1091,7 @@ int main(void)
         sceKernelExitGame();
         return 0;
     }
-    pspDebugScreenPrintf("%s", gsh_text("GameShelf 1.09\nX: create/update game entries (7 systems)\nCircle: legacy catalog   HOME: exit\n"));
+    pspDebugScreenPrintf("%s", gsh_text("GameShelf 1.10\nX: create/update game entries (8 systems)\nCircle: legacy catalog   HOME: exit\n"));
     setup_callbacks();
     for (;;) {
         sceCtrlReadBufferPositive(&pad, 1);
@@ -1101,11 +1128,11 @@ int main(void)
                     (view_mode == 5 ? gbc_count :
                      (view_mode == 6 ? atari_count :
                       (view_mode == 7 ? megadrive_count :
-                       (view_mode == 8 ? snes_count : nes_count))))))));
+                       (view_mode == 8 ? snes_count : view_mode == 10 ? n64_count : nes_count))))))));
 
         if (pressed & PSP_CTRL_LEFT) {
             view_mode--;
-            if (view_mode < 0) view_mode = 9;
+            if (view_mode < 0) view_mode = 10;
             cursor = 0;
             list_offset = 0;
             selected = -1;
@@ -1116,11 +1143,12 @@ int main(void)
             if (view_mode == 7 && !megadrive_scanned) scan_extra_roms(megadrive_roms, &megadrive_count, &megadrive_scanned, "ms0:/PSP/GAME/PicoDrive/roms", 7);
             if (view_mode == 8 && !snes_scanned) scan_extra_roms(snes_roms, &snes_count, &snes_scanned, "ms0:/PSP/GAME/s9xTYLme_mod/roms", 8);
             if (view_mode == 9 && !nes_scanned) scan_nes_roms();
+            if (view_mode == 10 && !n64_scanned) scan_extra_roms(n64_roms,&n64_count,&n64_scanned,"ms0:/PSP/GAME/DaedalusX64/Roms",10);
             draw_screen();
         }
         if (pressed & PSP_CTRL_RIGHT) {
             view_mode++;
-            if (view_mode > 9) view_mode = 0;
+            if (view_mode > 10) view_mode = 0;
             cursor = 0;
             list_offset = 0;
             selected = -1;
@@ -1131,6 +1159,7 @@ int main(void)
             if (view_mode == 7 && !megadrive_scanned) scan_extra_roms(megadrive_roms, &megadrive_count, &megadrive_scanned, "ms0:/PSP/GAME/PicoDrive/roms", 7);
             if (view_mode == 8 && !snes_scanned) scan_extra_roms(snes_roms, &snes_count, &snes_scanned, "ms0:/PSP/GAME/s9xTYLme_mod/roms", 8);
             if (view_mode == 9 && !nes_scanned) scan_nes_roms();
+            if (view_mode == 10 && !n64_scanned) scan_extra_roms(n64_roms,&n64_count,&n64_scanned,"ms0:/PSP/GAME/DaedalusX64/Roms",10);
             draw_screen();
         }
 
@@ -1159,7 +1188,7 @@ int main(void)
                         (view_mode == 5 ? gbc_count :
                          (view_mode == 6 ? atari_count :
                           (view_mode == 7 ? megadrive_count :
-                           (view_mode == 8 ? snes_count : nes_count))))))));
+                           (view_mode == 8 ? snes_count : view_mode == 10 ? n64_count : nes_count))))))));
             if (cursor >= total) cursor = total > 0 ? total - 1 : 0;
             if (list_offset > cursor) list_offset = cursor;
             draw_screen();

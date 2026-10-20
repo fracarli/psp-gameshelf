@@ -22,6 +22,7 @@ from urllib.request import Request, urlopen
 
 BASE_URL = "https://thumbnails.libretro.com"
 SYSTEMS = {
+    "n64": ("Nintendo - Nintendo 64", "PSP/GAME/DaedalusX64/Roms", (".z64", ".v64", ".n64")),
     "atari": ("Atari - 2600", "PSP/GAME/psp2600/roms", (".a26", ".bin", ".rom")),
     "megadrive": ("Sega - Mega Drive - Genesis", "PSP/GAME/PicoDrive/roms", (".bin", ".md", ".gen", ".smd")),
     "snes": ("Nintendo - Super Nintendo Entertainment System", "PSP/GAME/s9xTYLme_mod/roms", (".smc", ".sfc")),

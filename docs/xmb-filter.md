@@ -70,3 +70,11 @@ conflict with category_lite.prx. Review this before combining them.
 
 - categories_lite-1.6.zip: c3b6daa06523e6d17140e0367c91d96c835afc3bbd2792f57deb3b6b47ddd852
 - category_lite.prx: 576d2ff2e9fdfc4cdef7988ccbb1fe421b4caf57c23a01971363bd5b0d1ed717
+
+## N64 candidate configuration
+
+The prepared 1.10 candidate card also filters DaedalusX64 after creating four
+N64 entries. The emulator executable, ROM directory and saves are retained.
+N64 direct launch still requires hardware validation. If it fails, remove the
+DaedalusX64 line from gclite_filter.txt and reset VSH to restore the standalone
+entry. The pre-1.10 launcher and filter have a private backup.

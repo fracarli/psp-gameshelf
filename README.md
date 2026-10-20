@@ -65,9 +65,24 @@ continue to use the stable updater below. The installer passes computer checks
 for extraction, hashes, conflicts and error rollback; PSP installation is still
 unconfirmed. Stable 1.08 remains the recommended release. Read the
 [1.09 instructions and recovery limits](candidates/1.09/INSTALL.txt).
-The source on main now builds the 1.09 candidate; tag `v1.08` preserves the
+The 1.09 packager reuses its archived launcher when the source has advanced.
+The source on main now builds the 1.10 candidate; tag `v1.08` preserves the
 stable source. The candidate also corrects the Moonptrl display name without
-changing its ROM or save identity. N64 integration is still pending.
+changing its ROM or save identity. N64 direct launch is available separately in the 1.10 candidate below.
+
+## N64 direct launch: 1.10 candidate
+
+The [1.10 launcher candidate](candidates/1.10/INSTALL.txt) adds individual N64
+entries using the official, unmodified DaedalusX64 1.1.8 PSP runtime. Games stay
+in `PSP/GAME/DaedalusX64/Roms/` (`.z64`, `.v64`, `.n64`). Covers and full-screen
+backgrounds are supported. Existing runtime settings and saves remain in use.
+
+This is a launcher-only test update for the existing setup, not a complete
+first installer or a supported computer-updater target. The separate 1.09
+single-file installer still includes seven systems. N64 startup, controls,
+performance and saves require PSP validation before joining a stable package.
+Read the candidate instructions for backups and how to show Daedalus again
+if a direct launch fails.
 
 ## Updating an existing installation
 
@@ -122,7 +137,7 @@ connected, run:
 
 ```sh
 python3 tools/fetch_boxart.py --sd-root /Volumes/SD-FAT32 --platform nes --platform gba
-# Also supported: --platform gb --platform gbc --platform atari --platform megadrive --platform snes
+# Also supported: --platform gb --platform gbc --platform atari --platform megadrive --platform snes --platform n64
 ```
 
 The helper fetches available Libretro covers onto the card and prepares square
@@ -165,6 +180,7 @@ ROM and regenerate to recreate its entry.
 | NES / GBA | Confirmed on PSP |
 | GB / GBC | Direct launch confirmed on PSP in 1.07 |
 | Atari / Mega Drive / SNES | Available in stable 1.08; installed setup confirmed by user |
+| N64 | Direct launch implemented in 1.10 candidate; awaiting PSP confirmation |
 | PSP ISO / PS1 | Use the normal PSP home screen; GameShelf launch remains unresolved on tested PRO-C |
 
 Each entry contains a small launcher copy; emulator runtimes remain shared.
@@ -190,6 +206,10 @@ are in [candidates/](candidates/). Archived executables are never overwritten.
 | [1.07](releases/v1/07/) | GB/GBC direct launch confirmed; minimal loading bars |
 | [1.08](releases/v1/08/) | User-confirmed setup; Atari/MD/SNES adapters and bridge icon |
 | [1.09 candidate](candidates/1.09/) | Single-file first installer; Moon Patrol display correction; awaiting PSP test |
+| [1.10 candidate](candidates/1.10/) | N64 direct launch through unmodified DaedalusX64; awaiting PSP test |
+
+An English [presentation storyboard and narration](media/presentation/production-plan.md)
+are prepared for a real-hardware demonstration.
 
 See [the next architecture steps](docs/architecture-next.md) for a unified
 installation and [optional homebrew notes](docs/optional-homebrew.md) for

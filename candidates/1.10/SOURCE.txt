@@ -1,0 +1,10 @@
+GameShelf 1.10 N64 direct-launch candidate.
+Launcher source: https://github.com/fracarli/psp-gameshelf
+Existing shared engines remain unchanged from the installed setup.
+DaedalusX64 1.1.8 official PSP binary is reused without modification.
+Release: https://github.com/DaedalusX64/daedalus/releases/tag/1.1.8
+Source commit: 7a3fdf6f104774ede335a5ab4555245d64970080
+EBOOT.PBP SHA256: 8922126859efa47b9a6fc8e6a42e3af2e6fb5004f8abf9fa777c8b235100c0c4
+Upstream ZIP SHA256: 7e734cb48ba092b44a60c61218c5d6789a23db43f4909beb8cb1a783fe658224
+Daedalus keeps its upstream GPL license and source obligations.
+No games, BIOS, saves, downloaded covers or Daedalus binaries are supplied in this launcher-only candidate.

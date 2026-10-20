@@ -32,3 +32,17 @@ The plugin must:
 The plugin is intentionally not included in this milestone. This keeps the
 catalog homebrew safe and testable while the VSH/kernel integration is built
 separately.
+
+## N64 candidate 1.10
+
+Mode 10 is appended without changing NES mode 9 or any previous entry IDs.
+Runtime: ms0:/PSP/GAME/DaedalusX64/EBOOT.PBP. Original ROM directory:
+ms0:/PSP/GAME/DaedalusX64/Roms/. The PSP loadexec argument block contains two
+NUL-terminated strings: executable path, then full ROM path. Its byte count
+includes both terminators. The current directory is set to the runtime root.
+
+The root validates the basename, extension, path length and file existence.
+No ROM is staged or renamed. Daedalus 1.1.8 already handles argv[1] directly;
+its PSP executable is unmodified and verified against the official release.
+Original emulator configuration and save behavior are retained. Hardware
+compatibility and save/reload checks remain pending.

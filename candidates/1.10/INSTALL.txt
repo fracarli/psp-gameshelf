@@ -1,0 +1,39 @@
+GameShelf 1.10 - N64 direct-launch candidate
+
+This is a launcher-only update for the existing, tested 1.08 setup with the
+official DaedalusX64 1.1.8 PSP emulator already present. It is not a complete
+first-install package. The separate 1.09 single-file first installer currently
+contains seven systems; N64 can join it after hardware validation.
+
+On the existing card, the launcher and generated N64 entries were backed up
+before installation. Emulator executables, ROM filenames and saves are retained.
+The official Daedalus binary was verified byte-for-byte against upstream.
+
+For another existing installation, first back up the complete GAMESHELF folder,
+Daedalus settings/saves, old N64 entries and seplugins configuration. Replace
+only PSP/GAME/GAMESHELF/EBOOT.PBP with this candidate's EBOOT.PBP. Keep all
+previous runtimes, modules, BIOS and original ROM directories. The stable
+computer updater does not accept 1.10 yet.
+
+N64 ROM directory: PSP/GAME/DaedalusX64/Roms/
+Uncompressed formats: .z64, .v64, .n64. Up to 32 games; no nested directories.
+The launcher passes two NUL-separated arguments: emulator executable and full
+original ROM path. It checks file existence, safe paths and supported extensions.
+ROMs are read in place. Original Daedalus settings and save paths remain in use.
+
+Open GameShelf and press X to regenerate entries, then X to return home.
+The prepared existing card also has four generated N64 entries and covers.
+After regeneration, Moonptrl.bin keeps its corrected Moon Patrol display name.
+
+Test Super Mario 64 first. Check launch, controls, normal exit, in-game save
+and save/reload. Then try Mario Tennis, Paper Mario and Super Smash Bros.
+Game compatibility, speed and graphics are Daedalus capabilities and may vary;
+a working launch adapter does not establish compatibility for every game.
+N64 launch and saves remain unconfirmed on actual PSP hardware.
+
+On the prepared card, the optional filter hides Daedalus after creating the
+four game entries. Its executable and ROM/save directories remain intact.
+If a direct launch fails, remove DaedalusX64 from seplugins/gclite_filter.txt
+and reset VSH to show the emulator again. The prior filter is backed up.
+Restore the complete backup to roll back the launcher and filter together.
+Stable 1.08 remains archived under releases/v1/08 and tag v1.08.

@@ -8,14 +8,16 @@ static inline const char *gsh_extra_root(int mode)
 {
  return mode==6?"ms0:/PSP/GAME/psp2600/roms/":
         mode==7?"ms0:/PSP/GAME/PicoDrive/roms/":
-        mode==8?"ms0:/PSP/GAME/s9xTYLme_mod/roms/":NULL;
+        mode==8?"ms0:/PSP/GAME/s9xTYLme_mod/roms/":
+        mode==10?"ms0:/PSP/GAME/DaedalusX64/Roms/":NULL;
 }
 static inline int gsh_extra_extension(int mode,const char *name)
 {
  const char *dot=strrchr(name,'.');if(!dot)return 0;
  return mode==6?(!strcasecmp(dot,".a26")||!strcasecmp(dot,".bin")||!strcasecmp(dot,".rom")):
         mode==7?(!strcasecmp(dot,".bin")||!strcasecmp(dot,".md")||!strcasecmp(dot,".gen")||!strcasecmp(dot,".smd")):
-        mode==8?(!strcasecmp(dot,".smc")||!strcasecmp(dot,".sfc")):0;
+        mode==8?(!strcasecmp(dot,".smc")||!strcasecmp(dot,".sfc")):
+        mode==10?(!strcasecmp(dot,".z64")||!strcasecmp(dot,".v64")||!strcasecmp(dot,".n64")):0;
 }
 /* Leave room for legacy runtime save/state suffixes in 256-byte paths. */
 static inline int gsh_extra_valid(int mode,const char *path)

@@ -19,7 +19,13 @@ def build():
     CANDIDATE.mkdir(parents=True, exist_ok=True)
     env = dict(os.environ)
     env['PATH'] = str(Path.home()/'pspdev/bin') + os.pathsep + env['PATH']
-    subprocess.run(['make', '-B'], cwd=ROOT, env=env, check=True)
+    launcher = CANDIDATE/'EBOOT.PBP'
+    if not launcher.is_file():
+        subprocess.run(['make', '-B'], cwd=ROOT, env=env, check=True)
+        launcher = ROOT/'EBOOT.PBP'
+    else:
+        expected = next(line.split('  ',1)[0] for line in (CANDIDATE/'SHA256SUMS.txt').read_text().splitlines() if line.endswith('  EBOOT.PBP'))
+        assert hashlib.sha256(launcher.read_bytes()).hexdigest() == expected
     stable = ROOT / 'releases/v1/08'
     archive = stable / 'GameShelf-1.08-setup.zip'
     assert hashlib.sha256(archive.read_bytes()).hexdigest() == (archive.with_suffix('.zip.sha256').read_text().split()[0])
@@ -35,7 +41,7 @@ def build():
                 continue
             data = z.read(name)
             if name == 'PSP/GAME/GAMESHELF/EBOOT.PBP':
-                data = (ROOT / 'EBOOT.PBP').read_bytes()
+                data = launcher.read_bytes()
                 assert data.startswith(b'\0PBP') and data.count(b'GSHXMB100TARGET!') == 1
                 assert b'PSP GameShelf 1.09' in data
             elif name == 'PSP/GAME/GAMESHELF/INSTALL_VERSION.TXT':
@@ -73,7 +79,8 @@ def build():
     target = CANDIDATE/'GameShelfSetup/EBOOT.PBP'
     target.parent.mkdir(exist_ok=True)
     target.write_bytes(base+blob)
-    shutil.copy2(ROOT/'EBOOT.PBP', CANDIDATE/'EBOOT.PBP')
+    if launcher.resolve() != (CANDIDATE/'EBOOT.PBP').resolve():
+        shutil.copy2(launcher, CANDIDATE/'EBOOT.PBP')
     shutil.copy2(BUILD/'manifest.json', CANDIDATE/'PAYLOAD-MANIFEST.json')
     wrapper = CANDIDATE/'GameShelf-1.09-single-file-setup.zip'
     with zipfile.ZipFile(wrapper, 'w', zipfile.ZIP_DEFLATED) as z:

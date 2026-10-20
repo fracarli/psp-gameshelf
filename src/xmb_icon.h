@@ -35,11 +35,11 @@ static unsigned char *xmb_cover_png(const char *rom, int mode, unsigned int *len
     SceUID f;
     strncpy(name,rom,sizeof(name)-1); name[255]=0;
     { char *dot=strrchr(name,'.'); if(dot) *dot=0; }
-    snprintf(path,sizeof(path),"ms0:/PSP/GAME/GAMESHELF/boxart/%s/%s.xmb.gsh",mode==3?"gba":mode==4?"gb":mode==5?"gbc":mode==6?"atari":mode==7?"megadrive":mode==8?"snes":"nes",name);
+    snprintf(path,sizeof(path),"ms0:/PSP/GAME/GAMESHELF/boxart/%s/%s.xmb.gsh",mode==3?"gba":mode==4?"gb":mode==5?"gbc":mode==6?"atari":mode==7?"megadrive":mode==8?"snes":mode==10?"n64":"nes",name);
     *length=0;
     if(sceIoGetstat(path,&st)<0 || st.st_size!=texture_size) {
         /* Compatibility with cover caches prepared before version 1.02. */
-        snprintf(path,sizeof(path),"ms0:/PSP/GAME/GAMESHELF/boxart/%s/%s.gsh",mode==3?"gba":mode==4?"gb":mode==5?"gbc":mode==6?"atari":mode==7?"megadrive":mode==8?"snes":"nes",name);
+        snprintf(path,sizeof(path),"ms0:/PSP/GAME/GAMESHELF/boxart/%s/%s.gsh",mode==3?"gba":mode==4?"gb":mode==5?"gbc":mode==6?"atari":mode==7?"megadrive":mode==8?"snes":mode==10?"n64":"nes",name);
         source_width=128; source_height=160;texture_size=source_width*source_height*2;
         if(sceIoGetstat(path,&st)<0 || st.st_size!=texture_size) return NULL;
     }
@@ -98,7 +98,7 @@ static unsigned char *xmb_background_png(const char *rom, int mode, unsigned int
     *length=0;
     strncpy(name,rom,sizeof(name)-1);name[255]=0;
     { char *dot=strrchr(name,'.');if(dot)*dot=0; }
-    snprintf(path,sizeof(path),"ms0:/PSP/GAME/GAMESHELF/boxart/%s/%s.pic1.png",mode==3?"gba":mode==4?"gb":mode==5?"gbc":mode==6?"atari":mode==7?"megadrive":mode==8?"snes":"nes",name);
+    snprintf(path,sizeof(path),"ms0:/PSP/GAME/GAMESHELF/boxart/%s/%s.pic1.png",mode==3?"gba":mode==4?"gb":mode==5?"gbc":mode==6?"atari":mode==7?"megadrive":mode==8?"snes":mode==10?"n64":"nes",name);
     if(sceIoGetstat(path,&st)<0 || st.st_size<57 || st.st_size>524288) return NULL;
     size=st.st_size;png=malloc(size);
     if(!png)return NULL;

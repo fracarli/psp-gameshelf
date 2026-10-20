@@ -1,0 +1,34 @@
+1
+00:00:00,400 --> 00:00:04,000
+Your PSP. A new way to play.
+
+2
+00:00:04,800 --> 00:00:08,000
+Meet GameShelf.
+
+3
+00:00:09,000 --> 00:00:17,000
+Prepare your library,
+then return to the PSP home menu.
+
+4
+00:00:20,000 --> 00:00:27,000
+Browse your games
+with covers and backgrounds.
+
+5
+00:00:28,000 --> 00:00:31,000
+Choose a game. Press X.
+
+6
+00:00:32,000 --> 00:00:38,500
+GameShelf opens the right emulator
+and loads your game automatically.
+
+7
+00:00:39,000 --> 00:00:42,000
+Less browsing. More playing.
+
+8
+00:00:42,000 --> 00:00:45,000
+GameShelf. Your games. One home.

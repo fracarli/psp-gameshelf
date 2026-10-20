@@ -8,6 +8,7 @@ static inline const char *gsh_text(const char *english)
 {
     static const struct { const char *english; const char *italian; } messages[] = {
         { "Ready.", "Pronto." },
+        { "%s  View: Nintendo 64 (%d)\n", "%s  Vista: Nintendo 64 (%d)\n" },
         { "Diagnostics saved to GBA_DIAG.TXT", "Diagnostica salvata in GBA_DIAG.TXT" },
         { "Cannot save GBA_DIAG.TXT", "Impossibile salvare GBA_DIAG.TXT" },
         { "No GBA ROM selected.", "Nessuna ROM GBA selezionata." },
@@ -26,7 +27,7 @@ static inline const char *gsh_text(const char *english)
         { "PS1 EBOOT not found.", "EBOOT PS1 non trovato." },
         { "No title selected.", "Nessun titolo selezionato." },
         { "Loader error: 0x%08X", "Errore loader: 0x%08X" },
-        { "PSP GameShelf 1.09 - hardware test\n", "PSP GameShelf 1.09 - test PSP\n" },
+        { "PSP GameShelf 1.10 - hardware test\n", "PSP GameShelf 1.10 - test PSP\n" },
         { "Entries %d-%d of %d\n", "Elementi %d-%d di %d\n" },
         { "\nLeft/Right: change view\n", "\nSinistra/Destra: cambia vista\n" },
         { "Up/Down: choose   X: select/diagnose\n", "Su/Giu: scegli   X: seleziona/diagnostica\n" },
@@ -38,7 +39,7 @@ static inline const char *gsh_text(const char *english)
         { "Selected.\n", "Selezionato.\n" },
         { "Invalid game entry.", "Collegamento non valido." },
         { "%s\nPress HOME to exit.\n", "%s\nPremi HOME per uscire.\n" },
-        { "GameShelf 1.09\nX: create/update game entries (7 systems)\nCircle: legacy catalog   HOME: exit\n", "GameShelf 1.09\nX: crea/aggiorna giochi (7 sistemi)\nCerchio: catalogo precedente   HOME: esci\n" },
+        { "GameShelf 1.10\nX: create/update game entries (8 systems)\nCircle: legacy catalog   HOME: exit\n", "GameShelf 1.10\nX: crea/aggiorna giochi (8 sistemi)\nCerchio: catalogo precedente   HOME: esci\n" },
         { "\nPress X to return to the home screen.\n", "\nPremi X per tornare alla home.\n" },
         { "The library refreshes at the next startup.", "Aggiornamento disponibile al prossimo avvio." },
         { "ERROR", "ERRORE" },

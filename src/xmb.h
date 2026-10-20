@@ -1,6 +1,6 @@
 #include "language.h"
 #include "../shared/extra_launch.h"
-/* GameShelf 1.09: generate per-ROM XMB EBOOTs, no emulator duplication. */
+/* GameShelf 1.10: generate per-ROM XMB EBOOTs, no emulator duplication. */
 static unsigned int read32(const unsigned char *p)
 {
     return p[0] | ((unsigned int)p[1]<<8) | ((unsigned int)p[2]<<16) | ((unsigned int)p[3]<<24);
@@ -16,7 +16,7 @@ static unsigned int rom_id(const char *s, int mode)
     return h;
 }
 static const char *gsh_system(int mode)
-{ return mode==3?"GBA":mode==4?"GB":mode==5?"GBC":mode==6?"ATARI":mode==7?"MD":mode==8?"SNES":"NES"; }
+{ return mode==3?"GBA":mode==4?"GB":mode==5?"GBC":mode==6?"ATARI":mode==7?"MD":mode==8?"SNES":mode==10?"N64":"NES"; }
 #include "xmb_icon.h"
 #include "xmb_cleanup.h"
 
@@ -47,7 +47,7 @@ static int make_xmb_entry(const char *rom, int mode)
     char dir[128], path[160], temporary[164], backup[164], title[128];
     unsigned int title_entry=0, oldmax=0, value=0, growth;
     const char *base="ms0:/PSP/GAME/GAMESHELF/EBOOT.PBP";
-    if (strlen(rom) >= 256 || strchr(rom, '/') || strchr(rom, ':') || strchr(rom, '\\') || (mode<3 || mode>9)) return -1;
+    if (!rom[0] || rom[0]=='.' || strlen(rom) >= 256 || strchr(rom, '/') || strchr(rom, ':') || strchr(rom, '\\') || (mode<3 || mode>10)) return -1;
     memset(&st, 0, sizeof(st));
     if (sceIoGetstat(base, &st)<0 || st.st_size<40 || st.st_size>2097152) return -1;
     size=(unsigned int)st.st_size;
@@ -146,6 +146,7 @@ static void generate_xmb(void)
     scan_extra_roms(atari_roms,&atari_count,&atari_scanned,"ms0:/PSP/GAME/psp2600/roms",6);
     scan_extra_roms(megadrive_roms,&megadrive_count,&megadrive_scanned,"ms0:/PSP/GAME/PicoDrive/roms",7);
     scan_extra_roms(snes_roms,&snes_count,&snes_scanned,"ms0:/PSP/GAME/s9xTYLme_mod/roms",8);
+    scan_extra_roms(n64_roms,&n64_count,&n64_scanned,"ms0:/PSP/GAME/DaedalusX64/Roms",10);
     {
     struct { int mode,count;char (*roms)[256];const char *runtime; } systems[]={
         {3,gba_count,gba_roms,"ms0:/PSP/GAME/GAMESHELF/TempGBA/EBOOT.PBP"},
@@ -154,15 +155,16 @@ static void generate_xmb(void)
         {6,atari_count,atari_roms,"ms0:/PSP/GAME/psp2600/EBOOT.PBP"},
         {7,megadrive_count,megadrive_roms,"ms0:/PSP/GAME/PicoDrive/EBOOT.PBP"},
         {8,snes_count,snes_roms,"ms0:/PSP/GAME/s9xTYLme_mod/EBOOT.PBP"},
-        {9,nes_count,nes_roms,"ms0:/PSP/GAME/Nester_AoEX_R3/EBOOT.PBP"}
+        {9,nes_count,nes_roms,"ms0:/PSP/GAME/Nester_AoEX_R3/EBOOT.PBP"},
+        {10,n64_count,n64_roms,"ms0:/PSP/GAME/DaedalusX64/EBOOT.PBP"}
     };
     int system;
-    for(system=0;system<7;system++)for(i=0;i<systems[system].count;i++) {
+    for(system=0;system<8;system++)for(i=0;i<systems[system].count;i++) {
         int mode=systems[system].mode;
         const char *rom=systems[system].roms[i];
         char path[256];
         if(!diagnostic_exists(systems[system].runtime,0) ||
-           (mode>=6&&mode<=8&&gsh_extra_path(path,sizeof(path),mode,rom)<0))result=-1;
+           (((mode>=6&&mode<=8)||mode==10)&&gsh_extra_path(path,sizeof(path),mode,rom)<0))result=-1;
         else result=make_xmb_entry(rom,mode);
         if(result==0) created++; else if(result==1) existing++; else failed++;
         pspDebugScreenPrintf("%s: %.45s\n",result<0?gsh_text("ERROR"):result?gsh_text("UPDATED"):gsh_text("CREATED"),rom);
