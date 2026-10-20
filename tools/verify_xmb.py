@@ -32,7 +32,10 @@ typedef struct { long st_size; } SceIoStat;
 #define pspDebugScreenPrintf printf
 static int sceIoGetstat(const char *p,SceIoStat *s) { struct stat t; int r=stat(p,&t); if(!r)s->st_size=t.st_size;return r; }
 static volatile struct { unsigned char magic[16]; unsigned int mode; char rom[256]; } xmb_target={ "GSHXMB100TARGET!",0,"" };
-static int gba_count,nes_count,gb_count,gbc_count;
+static int gba_count,nes_count,gb_count,gbc_count,atari_count,megadrive_count,snes_count;
+static int atari_scanned,megadrive_scanned,snes_scanned;
+static char atari_roms[32][256],megadrive_roms[32][256],snes_roms[32][256];
+static void scan_extra_roms(char r[32][256],int *c,int *s,const char *p,int m) {(void)r;(void)c;(void)s;(void)p;(void)m;}
 static char gba_roms[32][256],nes_roms[32][256],gb_roms[32][256],gbc_roms[32][256];
 static void scan_gba_roms(void) {}
 static void scan_nes_roms(void) {}

@@ -1,0 +1,6 @@
+Adapted Snes9xTYL startup runtime. Awaiting hardware confirmation.
+Corresponding source: third_party/Snes9xTYL at 6ce09a0ada7cc10b57ab8d7134385f44f29a9629.
+Apply patches/snes9x-gameshelf.patch inside the matching submodule.
+The source also requires shared/extra_launch.h in the parent GameShelf tree.
+Build commands: patches/README.md. Upstream notices/terms are preserved.
+ROMs retain original names; normal existing save and configuration paths are used.

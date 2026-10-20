@@ -40,3 +40,32 @@ An external-launch loading bar replaces detailed startup text.
 
 For the exact 1.06 TempGBA source adaptation, use the patch archived under
 `releases/v1/06/tempgba-gameshelf.patch`; the current patch includes 1.07 bars.
+
+
+## Atari 2600 and SNES adapters (1.08 preview)
+
+```sh
+git -C third_party/PSP2600 apply ../../patches/psp2600-gameshelf.patch
+git -C third_party/Snes9xTYL apply ../../patches/snes9x-gameshelf.patch
+make -C third_party/PSP2600/src -f Makefile-3x
+make -C third_party/Snes9xTYL mehomeadhoc
+make -C third_party/Snes9xTYL/psp/mediaengineprx
+make -C third_party/Snes9xTYL/psp/homehookprx
+```
+
+Both adapters include `shared/extra_launch.h` from the parent project. They
+accept executable and original ROM path as two NUL-separated PSP arguments.
+The Atari adapter retains the original PSP2600 data directory and per-game
+state/settings names, skipping its splash and initial menu during direct launch.
+Its build disables the optional infrared keyboard and reports it unavailable
+to the SDK SDL library; ordinary controller input remains enabled.
+
+SNES retains `s9xTYLme_mod` as its data/module/save directory and skips welcome
+and selection for explicit requests. The patches include SDK type/prototype,
+C dialect and zlib linkage updates needed for the current PSPDEV toolchain.
+They retain emulation code and original notices. The setup does not copy the
+upstream music archive, which contains game audio.
+
+PicoDrive is the unmodified official PSP 2.05 binary. Its native ROM argument
+interface needs no core patch. The archive provenance, checksum, source tag
+and original license are recorded under `candidates/1.08/PicoDrive/`.

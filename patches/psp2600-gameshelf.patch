@@ -1,0 +1,233 @@
+diff --git a/src/Atari.cpp b/src/Atari.cpp
+index 1555e1f..f333840 100644
+--- a/src/Atari.cpp
++++ b/src/Atari.cpp
+@@ -116,7 +116,7 @@ atari_update_save_name(char *Name)
+ # endif
+     {
+       ATARI.atari_save_state[index].used = 1;
+-      ATARI.atari_save_state[index].date = aStat.st_mtime;
++      ATARI.atari_save_state[index].date = aStat.sce_st_mtime;
+       snprintf(TmpFileName, MAX_PATH, "%s/save/sav_%s_%d.png", ATARI.atari_home_dir, ATARI.atari_save_name, index);
+ # ifdef LINUX_MODE
+       if (! stat(TmpFileName, &aStat)) 
+@@ -1057,7 +1057,7 @@ atari_snapshot_save_slot(int save_id)
+       {
+         ATARI.atari_save_state[save_id].used  = 1;
+         ATARI.atari_save_state[save_id].thumb = 0;
+-        ATARI.atari_save_state[save_id].date  = aStat.st_mtime;
++        ATARI.atari_save_state[save_id].date  = aStat.sce_st_mtime;
+         snprintf(FileName, MAX_PATH, "%s/save/sav_%s_%d.png", ATARI.atari_home_dir, ATARI.atari_save_name, save_id);
+         if (psp_sdl_save_thumb_png(ATARI.atari_save_state[save_id].surface, FileName)) {
+           ATARI.atari_save_state[save_id].thumb = 1;
+@@ -1194,6 +1194,8 @@ extern int atariMain(int argc, char* argv[]);
+ int
+ SDL_main(int argc,char **argv)
+ {
++  gsh_atari_autoload = argc == 2;
++  chdir("ms0:/PSP/GAME/psp2600");
+   psp_global_initialize();
+ 
+   atariMain(argc, argv);
+diff --git a/src/Atari.h b/src/Atari.h
+index b4292fe..499cfd3 100644
+--- a/src/Atari.h
++++ b/src/Atari.h
+@@ -1,5 +1,6 @@
+ #ifndef _ATARI_H_
+ #define _ATARI_H_
++#include <pspctrl.h>
+ 
+ # ifdef __cplusplus
+ extern "C" {
+@@ -83,6 +84,9 @@ extern "C" {
+   } Atari_t;
+ 
+   extern Atari_t ATARI;
++  extern int gsh_atari_autoload;
++  extern void myCtrlPeekBufferPositive(SceCtrlData *, int);
++  extern void psp_sdl_gu_init(void);
+ 
+   extern void main_atari_send_key_event(int atari_idx, int key_press);
+   extern int  main_atari_load_state(char *filename);
+diff --git a/src/Makefile-3x b/src/Makefile-3x
+index 0947d04..ebcc85d 100644
+--- a/src/Makefile-3x
++++ b/src/Makefile-3x
+@@ -9,6 +9,7 @@ SDL_CONFIG = $(PSPBIN)/sdl-config
+ 
+ PSP_OBJS = \
+ psp_main.o \
++psp_no_ir.o \
+ psp_sdl.o \
+ psp_gu.o \
+ psp_font.o \
+@@ -23,7 +24,6 @@ psp_menu_kbd.o \
+ psp_menu_cheat.o \
+ psp_menu_list.o \
+ psp_editor.o \
+-psp_irkeyb.o \
+ psp_fmgr.o
+ 
+ EMU_OBJS= \
+@@ -126,7 +126,7 @@ gui/Widget.o
+ OBJS= $(EMU_OBJS) $(PSP_OBJS)
+ # $(GUI_OBJS) 
+ 
+-DEFAULT_CFLAGS = $(shell $(SDL_CONFIG) --cflags)
++DEFAULT_CFLAGS = -I$(shell psp-config --psp-prefix)/include/SDL -D_GNU_SOURCE=1 -Dmain=SDL_main
+ 
+ PSP_FW_VERSION=500
+ PSP2600_VERSION=1.2.0-fw5x
+@@ -140,25 +140,24 @@ MORE_CFLAGS = -G0 -Iemucore -Icommon -Ipsp \
+  -DPSP -DBSPF_PSP \
+  -DSOUND_SUPPORT \
+  -DPSP2600_VERSION=\"$(PSP2600_VERSION)\" \
+- -DUSE_PSP_IRKEYB \
+  -DNO_STDIO_REDIRECT
+ # -DJOYSTICK_SUPPORT
+ # -DPSP_DEBUG 
+ 
+ OPTIM_CFLAGS= -O2
+ 
+-CFLAGS = $(DEFAULT_CFLAGS) $(MORE_CFLAGS) 
+-CXXFLAGS = $(DEFAULT_CFLAGS) $(MORE_CFLAGS) -fexceptions -fno-rtti
++CFLAGS = $(DEFAULT_CFLAGS) $(MORE_CFLAGS) -std=gnu89 -fcommon 
++CXXFLAGS = $(DEFAULT_CFLAGS) $(MORE_CFLAGS) -std=gnu++98 -fexceptions -fno-rtti
+ 
+-LIBS += -lstdc++ -lpspirkeyb -lpsppower -lSDL_image -lSDL -lGL -lpspirkeyb -lpspvfpu -lpsprtc -lpng -ljpeg -lpspaudio -lpspgu -lpsphprm -lz -lm
++LIBS += -lstdc++ -lpsppower -lSDL_image -lSDL -lGL -lpspvfpu -lpsprtc -lpng -ljpeg -lpspaudio -lpspgu -lpsphprm -lz -lm
+ 
+ BUILD_PRX=1
+ 
+ EXTRA_TARGETS   = EBOOT.PBP
+ PSP_EBOOT_TITLE = PSP2600-v$(PSP2600_VERSION)
+ PSP_EBOOT_ICON  = psp2600.png
+-PSP_EBOOT_SND0  = psp2600.at3
+-PSP_EBOOT_PIC1 = psp2600-pic.png
++PSP_EBOOT_SND0  =
++PSP_EBOOT_PIC1 =
+ 
+ include $(PSPSDK)/lib/build.mak
+ 
+@@ -182,3 +181,5 @@ realclean:
+ 
+ ctags :
+ 	ctags *[chxp] gui/*[chxp] common/*[chxp] emucore/*[chxp] psp/*[chxp]
++
++common/mainSDL.o: ../../../shared/extra_launch.h
+diff --git a/src/common/mainSDL.cpp b/src/common/mainSDL.cpp
+index 975aa5e..2b58b2a 100644
+--- a/src/common/mainSDL.cpp
++++ b/src/common/mainSDL.cpp
+@@ -1,3 +1,5 @@
++#include "../../../../shared/extra_launch.h"
++extern "C" { int gsh_atari_autoload = 0; int atari_load_rom(char *, int); }
+ //============================================================================
+ //
+ //   SSSS    tt          lll  lll
+@@ -322,7 +324,14 @@ atariMain(int argc, char* argv[])
+   }
+ # else
+   //LUDO: We load the default rom file ...
+-  theOSystem->createConsole("./default.bin");
++  if (argc == 2) {
++    if (!gsh_extra_valid(6, argv[1]) || atari_load_rom(argv[1], 0)) {
++      Cleanup(); return 0;
++    }
++    gsh_atari_autoload = 1;
++  } else {
++    theOSystem->createConsole("./default.bin");
++  }
+ # endif
+ 
+ # if 0 //LUDO:
+diff --git a/src/psp/FSNodePSP.cpp b/src/psp/FSNodePSP.cpp
+index 362e929..dba37f4 100644
+--- a/src/psp/FSNodePSP.cpp
++++ b/src/psp/FSNodePSP.cpp
+@@ -295,12 +295,12 @@ string AbstractFilesystemNode::modTime(const string& in)
+         return "";
+     }
+    ostringstream buf;
+-    buf     << (unsigned short)st.st_mtime.year
+-            << (unsigned short)st.st_mtime.month
+-            << (unsigned short)st.st_mtime.day
+-            << (unsigned short)st.st_mtime.hour
+-            << (unsigned short)st.st_mtime.minute
+-            << (unsigned short)st.st_mtime.second;
++    buf     << (unsigned short)st.sce_st_mtime.year
++            << (unsigned short)st.sce_st_mtime.month
++            << (unsigned short)st.sce_st_mtime.day
++            << (unsigned short)st.sce_st_mtime.hour
++            << (unsigned short)st.sce_st_mtime.minute
++            << (unsigned short)st.sce_st_mtime.second;
+ 
+ #ifdef PSP_DEBUG
+     fprintf(stdout,"AbstractFilesystemNode::modTime returns '%s'\n",buf.str().c_str());
+diff --git a/src/psp_kbd.c b/src/psp_kbd.c
+index fa23e57..f902a99 100644
+--- a/src/psp_kbd.c
++++ b/src/psp_kbd.c
+@@ -1,3 +1,4 @@
++extern int gsh_atari_autoload;
+ /*
+  *  Copyright (C) 2006 Ludovic Jacomme (ludovic.jacomme@gmail.com)
+  *
+@@ -620,7 +621,8 @@ psp_kbd_enter_danzeff()
+     danzeff_mode          = 0;
+     danzeff_atari_pending = 0;
+     danzeff_atari_key     = 0;
+-    psp_main_menu();
++    if (!gsh_atari_autoload) psp_main_menu();
++    gsh_atari_autoload = 0;
+     psp_init_keyboard();
+ 
+     psp_kbd_wait_no_button();
+@@ -1025,7 +1027,7 @@ psp_update_keys(void)
+     c.Buttons &= PSP_ALL_BUTTON_MASK;
+ 
+     if (first_time_stamp == -1) first_time_stamp = c.TimeStamp;
+-    if ((! c.Buttons) && ((c.TimeStamp - first_time_stamp) < KBD_MIN_START_TIME)) return 0;
++    if (!gsh_atari_autoload && (! c.Buttons) && ((c.TimeStamp - first_time_stamp) < KBD_MIN_START_TIME)) return 0;
+ 
+     first_time      = 0;
+     release_pending = 0;
+@@ -1037,7 +1039,8 @@ psp_update_keys(void)
+     sceCtrlPeekBufferPositive(&loc_button_data, 1);
+     loc_button_data.Buttons &= PSP_ALL_BUTTON_MASK;
+ 
+-    psp_main_menu();
++    if (!gsh_atari_autoload) psp_main_menu();
++    gsh_atari_autoload = 0;
+     psp_init_keyboard();
+ 
+     return 0;
+diff --git a/src/psp_sdl.c b/src/psp_sdl.c
+index 57179b2..876a11a 100644
+--- a/src/psp_sdl.c
++++ b/src/psp_sdl.c
+@@ -711,7 +711,7 @@ psp_sdl_init(void)
+ 
+   SDL_ShowCursor(SDL_DISABLE);
+ 
+-  psp_sdl_display_splash();
++  if (!gsh_atari_autoload) psp_sdl_display_splash();
+ 
+   /* Danzeff Keyboard */
+   danzeff_load();
+diff --git a/src/psp_no_ir.c b/src/psp_no_ir.c
+new file mode 100644
+--- /dev/null
++++ b/src/psp_no_ir.c
+@@ -0,0 +1,10 @@
++/* The SDK SDL build references optional PSP-1000 infrared keyboard hooks.
++ * This PSP-3000 adapter has no infrared keyboard; report unavailable so SDL
++ * retains its ordinary controller input without an external IR dependency. */
++int pspIrKeybInit(const char *config, int kernelmode)
++{ (void)config; (void)kernelmode; return -1; }
++int pspIrKeybOutputMode(int mode)
++{ (void)mode; return -1; }
++int pspIrKeybReadinput(void *buffer, int *length)
++{ (void)buffer; if(length)*length=0; return -1; }
++int pspIrKeybFinish(void) { return 0; }

@@ -48,7 +48,7 @@ static void gsh_launch_log(const char *name)
 {
     char log[512];int length;SceUID f;
     unsigned int ms=(unsigned int)((sceKernelGetSystemTimeWide()-gsh_launch_started)/1000);
-    length=snprintf(log,sizeof(log),"GameShelf 1.07 preparation\nROM: %s\nPreparation_ms: %u\nROM_copies: %u\nCopied_file_bytes: %u\nFirmware/emulator hand-off time is not included.\n",name,ms,gsh_rom_copies,gsh_copied_bytes);
+    length=snprintf(log,sizeof(log),"GameShelf 1.08 preparation\nROM: %s\nPreparation_ms: %u\nROM_copies: %u\nCopied_file_bytes: %u\nFirmware/emulator hand-off time is not included.\n",name,ms,gsh_rom_copies,gsh_copied_bytes);
     f=sceIoOpen("ms0:/PSP/GAME/GAMESHELF/STARTUP_LOG.TXT",PSP_O_WRONLY|PSP_O_CREAT|PSP_O_TRUNC,0777);
     if(f>=0){sceIoWrite(f,log,length);sceIoClose(f);}
 }

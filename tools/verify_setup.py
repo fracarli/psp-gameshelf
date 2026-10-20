@@ -13,7 +13,7 @@ sys.path.insert(0,str(ROOT/'tools'))
 from check_installation import check_installation
 with tempfile.TemporaryDirectory() as d:
  root=Path(d)
- for version,folder in [('1.06','releases/v1/06'),('1.07','candidates/1.07')]:
+ for version,folder in [('1.06','releases/v1/06'),('1.07','releases/v1/07')]:
   package=ROOT/folder
   with zipfile.ZipFile(package/f'GameShelf-{version}-setup.zip') as archive:
    names=archive.namelist()
@@ -54,7 +54,7 @@ with tempfile.TemporaryDirectory() as d:
  assert failed[0] and (shelf/'EBOOT.PBP').read_bytes()==main and (shelf/'TempGBA/EBOOT.PBP').read_bytes()==core
  assert not list((shelf/'GBAdhoc').glob('*'))
  subprocess.run(cmd,capture_output=True,check=True)
- package=ROOT/'candidates/1.07'
+ package=ROOT/'releases/v1/07'
  for name in ('EBOOT.PBP','gbadhoc_me.prx','gbadhoc_home.prx'):
   assert (shelf/'GBAdhoc'/name).read_bytes()==(package/'GBAdhoc'/name).read_bytes()
  assert (original/'EBOOT.PBP').read_bytes()==b'existing original runtime'

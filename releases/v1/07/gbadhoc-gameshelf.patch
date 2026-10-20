@@ -1,0 +1,86 @@
+diff --git a/gpsp/psp/main_psp.c b/gpsp/psp/main_psp.c
+index 741047f..7fc1219 100644
+--- a/gpsp/psp/main_psp.c
++++ b/gpsp/psp/main_psp.c
+@@ -10874,6 +10874,8 @@ static int psp_rewind_tick(int ff)
+ int main(int argc, char *argv[])
+ {
+    char rom_path[PSP_FILE_PATH_CAP];
++   int gameshelf_pending = argc == 3 && argv && argv[1] &&
++      !strcmp(argv[1], "--gameshelf");
+    char save_path[PSP_FILE_PATH_CAP], state_path[PSP_FILE_PATH_CAP];
+    char script_name[64], script_path[192];
+    char nick[24], group[16] = "";
+@@ -10918,6 +10920,7 @@ int main(int argc, char *argv[])
+    scePowerSetClockFrequency(333, 333, 166);
+ 
+    init_paths(argc, argv);
++   { extern void ui_gameshelf_loading(int); ui_gameshelf_loading(gameshelf_pending); }
+ #ifdef GPSP_PERF_RIG
+    boot_ballast_take();              /* first heap use of the process */
+ #endif
+@@ -12192,7 +12195,28 @@ session_top:
+       heap_census("pre_select");
+    }
+ #endif
+-   if (have_variant)
++   if (gameshelf_pending)
++   {
++      /* External launch preserves normal console-specific save/state paths.
++       * A missing or invalid request must never launch a different game. */
++      const char *requested = argv[2];
++      const char *root = "ms0:/PSP/GAME/TempGBA4PSP-Mod/roms/";
++      const char *name;
++      const char *dot;
++      if (!requested || strncmp(requested, root, strlen(root)))
++      { evt_shutdown(); audio_stop(); vid_term(); sceKernelExitGame(); return 0; }
++      name = requested + strlen(root);
++      if (!name[0] || name[0] == '.' || strlen(name) > 255 ||
++          strchr(name, '/') || strchr(name, '\\') || strchr(name, ':') ||
++          !(dot = strrchr(name, '.')) ||
++          (strcasecmp(dot, ".gb") && strcasecmp(dot, ".gbc")) ||
++          !file_exists(requested))
++      { evt_shutdown(); audio_stop(); vid_term(); sceKernelExitGame(); return 0; }
++      snprintf(rom_path, sizeof(rom_path), "%s", requested);
++      g_pcfg.console = (int)console_from_rom_path(rom_path);
++      gameshelf_pending = 0;
++   }
++   else if (have_variant)
+    {
+       char vrom[PSP_ROM_REL_PATH_CAP] = "", savedir[160];
+       char stem[PSP_ROM_REL_PATH_CAP];
+diff --git a/gpsp/psp/ui_psp.c b/gpsp/psp/ui_psp.c
+index ae1a1a9..05577af 100644
+--- a/gpsp/psp/ui_psp.c
++++ b/gpsp/psp/ui_psp.c
+@@ -6871,6 +6871,10 @@ static void clip_title_hd(char *t, int px)
+ 
+ /* "L2": the browser's marquee chrome over the ambient bake, or over the
+  * console's palette ramp when there is no art (Fable, loading/). */
++static int g_gameshelf_loading;
++static unsigned g_gameshelf_width = 210;
++void ui_gameshelf_loading(int enabled) { g_gameshelf_loading = enabled; g_gameshelf_width = 210; }
++
+ void ui_loading_update(const char *stage, unsigned done, unsigned total)
+ {
+    unsigned now = sceKernelGetSystemTimeLow();
+@@ -6891,6 +6895,19 @@ void ui_loading_update(const char *stage, unsigned done, unsigned total)
+    if (!changed && now - g_loading.drawn_at < 100000 && done != total)
+       return;
+    g_loading.drawn_at = now;
++   if (g_gameshelf_loading)
++   {
++      unsigned width = total ? 210 + (unsigned long long)(done > total ? total : done)*40/total : 210;
++      if (width < g_gameshelf_width) width = g_gameshelf_width;
++      g_gameshelf_width = width;
++      vid_overlay_begin(1);
++      vid_rect(0, 0, VID_SCR_W, VID_SCR_H, 0, 255);
++      vid_rect(110, 129, 260, 14, 0x2124, 255);
++      vid_rect(110, 129, width, 14, 0xe5eb, 255);
++      vid_overlay_end(); vid_swap(); sceDisplayWaitVblankStart();
++      return;
++   }
++
+    g_thm = (g_pcfg.theme == 1) ? &THM_LIGHT : &THM_DARK;
+    s = skin_of(g_pcfg.console);
+    vid_overlay_begin(1);

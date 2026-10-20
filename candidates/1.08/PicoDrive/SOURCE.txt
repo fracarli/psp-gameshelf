@@ -1,0 +1,8 @@
+Unmodified official PicoDrive PSP 2.05 (19d4108).
+https://github.com/irixxxx/picodrive/releases/tag/v2.05
+Archive: PicoDrive_psp_2.05-19d4108.zip
+Archive SHA256: ceb1b1c7e5b9b2f73542d5de1ee6aef387160d8d782f07fd14e018cf9a361407
+Source: https://github.com/irixxxx/picodrive/tree/v2.05
+Its native command-line interface accepts the ROM as argv[1]. No core patch.
+PicoDrive retains its upstream non-commercial redistribution terms (COPYING.txt).
+The updater verifies and reuses the installed matching runtime without replacing it.

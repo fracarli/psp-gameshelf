@@ -1,12 +1,13 @@
 # PSP GameShelf
 
-Your NES and GBA games, directly in **Game → Memory Stick**.
+Your retro games, directly in **Game → Memory Stick**.
 Choose a game and it opens in its shared emulator without selecting the ROM again.
 Square cover icons and full-screen backgrounds are supported.
 
 **Confirmed on hardware:** NES/GBA launch, covers, backgrounds, separate GBA
 saves, English UI and loading feedback. Tested on PSP-3004, 6.61 PRO-C.
-GB/GBC direct launch is available in the **1.07 test build** and needs PSP testing.
+**GB/GBC direct launch is also confirmed on hardware in 1.07.**
+Atari 2600, Mega Drive and SNES are implemented in the **1.08 test build**.
 
 ## First installation
 
@@ -14,7 +15,7 @@ You need a PSP that **already runs homebrew with custom firmware**. GameShelf
 does not install or change firmware. With PRO-C, FastRecovery may be needed
 after a full shutdown. Back up your memory card before copying files.
 
-1. Download [GameShelf 1.06 setup ZIP](https://github.com/fracarli/psp-gameshelf/raw/refs/heads/main/releases/v1/06/GameShelf-1.06-setup.zip)
+1. Download [GameShelf 1.07 setup ZIP](https://github.com/fracarli/psp-gameshelf/raw/refs/heads/main/releases/v1/07/GameShelf-1.07-setup.zip)
    and extract it. This is the latest hardware-confirmed launcher/runtime.
 2. Copy the extracted **PSP** folder to the **root of the memory card**,
    merging with its existing PSP folder. Do not replace the whole PSP folder.
@@ -54,8 +55,8 @@ Use the backup-preserving computer updater instead of merging a first-install
 ZIP over an existing setup. It requires Python 3.9 or newer:
 
 ```sh
-python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --version 1.06 --check
-python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --version 1.06 --backup-root ../PSP_BACKUP
+python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --version 1.07 --check
+python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --version 1.07 --backup-root ../PSP_BACKUP
 ```
 
 Replace `/Volumes/SD-FAT32` with your card path, for example `E:/` on Windows.
@@ -64,23 +65,35 @@ updates launcher and runtime together and verifies writes. Saves are preserved.
 Open GameShelf and press **X** to regenerate entries after updating.
 Restore the complete backup to roll back; do not downgrade only one executable.
 
-## GB/GBC and minimal loading bar: 1.07 preview
+## Additional emulators: 1.08 preview
 
-[Download the 1.07 test setup ZIP](https://github.com/fracarli/psp-gameshelf/raw/refs/heads/main/candidates/1.07/GameShelf-1.07-setup.zip), or
-use the updater above with `--version 1.07` for an existing installation.
-Read the [1.07 test instructions](candidates/1.07/INSTALL.txt).
+[Download the 1.08 test setup ZIP](https://github.com/fracarli/psp-gameshelf/raw/refs/heads/main/candidates/1.08/GameShelf-1.08-setup.zip), or
+use the updater above with `--version 1.08` for an existing installation.
+Read the [1.08 instructions](candidates/1.08/INSTALL.txt).
 
-- Individual GB/GBC entries launch the selected ROM through adapted GBAdhoc.
-- ROMs are read in place. There is no extra GB/GBC ROM copy.
-- GB/GBC battery saves and states use upstream console-specific filenames
-  beside the source ROM. Existing files under the separate GBAdhoc410 library
-  are not automatically migrated.
-- A dedicated runtime is installed in `GAMESHELF/GBAdhoc`; GBAdhoc410 is preserved.
-- Launcher, GBA and GB/GBC startup use a minimal graphical bar instead of
-  preparation messages. It indicates stages, without estimating firmware delay.
+| System | ROM directory | Uncompressed extensions |
+| --- | --- | --- |
+| Atari 2600 | `PSP/GAME/psp2600/roms/` | `.a26`, `.bin`, `.rom` |
+| Mega Drive / Genesis | `PSP/GAME/PicoDrive/roms/` | `.md`, `.bin`, `.gen`, `.smd` |
+| SNES | `PSP/GAME/s9xTYLme_mod/roms/` | `.smc`, `.sfc` |
 
-Computer checks pass; **GB/GBC direct launch, saves and bar appearance still
-need real-PSP confirmation**. Version 1.06 remains the confirmed fallback.
+The Atari/SNES adapters receive the original ROM path and skip ROM selection.
+PicoDrive 2.05 already supports direct ROM arguments; its official PSP binary is
+verified and reused without modification. ROMs are read in place, with no extra
+staging copy. Original save/state/configuration locations remain in use.
+Paths for these systems must fit within 239 bytes including the directory.
+
+The updater backs up the **complete Atari and SNES folders**, then replaces
+only their executables alongside the GameShelf update. Existing support modules,
+ROMs and settings are retained. The first-install ZIP supplies the engines,
+modules and required keyboard assets; the optional upstream music archive is omitted.
+
+A new original bridge icon is used in this preview. The public name and card
+paths remain GameShelf while a new identity is being considered.
+
+Computer checks pass; **Atari/MD/SNES startup, controls and saves still need PSP
+confirmation**. Version 1.07 remains the confirmed fallback. GB/GBC startup was
+confirmed with multiple games; dedicated save/state checks remain useful.
 
 ## Covers and backgrounds
 
@@ -89,11 +102,11 @@ connected, run:
 
 ```sh
 python3 tools/fetch_boxart.py --sd-root /Volumes/SD-FAT32 --platform nes --platform gba
-# For the 1.07 preview, also add: --platform gb --platform gbc
+# Also supported: --platform gb --platform gbc --platform atari --platform megadrive --platform snes
 ```
 
 The helper fetches available Libretro covers onto the card and prepares square
-icons and darkened 480×272 backgrounds in `GAMESHELF/boxart/{nes,gba,gb,gbc}/`.
+icons and darkened 480×272 backgrounds in `GAMESHELF/boxart/{nes,gba,gb,gbc,atari,megadrive,snes}/`.
 Names must match the ROM basename. Rectangular covers are centrally cropped.
 Run GameShelf and press X after changing artwork. Highlight a game and wait
 for XMB to display its background. ROM hacks may need manually supplied art.
@@ -122,8 +135,8 @@ ROM and regenerate to recreate its entry.
 | System | Individual XMB entry and direct ROM selection |
 | --- | --- |
 | NES / GBA | Confirmed on PSP |
-| GB / GBC | Implemented in 1.07; awaiting PSP tests |
-| Atari / Mega Drive / SNES | Legacy catalog only; adapters still required |
+| GB / GBC | Direct launch confirmed on PSP in 1.07 |
+| Atari / Mega Drive / SNES | Implemented in 1.08; awaiting PSP tests |
 | PSP ISO / PS1 | Use the normal PSP home screen; GameShelf launch remains unresolved on tested PRO-C |
 
 Each entry contains a small launcher copy; emulator runtimes remain shared.
@@ -146,13 +159,19 @@ are in [candidates/](candidates/). Archived executables are never overwritten.
 | [1.04](releases/v1/04/) | Separate GBA saves |
 | [1.05](releases/v1/05/) | English UI and system-language selection |
 | [1.06](releases/v1/06/) | Confirmed startup feedback; one-copy preparation; first-install ZIP |
-| [1.07 preview](candidates/1.07/) | GB/GBC adapter and minimal loading bars |
+| [1.07](releases/v1/07/) | GB/GBC direct launch confirmed; minimal loading bars |
+| [1.08 preview](candidates/1.08/) | Atari/MD/SNES adapters and new bridge icon |
 
 ## Source, tests and licenses
 
 ```sh
 git clone --recurse-submodules https://github.com/fracarli/psp-gameshelf.git
 cd psp-gameshelf
+git -C third_party/NesterJ-AoEX apply ../../patches/nesterj-autoload.patch
+git -C third_party/TempGBA4PSP-Single-game apply ../../patches/tempgba-gameshelf.patch
+git -C third_party/GBAdhoc apply ../../patches/gbadhoc-gameshelf.patch
+git -C third_party/PSP2600 apply ../../patches/psp2600-gameshelf.patch
+git -C third_party/Snes9xTYL apply ../../patches/snes9x-gameshelf.patch
 # Install PSPDEV/PSPSDK and put its tools on PATH first.
 make
 python3 tools/verify_xmb.py
@@ -163,14 +182,18 @@ python3 tools/verify_startup.py
 python3 tools/verify_cleanup.py
 python3 tools/verify_gb_launch.py
 python3 tools/verify_setup.py
+python3 tools/verify_extra_systems.py
+python3 tools/verify_extra_install.py
+python3 tools/verify_artwork.py
 ```
 
 Build emulator adapters using [patches/README.md](patches/README.md).
 Computer checks do not replace PSP tests. See the [roadmap](docs/roadmap.md)
 and [original technical history](docs/history-v0.md).
 
-GameShelf code uses the [MIT license](LICENSE). NesterJ, TempGBA and GBAdhoc
-retain their upstream GPL terms and notices, with source submodules and
-adaptation patches available here. Packages include license/source references.
+GameShelf code uses the [MIT license](LICENSE). NesterJ, TempGBA, GBAdhoc and
+PSP2600 retain upstream GPL terms. Snes9xTYL and PicoDrive retain their original
+non-commercial redistribution terms and component notices. Source submodules,
+adaptation patches and source/license references accompany the packages.
 Only project content is published: no ROMs, BIOS, saves, downloaded artwork,
 card backups or unrelated files from the developer's computer.

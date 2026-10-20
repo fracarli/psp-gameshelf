@@ -1,4 +1,4 @@
-PSP GameShelf 1.07 - test build, awaiting PSP confirmation
+PSP GameShelf 1.07 - GB/GBC direct launch confirmed on PSP
 
 New: direct GB/GBC entries with covers/backgrounds; graphical loading bars.
 Use GameShelf-1.07-setup.zip for a FIRST installation on an already modified PSP.
@@ -16,7 +16,7 @@ Battery saves use the original ROM basename with .gb.sav or .gbc.sav beside
 the source ROM. States use the upstream console-specific state suffixes.
 Existing GBAdhoc410 sidecars are not automatically migrated from its roms folder.
 
-Test on PSP: generate entries; launch one GB and one GBC title directly; save,
+Further save/cleanup checks: generate entries; launch one GB and one GBC title directly; save,
 exit and reopen each. Check existing NES/GBA games and saves. Loading bars
 show preparation stages; they do not estimate total firmware hand-off time.
 The default emulator menu remains available when leaving a GB/GBC game.

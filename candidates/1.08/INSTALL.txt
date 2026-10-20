@@ -1,0 +1,34 @@
+PSP GameShelf 1.08 - Atari 2600, Mega Drive and SNES test build
+Awaiting confirmation on a real PSP. Version 1.07 remains the confirmed fallback.
+
+Existing installation:
+python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --version 1.08 --check
+python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --version 1.08 --backup-root ../PSP_BACKUP
+The updater backs up GameShelf and the complete shared Atari/SNES folders.
+It updates the Atari and SNES executables in their original locations, preserving
+settings, states and ROMs. Existing SNES support modules are reused; the matching
+PicoDrive 2.05 runtime is checked and reused without replacing it.
+
+First installation: use GameShelf-1.08-setup.zip and read START-HERE.txt.
+The setup includes the adapted runtimes, required modules and keyboard assets.
+No game images, BIOS files, covers or user saves are supplied.
+The optional upstream music archive is omitted.
+
+ROM locations and supported uncompressed formats:
+Atari: PSP/GAME/psp2600/roms/ (.a26, .bin, .rom)
+Mega Drive: PSP/GAME/PicoDrive/roms/ (.md, .bin, .gen, .smd)
+SNES: PSP/GAME/s9xTYLme_mod/roms/ (.smc, .sfc)
+Up to 32 per system. Paths must fit within 239 bytes, including the prefix.
+Open GameShelf, press X to generate/update entries, then X to return home.
+
+PSP checks: select the exact game from XMB, exercise its controls, save a state,
+exit and reopen it. Repeat with another game to check state separation.
+For battery-backed games, also save in-game and reopen the game.
+Check existing NES/GBA/GB/GBC entries and their saves.
+Restore the complete backup, including shared_emulators, to roll back.
+
+The Atari adapter skips the startup splash/menu when a game is supplied.
+Its optional infrared keyboard is unavailable on the tested PSP-3000 target.
+SNES retains its original SAVES/configuration location and skips its welcome
+and ROM-selection screens during a direct launch. Normal error screens remain.
+Artwork is optional; the computer helper supports all seven systems.

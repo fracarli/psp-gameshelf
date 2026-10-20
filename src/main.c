@@ -13,8 +13,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include "../shared/gba_identity.h"
+#include "../shared/extra_launch.h"
 
-PSP_MODULE_INFO("GameShelf", 0, 1, 7);
+PSP_MODULE_INFO("GameShelf", 0, 1, 8);
 PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER | THREAD_ATTR_VFPU);
 
 #define MAX_ENTRIES 32
@@ -369,7 +370,7 @@ static void scan_gbc_roms(void)
 
 static void scan_extra_roms(char entries[MAX_ROM_ENTRIES][ENTRY_LENGTH],
                             int *count, int *scanned, const char *directory_path,
-                            const char *extension)
+                            int extra_mode)
 {
     SceUID directory;
     SceIoDirent entry;
@@ -382,7 +383,7 @@ static void scan_extra_roms(char entries[MAX_ROM_ENTRIES][ENTRY_LENGTH],
     memset(&entry, 0, sizeof(entry));
     while (sceIoDread(directory, &entry) > 0) {
         if (!(entry.d_stat.st_mode & FIO_S_IFDIR) && entry.d_name[0] != '.' &&
-            has_extension(entry.d_name, extension)) {
+            gsh_extra_extension(extra_mode,entry.d_name)) {
             copy_entry(entries, count, entry.d_name);
         }
         memset(&entry, 0, sizeof(entry));
@@ -832,41 +833,21 @@ static void launch_selected(void)
     }
 
     if (view_mode >= 6 && view_mode <= 8) {
-        const char *rom_name;
-        const char *source_dir = "ms0:/PSP/GAME/TempGBA4PSP-Mod/roms/";
-        const char *destination_dir;
-        const char *emulator_dir;
-        char source[ENTRY_LENGTH];
-        char destination[ENTRY_LENGTH];
-
-        if (view_mode == 6) {
-            if (cursor >= atari_count) { set_status(gsh_text("No Atari game selected.")); return; }
-            rom_name = atari_roms[cursor];
-            source_dir = "ms0:/PSP/GAME/psp2600/roms/";
-            destination_dir = "ms0:/PSP/GAME/psp2600/roms/";
-            emulator_dir = "psp2600";
-        } else if (view_mode == 7) {
-            if (cursor >= megadrive_count) { set_status(gsh_text("No Mega Drive game selected.")); return; }
-            rom_name = megadrive_roms[cursor];
-            source_dir = "ms0:/PSP/GAME/PicoDrive/roms/";
-            destination_dir = "ms0:/PSP/GAME/PicoDrive/roms/";
-            emulator_dir = "PicoDrive";
-        } else {
-            if (cursor >= snes_count) { set_status(gsh_text("No SNES game selected.")); return; }
-            rom_name = snes_roms[cursor];
-            destination_dir = "ms0:/PSP/GAME/s9xTYLme_mod/roms/";
-            emulator_dir = "s9xTYLme_mod";
+        if(cursor<0||cursor>=(view_mode==6?atari_count:view_mode==7?megadrive_count:snes_count)){set_status(gsh_text("No title selected."));return;}
+        const char *rom_name=view_mode==6?atari_roms[cursor]:
+                             view_mode==7?megadrive_roms[cursor]:snes_roms[cursor];
+        const char *runtime=view_mode==6?"ms0:/PSP/GAME/psp2600/EBOOT.PBP":
+                            view_mode==7?"ms0:/PSP/GAME/PicoDrive/EBOOT.PBP":
+                                         "ms0:/PSP/GAME/s9xTYLme_mod/EBOOT.PBP";
+        unsigned int offset;
+        snprintf(path,sizeof(path),"%s",runtime);
+        offset=strlen(path)+1;memcpy(argument,path,offset);
+        if(gsh_extra_path(argument+offset,sizeof(argument)-offset,view_mode,rom_name)<0) {
+            set_status(gsh_text("Invalid game entry."));return;
         }
-        snprintf(source, sizeof(source), "%s%s", source_dir, rom_name);
-        snprintf(destination, sizeof(destination), "%s%s", destination_dir, rom_name);
-        sceIoMkdir(destination_dir, 0777);
-        if (copy_file(source, destination) < 0) {
-            set_status(gsh_text("Failed to copy the emulator ROM."));
-            return;
-        }
-        snprintf(path, sizeof(path), "ms0:/PSP/GAME/%s/EBOOT.PBP", emulator_dir);
-        argument[0] = '\0';
-        sceIoChdir(destination_dir);
+        argument_size=offset+strlen(argument+offset)+1;has_argument=1;
+        sceIoChdir(view_mode==6?"ms0:/PSP/GAME/psp2600":
+                   view_mode==7?"ms0:/PSP/GAME/PicoDrive":"ms0:/PSP/GAME/s9xTYLme_mod");
         goto launch_application;
     }
 
@@ -929,7 +910,7 @@ static void launch_selected(void)
     has_argument = 1;
 launch_application:
     if(gsh_launch_active){
-        const char *name=view_mode==3?gba_roms[cursor]:view_mode==4?gb_roms[cursor]:view_mode==5?gbc_roms[cursor]:nes_roms[cursor];
+        const char *name=view_mode==3?gba_roms[cursor]:view_mode==4?gb_roms[cursor]:view_mode==5?gbc_roms[cursor]:view_mode==6?atari_roms[cursor]:view_mode==7?megadrive_roms[cursor]:view_mode==8?snes_roms[cursor]:nes_roms[cursor];
         gsh_launch_stage("Starting emulator...");gsh_launch_log(name);
     }
     memset(&param, 0, sizeof(param));
@@ -963,7 +944,7 @@ static void draw_screen(void)
 
     pspDebugScreenClear();
     pspDebugScreenSetXY(0, 0);
-    pspDebugScreenPrintf("%s", gsh_text("PSP GameShelf 1.07 - hardware test\n"));
+    pspDebugScreenPrintf("%s", gsh_text("PSP GameShelf 1.08 - hardware test\n"));
     pspDebugScreenPrintf("PSP-3004 / TA-095v2 / FW 6.61\n\n");
     if (view_mode == 0) {
         pspDebugScreenPrintf(gsh_text("%s  View: PSP ISO / CSO (%d)\n"), platform_badge(), iso_count);
@@ -1064,13 +1045,16 @@ int main(void)
         memcpy(name, (const void *)xmb_target.rom, sizeof(name));
         name[255] = '\0';
         setup_callbacks();
-        if ((mode == 3 || mode == 4 || mode == 5 || mode == 9) && name[0] &&
+        if ((mode >= 3 && mode <= 9) && name[0] &&
             !strchr(name, '/') && !strchr(name, ':') && !strchr(name, '\\')) {
             view_mode = mode;
             cursor = 0;
             if (mode == 3) { strcpy(gba_roms[0], name); gba_count = 1; }
             else if(mode==4) { strcpy(gb_roms[0],name); gb_count=1; }
             else if(mode==5) { strcpy(gbc_roms[0],name); gbc_count=1; }
+            else if(mode==6) { strcpy(atari_roms[0],name); atari_count=1; }
+            else if(mode==7) { strcpy(megadrive_roms[0],name); megadrive_count=1; }
+            else if(mode==8) { strcpy(snes_roms[0],name); snes_count=1; }
             else { strcpy(nes_roms[0], name); nes_count = 1; }
             gsh_launch_begin(name);
             launch_selected();
@@ -1080,7 +1064,7 @@ int main(void)
         sceKernelExitGame();
         return 0;
     }
-    pspDebugScreenPrintf("%s", gsh_text("GameShelf 1.07\nX: create/update NES/GBA/GB/GBC entries\nCircle: legacy catalog   HOME: exit\n"));
+    pspDebugScreenPrintf("%s", gsh_text("GameShelf 1.08\nX: create/update game entries (7 systems)\nCircle: legacy catalog   HOME: exit\n"));
     setup_callbacks();
     for (;;) {
         sceCtrlReadBufferPositive(&pad, 1);
@@ -1128,9 +1112,9 @@ int main(void)
             if (view_mode == 3 && !gba_scanned) scan_gba_roms();
             if (view_mode == 4 && !gb_scanned) scan_gb_roms();
             if (view_mode == 5 && !gbc_scanned) scan_gbc_roms();
-            if (view_mode == 6 && !atari_scanned) scan_extra_roms(atari_roms, &atari_count, &atari_scanned, "ms0:/PSP/GAME/psp2600/roms", ".a26");
-            if (view_mode == 7 && !megadrive_scanned) scan_extra_roms(megadrive_roms, &megadrive_count, &megadrive_scanned, "ms0:/PSP/GAME/PicoDrive/roms", ".md");
-            if (view_mode == 8 && !snes_scanned) scan_extra_roms(snes_roms, &snes_count, &snes_scanned, "ms0:/PSP/GAME/s9xTYLme_mod/roms", ".smc");
+            if (view_mode == 6 && !atari_scanned) scan_extra_roms(atari_roms, &atari_count, &atari_scanned, "ms0:/PSP/GAME/psp2600/roms", 6);
+            if (view_mode == 7 && !megadrive_scanned) scan_extra_roms(megadrive_roms, &megadrive_count, &megadrive_scanned, "ms0:/PSP/GAME/PicoDrive/roms", 7);
+            if (view_mode == 8 && !snes_scanned) scan_extra_roms(snes_roms, &snes_count, &snes_scanned, "ms0:/PSP/GAME/s9xTYLme_mod/roms", 8);
             if (view_mode == 9 && !nes_scanned) scan_nes_roms();
             draw_screen();
         }
@@ -1143,9 +1127,9 @@ int main(void)
             if (view_mode == 3 && !gba_scanned) scan_gba_roms();
             if (view_mode == 4 && !gb_scanned) scan_gb_roms();
             if (view_mode == 5 && !gbc_scanned) scan_gbc_roms();
-            if (view_mode == 6 && !atari_scanned) scan_extra_roms(atari_roms, &atari_count, &atari_scanned, "ms0:/PSP/GAME/psp2600/roms", ".a26");
-            if (view_mode == 7 && !megadrive_scanned) scan_extra_roms(megadrive_roms, &megadrive_count, &megadrive_scanned, "ms0:/PSP/GAME/PicoDrive/roms", ".md");
-            if (view_mode == 8 && !snes_scanned) scan_extra_roms(snes_roms, &snes_count, &snes_scanned, "ms0:/PSP/GAME/s9xTYLme_mod/roms", ".smc");
+            if (view_mode == 6 && !atari_scanned) scan_extra_roms(atari_roms, &atari_count, &atari_scanned, "ms0:/PSP/GAME/psp2600/roms", 6);
+            if (view_mode == 7 && !megadrive_scanned) scan_extra_roms(megadrive_roms, &megadrive_count, &megadrive_scanned, "ms0:/PSP/GAME/PicoDrive/roms", 7);
+            if (view_mode == 8 && !snes_scanned) scan_extra_roms(snes_roms, &snes_count, &snes_scanned, "ms0:/PSP/GAME/s9xTYLme_mod/roms", 8);
             if (view_mode == 9 && !nes_scanned) scan_nes_roms();
             draw_screen();
         }

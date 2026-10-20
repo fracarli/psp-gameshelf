@@ -8,7 +8,7 @@ static int gsh_owned_entry(const char *folder,char *rom,int *mode)
 {
     char path[384],expected[64];unsigned char *data;
     FILE *file;long size;unsigned int i,hits=0,target=0;
-    if(strlen(folder)!=16&&strlen(folder)!=15)return 0;
+    if(strlen(folder)>24||strlen(folder)<14)return 0;
     snprintf(path,sizeof(path),"ms0:/PSP/GAME/%s/EBOOT.PBP",folder);
     file=fopen(path,"rb");if(!file)return 0;
     if(fseek(file,0,SEEK_END)!=0){fclose(file);return 0;}
@@ -23,11 +23,11 @@ static int gsh_owned_entry(const char *folder,char *rom,int *mode)
         if(memcmp(data+i,(const void *)xmb_target.magic,16)==0){hits++;target=i;}
     if(hits!=1){free(data);return 0;}
     *mode=read32(data+target+16);
-    if((*mode!=3&&*mode!=4&&*mode!=5&&*mode!=9)||!memchr(data+target+20,0,256)){free(data);return 0;}
+    if((*mode<3||*mode>9)||!memchr(data+target+20,0,256)){free(data);return 0;}
     strcpy(rom,(char *)data+target+20);free(data);
     if(!rom[0]||rom[0]=='.'||strchr(rom,'/')||strchr(rom,'\\')||strchr(rom,':'))return 0;
     for(i=0;rom[i];i++)if((unsigned char)rom[i]<32)return 0;
-    {const char *dot=strrchr(rom,'.');if(!dot||strcasecmp(dot,*mode==3?".gba":*mode==4?".gb":*mode==5?".gbc":".nes"))return 0;}
+    {const char *dot=strrchr(rom,'.');if(!dot||((*mode>=6&&*mode<=8)?!gsh_extra_extension(*mode,rom):strcasecmp(dot,*mode==3?".gba":*mode==4?".gb":*mode==5?".gbc":".nes")))return 0;}
     snprintf(expected,sizeof(expected),"GSH_%s_%08X",gsh_system(*mode),rom_id(rom,*mode));
     return strcmp(folder,expected)==0;
 }
@@ -65,13 +65,12 @@ static int gsh_archive_entry(const char *folder)
 }
 static int gsh_cleanup_entries(void)
 {
-    static char folders[256][17];unsigned int count=0,i;int archived=0;
+    static char folders[256][25];unsigned int count=0,i;int archived=0;
     DIR *dir=opendir("ms0:/PSP/GAME");struct dirent *entry;
     if(!dir)return 0;
     while((entry=readdir(dir))!=NULL && count<256){
         const char *n=entry->d_name;
-        if((strlen(n)==16&&(!strncmp(n,"GSH_GBA_",8)||!strncmp(n,"GSH_NES_",8)||!strncmp(n,"GSH_GBC_",8)))||
-           (strlen(n)==15&&!strncmp(n,"GSH_GB_",7))){
+        if(strlen(n)<=24&&!strncmp(n,"GSH_",4)){
             strcpy(folders[count++],n);
         }
     }
@@ -79,7 +78,8 @@ static int gsh_cleanup_entries(void)
     for(i=0;i<count;i++){
         char rom[256],source_dir[128],source[384];int mode;struct stat st;
         if(!gsh_owned_entry(folders[i],rom,&mode))continue;
-        snprintf(source_dir,sizeof(source_dir),"ms0:/PSP/GAME/%s/roms",mode==9?"Nester_AoEX_R3":"TempGBA4PSP-Mod");
+        if(mode>=6&&mode<=8){snprintf(source_dir,sizeof(source_dir),"%s",gsh_extra_root(mode));source_dir[strlen(source_dir)-1]=0;}
+        else snprintf(source_dir,sizeof(source_dir),"ms0:/PSP/GAME/%s/roms",mode==9?"Nester_AoEX_R3":"TempGBA4PSP-Mod");
         /* A missing/unreadable library never causes a mass cleanup. */
         if(stat(source_dir,&st)<0||!S_ISDIR(st.st_mode))continue;
         dir=opendir(source_dir);if(!dir)continue;closedir(dir);

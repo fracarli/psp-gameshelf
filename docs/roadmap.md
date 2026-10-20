@@ -1,17 +1,16 @@
 # Next steps
 
-1. Confirm 1.07 on PSP: direct GB/GBC startup, save/reopen each, existing
-   NES/GBA regression checks and graphical loading-bar appearance.
-2. Validate the first-install ZIP on a fresh card/setup, including a user
-   following START-HERE without development tools. Keep recovery backups.
-3. Confirm recoverable cleanup by temporarily moving and restoring a ROM.
-   Measure preparation and end-to-end startup separately before claiming speedups.
-4. Integrate Atari, then Mega Drive and SNES, each with explicit ROM selection,
-   preserved saves, source/license records and a separate hardware test.
-5. Prepare an English hardware demonstration and public announcement only
-   after the first-install and new-system tests. Posting requires user approval.
+1. Confirm the 1.08 Atari/MD/SNES adapters on PSP: exact selected game,
+   controls, normal exit, battery saves and state separation between titles.
+2. Validate a fresh-card installation from the setup ZIP with a new user.
+3. Confirm recoverable missing-ROM cleanup on hardware and measure startup
+   preparation separately from the firmware hand-off.
+4. Choose a distinct final name and review the bridge icon at PSP size before
+   any repository or card-path rename. Preserve compatibility with installed data.
+5. Add an ongoing LinkedIn project entry now if desired; prepare the public
+   hardware demonstration/post after the new integrations are confirmed.
 
-Confirmed foundation: NES/GBA XMB entries, covers, backgrounds, independent GBA
-saves, English UI and visible startup feedback. GB/GBC are implemented in the
-1.07 preview. Other emulator entries remain a future integration, not a claim
-that catalog visibility already provides direct launch.
+Confirmed: NES/GBA entries, covers, backgrounds, separate GBA saves, English UI,
+minimal startup bar and GB/GBC direct launch across multiple games in 1.07.
+Atari, Mega Drive and SNES are implemented in the 1.08 preview, not yet confirmed
+on hardware. PSP ISO and PS1 continue to use the PSP's normal home screen.

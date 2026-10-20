@@ -1,0 +1,8 @@
+Adapted PSP2600 startup runtime. Awaiting hardware confirmation.
+Corresponding source: third_party/PSP2600 at 8e7e0e70f29322b850442830375cebe5acd076bb.
+Apply patches/psp2600-gameshelf.patch inside the matching submodule.
+The source also requires shared/extra_launch.h in the parent GameShelf tree.
+Build commands: patches/README.md. Upstream notices/terms are preserved.
+ROMs retain original names; normal existing save and configuration paths are used.
+Danzeff keyboard images are from Snes9xTYL/data/release/graphics; BSD notice included.
+Optional XMB startup audio/background are omitted from this runtime PBP.

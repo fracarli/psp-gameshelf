@@ -21,6 +21,9 @@ from urllib.request import Request, urlopen
 
 BASE_URL = "https://thumbnails.libretro.com"
 SYSTEMS = {
+    "atari": ("Atari - 2600", "PSP/GAME/psp2600/roms", (".a26", ".bin", ".rom")),
+    "megadrive": ("Sega - Mega Drive - Genesis", "PSP/GAME/PicoDrive/roms", (".bin", ".md", ".gen", ".smd")),
+    "snes": ("Nintendo - Super Nintendo Entertainment System", "PSP/GAME/s9xTYLme_mod/roms", (".smc", ".sfc")),
     "nes": ("Nintendo - Nintendo Entertainment System", "PSP/GAME/Nester_AoEX_R3/roms", (".nes",)),
     "gba": ("Nintendo - Game Boy Advance", "PSP/GAME/TempGBA4PSP-Mod/roms", (".gba",)),
     "gb": ("Nintendo - Game Boy", "PSP/GAME/TempGBA4PSP-Mod/roms", (".gb",)),
@@ -49,6 +52,11 @@ def find_remote_name(index: dict[str, str], title: str) -> str | None:
     for key in keys:
         if key in index:
             return index[key]
+
+    # Exact title after removing catalog tags; prefer worldwide/US box variants.
+    exact=[name for name in index.values() if candidate_keys(Path(name).stem)[-1]==keys[-1]]
+    if exact:
+        return min(exact,key=lambda name:(0 if '(World)' in name else 1 if '(USA' in name else 2,name))
 
     best_key = None
     best_score = 0.0
@@ -81,12 +89,14 @@ def download_cover(playlist: str, remote_name: str, destination: Path) -> None:
 
 
 def decode_cover_png(source: Path) -> tuple[int, int, int, list[bytes]]:
-    """Decode supported RGB/RGBA cover PNGs for local asset preparation."""
+    """Decode supported RGB/RGBA/indexed cover PNGs for local asset preparation."""
     data = source.read_bytes()
     if data[:8] != b"\x89PNG\r\n\x1a\n":
         raise ValueError("unrecognized PNG format")
     pos = 8
     idat = bytearray()
+    palette = None
+    transparency = b""
     image_width = image_height = color_type = bit_depth = None
     while pos + 12 <= len(data):
         length = struct.unpack(">I", data[pos:pos + 4])[0]
@@ -95,15 +105,21 @@ def decode_cover_png(source: Path) -> tuple[int, int, int, list[bytes]]:
         pos += 12 + length
         if kind == b"IHDR":
             image_width, image_height, bit_depth, color_type, _, _, interlace = struct.unpack(">IIBBBBB", payload)
-            if bit_depth != 8 or interlace != 0 or color_type not in (2, 6):
-                raise ValueError("unsupported PNG: use non-interlaced RGB/RGBA")
+            if bit_depth != 8 or interlace != 0 or color_type not in (2, 3, 6):
+                raise ValueError("unsupported PNG: use non-interlaced 8-bit RGB/RGBA/indexed color")
+        elif kind == b"PLTE":
+            if not payload or len(payload)%3 or len(payload)>768:
+                raise ValueError("invalid PNG palette")
+            palette=[payload[i:i+3] for i in range(0,len(payload),3)]
+        elif kind == b"tRNS":
+            transparency=payload
         elif kind == b"IDAT":
             idat.extend(payload)
         elif kind == b"IEND":
             break
     if image_width is None or image_height is None:
         raise ValueError("PNG has no IHDR chunk")
-    channels = 4 if color_type == 6 else 3
+    channels = 1 if color_type == 3 else 4 if color_type == 6 else 3
     stride = image_width * channels
     decoded = zlib.decompress(bytes(idat))
     rows: list[bytes] = []
@@ -134,6 +150,18 @@ def decode_cover_png(source: Path) -> tuple[int, int, int, list[bytes]]:
         rows.append(bytes(current))
         previous = current
 
+    if color_type == 3:
+        if palette is None or len(transparency)>len(palette):
+            raise ValueError("missing/invalid PNG palette")
+        expanded=[]
+        for row in rows:
+            rgba=bytearray()
+            for index in row:
+                if index>=len(palette): raise ValueError("PNG palette index out of range")
+                rgba.extend(palette[index])
+                rgba.append(transparency[index] if index<len(transparency) else 255)
+            expanded.append(bytes(rgba))
+        channels,rows=4,expanded
     return image_width, image_height, channels, rows
 
 
@@ -261,7 +289,7 @@ def main() -> int:
             print(f"OK    {destination.relative_to(sd_root)}")
             print(f"MAKE  {texture.relative_to(sd_root)}")
             downloaded += 1
-        except (HTTPError, URLError, TimeoutError, OSError) as error:
+        except (HTTPError, URLError, TimeoutError, OSError, ValueError, zlib.error) as error:
             print(f"ERR   {platform}: {rom_path.name} ({error})", file=sys.stderr)
 
     print(f"Finished: {downloaded} downloaded, {missing} not found.")

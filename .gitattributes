@@ -1,3 +1,11 @@
 # Patch files preserve upstream whitespace, including diff context prefixes.
 patches/*.patch -whitespace
 releases/**/*.patch -whitespace
+# Preserve whitespace in bundled upstream notices and support configuration.
+candidates/**/COPYING.txt -whitespace
+candidates/**/Danzeff-NOTICE.txt -whitespace
+candidates/**/OpenSPC-NOTICE.txt -whitespace
+candidates/**/PicoDrive/readme.txt -whitespace
+candidates/**/PicoDrive/game_def.cfg -whitespace
+candidates/**/PicoDrive/skin/*.txt -whitespace
+candidates/**/Snes9x/DATA/*.dat -whitespace

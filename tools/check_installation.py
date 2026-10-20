@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Read-only checks for an existing PSP GameShelf setup. BIOS is never supplied."""
 import argparse
+import hashlib
 import struct
 from pathlib import Path
 
@@ -36,6 +37,17 @@ def check_installation(sd_root, package):
         required('GAMESHELF/TempGBA/ku_bridge.prx')
     required('Nester_AoEX_R3/EBOOT.PBP', pbp=True)
     required('Nester_AoEX_R3/roms', 'dir')
+    if (package/'Atari').is_dir():
+        required('psp2600/EBOOT.PBP',pbp=True)
+        required('psp2600/roms','dir')
+        required('psp2600/graphics','dir')
+        required('s9xTYLme_mod/EBOOT.PBP',pbp=True)
+        for name in ('mediaengine.prx','homehook.prx'):
+            required('s9xTYLme_mod/'+name)
+        required('PicoDrive/EBOOT.PBP',pbp=True)
+        installed=game/'PicoDrive/EBOOT.PBP'
+        if installed.is_file() and hashlib.sha256(installed.read_bytes()).digest()!=hashlib.sha256((package/'PicoDrive/EBOOT.PBP').read_bytes()).digest():
+            issues.append('PicoDrive 2.05 official PSP runtime required; back up and install the supported upstream runtime first')
     return issues
 
 
@@ -43,7 +55,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--sd-root', type=Path, required=True)
     args = parser.parse_args()
-    package = Path(__file__).resolve().parents[1] / 'releases/v1/06'
+    package = Path(__file__).resolve().parents[1] / 'releases/v1/07'
     issues = check_installation(args.sd_root, package)
     for issue in issues: print('ERROR:', issue)
     if not issues: print('PASS: required folders, executables, support modules and BIOS size. No files changed.')

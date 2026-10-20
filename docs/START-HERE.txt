@@ -6,7 +6,8 @@ It does not modify or install firmware. Tested: PSP-3004, 6.61 PRO-C.
 If your setup needs FastRecovery after a full shutdown, run it first.
 Back up your memory card. For an existing GameShelf installation, use the
 backup-preserving update tool described in README.md instead of this ZIP.
-The 1.07 ZIP is a test build: GB/GBC need confirmation on a real PSP.
+Version 1.07 has confirmed NES/GBA/GB/GBC direct launch.
+Version 1.08 is a test build adding Atari 2600, Mega Drive and SNES.
 
 1. Connect the PSP/card to your computer.
 2. Extract the ZIP. Copy its PSP folder to the ROOT of your memory card.
@@ -17,7 +18,10 @@ The 1.07 ZIP is a test build: GB/GBC need confirmation on a real PSP.
 3. Add your own game files (up to 32 per system, no subfolders):
    NES .nes:  PSP/GAME/Nester_AoEX_R3/roms/
    GBA .gba:  PSP/GAME/TempGBA4PSP-Mod/roms/
-   GB .gb and GBC .gbc (1.07 only): same roms folder as GBA.
+   GB .gb and GBC .gbc (1.07 and newer): same roms folder as GBA.
+   Atari (1.08): PSP/GAME/psp2600/roms/ (.a26, .bin, .rom)
+   Mega Drive (1.08): PSP/GAME/PicoDrive/roms/ (.md, .bin, .gen, .smd)
+   SNES (1.08): PSP/GAME/s9xTYLme_mod/roms/ (.smc, .sfc)
    GBA requires your own 16,384-byte gba_bios.bin in:
               PSP/GAME/TempGBA4PSP-Mod/gba_bios.bin
    NES, GB and GBC do not require that GBA BIOS.

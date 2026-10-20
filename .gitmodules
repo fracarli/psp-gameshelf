@@ -8,3 +8,9 @@
 [submodule "third_party/GBAdhoc"]
 	path = third_party/GBAdhoc
 	url = https://github.com/ShoshinFauteux/GBAdhoc.git
+[submodule "third_party/PSP2600"]
+	path = third_party/PSP2600
+	url = https://github.com/PSP-Archive/PSP2600.git
+[submodule "third_party/Snes9xTYL"]
+	path = third_party/Snes9xTYL
+	url = https://github.com/esmjanus/snes9xTYL.git
