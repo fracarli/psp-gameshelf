@@ -65,7 +65,7 @@ def find_remote_name(index: dict[str, str], title: str) -> str | None:
 def list_boxarts(playlist: str) -> dict[str, str]:
     """Return normalized filename -> original filename from the remote index."""
     index_url = f"{BASE_URL}/{quote(playlist)}/Named_Boxarts/"
-    request = Request(index_url, headers={"User-Agent": "PSP-GameShelf/1.01"})
+    request = Request(index_url, headers={"User-Agent": "PSP-GameShelf/1.02"})
     with urlopen(request, timeout=20) as response:
         html = response.read().decode("utf-8", errors="replace")
     names = re.findall(r'href="([^"]+\.png)"', html, flags=re.IGNORECASE)
@@ -74,13 +74,13 @@ def list_boxarts(playlist: str) -> dict[str, str]:
 
 def download_cover(playlist: str, remote_name: str, destination: Path) -> None:
     url = f"{BASE_URL}/{quote(playlist)}/Named_Boxarts/{quote(remote_name)}"
-    request = Request(url, headers={"User-Agent": "PSP-GameShelf/1.01"})
+    request = Request(url, headers={"User-Agent": "PSP-GameShelf/1.02"})
     with urlopen(request, timeout=30) as response:
         data = response.read()
     destination.write_bytes(data)
 
 
-def png_to_gsh(source: Path, destination: Path, width: int = 128, height: int = 160) -> None:
+def png_to_gsh(source: Path, destination: Path, width: int = 128, height: int = 160, square_crop: bool = False) -> None:
     """Convert a simple RGB/RGBA PNG to a PSP-friendly 16-bit texture.
 
     The PSP launcher deliberately reads this tiny raw format instead of
@@ -139,12 +139,17 @@ def png_to_gsh(source: Path, destination: Path, width: int = 128, height: int = 
         rows.append(bytes(current))
         previous = current
 
+    crop_width = crop_height = min(image_width, image_height)
+    source_left = (image_width - crop_width) // 2 if square_crop else 0
+    source_top = (image_height - crop_height) // 2 if square_crop else 0
+    if not square_crop:
+        crop_width, crop_height = image_width, image_height
     output = bytearray(width * height * 2)
     for y in range(height):
-        source_y = min(image_height - 1, (y * image_height) // height)
+        source_y = min(image_height - 1, source_top + (y * crop_height) // height)
         row = rows[source_y]
         for x in range(width):
-            source_x = min(image_width - 1, (x * image_width) // width)
+            source_x = min(image_width - 1, source_left + (x * crop_width) // width)
             pixel = source_x * channels
             red, green, blue = row[pixel], row[pixel + 1], row[pixel + 2]
             value = ((red >> 3) << 11) | ((green >> 2) << 5) | (blue >> 3)
@@ -194,6 +199,7 @@ def main() -> int:
         playlist, _, _ = SYSTEMS[platform]
         destination = covers_root / platform / f"{title}.png"
         texture = covers_root / platform / f"{title}.gsh"
+        square_texture = covers_root / platform / f"{title}.xmb.gsh"
         destination.parent.mkdir(parents=True, exist_ok=True)
         if destination.exists() and not args.force:
             if not texture.exists():
@@ -202,6 +208,11 @@ def main() -> int:
                     print(f"MAKE  {texture.relative_to(sd_root)}")
                 except (OSError, ValueError, zlib.error) as error:
                     print(f"ERR   texture {destination.name} ({error})", file=sys.stderr)
+            try:
+                png_to_gsh(destination, square_texture, 80, 80, square_crop=True)
+                print(f"SQUARE {square_texture.relative_to(sd_root)}")
+            except (OSError, ValueError, zlib.error) as error:
+                print(f"ERR   square {destination.name} ({error})", file=sys.stderr)
             print(f"SKIP  {platform}: {title}")
             continue
         try:
@@ -215,6 +226,7 @@ def main() -> int:
                 continue
             download_cover(playlist, remote_name, destination)
             png_to_gsh(destination, texture)
+            png_to_gsh(destination, square_texture, 80, 80, square_crop=True)
             print(f"OK    {destination.relative_to(sd_root)}")
             print(f"MAKE  {texture.relative_to(sd_root)}")
             downloaded += 1

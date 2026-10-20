@@ -6,6 +6,7 @@ import struct
 import subprocess
 import tempfile
 import zlib
+import importlib.util
 
 ROOT = Path(__file__).resolve().parents[1]
 HARNESS = r'''
@@ -60,6 +61,7 @@ with tempfile.TemporaryDirectory() as temp:
     covers.mkdir(parents=True)
     # Red RGB565 cover. NES intentionally has no cover (fallback icon).
     (covers/'Example Adventure.gsh').write_bytes(struct.pack('<H', 0xf800)*128*160)
+    (covers/'Example Adventure.xmb.gsh').write_bytes(struct.pack('<H', 0x07e0)*80*80)
     for name, mode in [('Example Adventure.gba', 3), ('Example.nes', 9)]:
         assert subprocess.run([str(temp/'test'), name, str(mode)], cwd=temp).returncode == (2 if mode == 3 else 1)
         assert subprocess.run([str(temp/'test'), name, str(mode)], cwd=temp).returncode == 2
@@ -82,13 +84,14 @@ with tempfile.TemporaryDirectory() as temp:
                 size = struct.unpack_from('>I', icon, pos)[0]
                 kind, payload = icon[pos+4:pos+8], icon[pos+8:pos+8+size]
                 assert struct.unpack_from('>I', icon, pos+8+size)[0] == zlib.crc32(kind+payload)
-                if kind == b'IHDR': assert struct.unpack_from('>II',payload) == (144,80)
+                if kind == b'IHDR': assert struct.unpack_from('>II',payload) == (80,80)
                 if kind == b'IDAT': image += payload
                 pos += size+12
             raw = zlib.decompress(image)
-            assert len(raw) == (144*3+1)*80
-            assert raw[1+40*3:1+41*3] == bytes([255,0,0])
-            assert raw[1:4] == bytes([18,24,38])
+            assert len(raw) == (80*3+1)*80
+            assert raw[1+40*3:1+41*3] == bytes([0,255,0])
+            assert raw[1:4] == bytes([0,255,0])
+            assert raw[-3:] == bytes([0,255,0])
         else:
             assert icon == original[u32(original,12):u32(original,16)]
         sfo = offsets[0]
@@ -105,6 +108,33 @@ with tempfile.TemporaryDirectory() as temp:
         pos = old_exec.index(b'GSHXMB100TARGET!')
         new_exec[pos+16:pos+276] = old_exec[pos+16:pos+276]
         assert old_exec == new_exec
+    # Legacy 128x160 texture still generates a borderless square icon.
+    (covers/'Example Adventure.xmb.gsh').unlink()
+    assert subprocess.run([str(temp/'test'), 'Example Adventure.gba', '3'], cwd=temp).returncode == 2
+    gba_file = next(p for p in generated if 'GBA' in p.parent.name)
+    b = gba_file.read_bytes()
+    icon = b[u32(b,12):u32(b,16)]
+    pos, image = 8, b''
+    while pos < len(icon):
+        length = struct.unpack_from('>I', icon, pos)[0]
+        if icon[pos+4:pos+8] == b'IDAT': image += icon[pos+8:pos+8+length]
+        pos += 12+length
+    raw = zlib.decompress(image)
+    assert raw[1:4] == raw[-3:] == bytes([255,0,0])
+
+    # Square preparation crops rectangular art centrally, without stretching.
+    spec = importlib.util.spec_from_file_location('covers', ROOT/'tools/fetch_boxart.py')
+    helper = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(helper)
+    def chunk(kind, payload):
+        return struct.pack('>I',len(payload))+kind+payload+struct.pack('>I',zlib.crc32(kind+payload))
+    row = bytes([255,0,0])*2 + bytes([0,255,0])*4 + bytes([255,0,0])*2
+    png = b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',8,4,8,2,0,0,0))
+    png += chunk(b'IDAT',zlib.compress((b'\0'+row)*4))+chunk(b'IEND',b'')
+    (temp/'crop.png').write_bytes(png)
+    helper.png_to_gsh(temp/'crop.png', temp/'crop.xmb.gsh',80,80,square_crop=True)
+    assert (temp/'crop.xmb.gsh').read_bytes() == struct.pack('<H',0x07e0)*80*80
+
     # Refuse overwriting an unrelated EBOOT with the same generated folder name.
     victim = generated[0]
     victim.write_bytes(b'unrelated application')

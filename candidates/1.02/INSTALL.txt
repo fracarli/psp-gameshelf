@@ -1,0 +1,17 @@
+PSP GameShelf 1.02 - icone quadrate, da provare su PSP
+
+1. Mantieni emulatori, ROM, BIOS e salvataggi esistenti.
+2. Sostituisci PSP/GAME/GAMESHELF/EBOOT.PBP con il nuovo EBOOT.PBP.
+3. Sul Mac prepara le copertine quadrate dai PNG già sulla scheda:
+   python3 tools/fetch_boxart.py --sd-root /Volumes/SD-FAT32 --platform nes --platform gba
+   Il comando riusa i PNG esistenti e crea anche le texture *.xmb.gsh.
+4. Avvia GameShelf 1.02 sulla PSP e premi X per aggiornare le voci.
+5. Torna alla home e rientra in Memory Stick.
+
+Le icone sono PNG 80x80: niente cornice rettangolare o bande laterali.
+Le copertine quadrate sono conservate per intero; quelle rettangolari sono
+ritagliate al centro per riempire il quadrato senza deformazioni.
+I vecchi file .gsh rimangono disponibili per il catalogo e come fallback.
+Gli emulatori e il comportamento dei salvataggi non vengono modificati.
+
+Per tornare alla 1.01 installa l’EBOOT in releases/v1/01/ e rigenera le voci.

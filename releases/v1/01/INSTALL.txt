@@ -1,4 +1,4 @@
-PSP GameShelf 1.01 - copertine XMB, da confermare su PSP
+PSP GameShelf 1.01 - copertine XMB, copertine confermate su PSP
 
 Aggiornamento da 1.00:
 1. Conserva una copia di PSP/GAME/GAMESHELF/EBOOT.PBP.
@@ -20,4 +20,4 @@ Per la prima installazione installa prima il pacchetto stabile 1.00 e poi
 sostituisci soltanto l’EBOOT principale con questo.
 Per ripristinare copia l’EBOOT della 1.00 e rimuovi soltanto i collegamenti
 GSH_GBA_* / GSH_NES_* prima di rigenerarli con la 1.00.
-La 1.00 resta la versione stabile finché la 1.01 non viene provata su console.
+Copertine della 1.01 confermate dall’utente sulla console. La 1.02 amplia le icone.

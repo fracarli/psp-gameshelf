@@ -1,6 +1,6 @@
-/* Convert the existing 128x160 RGB565 cover to a PSP XMB ICON0 PNG.
+/* Convert a square RGB565 XMB cover to a PSP XMB ICON0 PNG.
  * Uses an uncompressed zlib block: no PNG decoder or new PSP dependencies. */
-#define XMB_ICON_WIDTH 144
+#define XMB_ICON_WIDTH 80
 #define XMB_ICON_HEIGHT 80
 #define XMB_ICON_RAW ((XMB_ICON_WIDTH * 3 + 1) * XMB_ICON_HEIGHT)
 static void png_be32(unsigned char *p, unsigned int v)
@@ -29,28 +29,36 @@ static unsigned char *xmb_cover_png(const char *rom, int mode, unsigned int *len
     unsigned char *texture=NULL, *raw=NULL, *compressed=NULL, *png=NULL;
     char name[256], path[384];
     unsigned int x,y,pixel,offset,a=1,b=0,pos=8;
+    unsigned int source_width=80, source_height=80, texture_size=80*80*2;
     unsigned char ihdr[13]={0};
     SceIoStat st;
     SceUID f;
     strncpy(name,rom,sizeof(name)-1); name[255]=0;
     { char *dot=strrchr(name,'.'); if(dot) *dot=0; }
-    snprintf(path,sizeof(path),"ms0:/PSP/GAME/GAMESHELF/boxart/%s/%s.gsh",mode==3?"gba":"nes",name);
+    snprintf(path,sizeof(path),"ms0:/PSP/GAME/GAMESHELF/boxart/%s/%s.xmb.gsh",mode==3?"gba":"nes",name);
     *length=0;
-    if(sceIoGetstat(path,&st)<0 || st.st_size!=128*160*2) return NULL;
-    texture=malloc(128*160*2); raw=malloc(XMB_ICON_RAW);
+    if(sceIoGetstat(path,&st)<0 || st.st_size!=texture_size) {
+        /* Compatibility with cover caches prepared before version 1.02. */
+        snprintf(path,sizeof(path),"ms0:/PSP/GAME/GAMESHELF/boxart/%s/%s.gsh",mode==3?"gba":"nes",name);
+        source_width=128; source_height=160;texture_size=source_width*source_height*2;
+        if(sceIoGetstat(path,&st)<0 || st.st_size!=texture_size) return NULL;
+    }
+    texture=malloc(texture_size); raw=malloc(XMB_ICON_RAW);
     compressed=malloc(XMB_ICON_RAW+11); png=malloc(XMB_ICON_RAW+80);
     if(!texture || !raw || !compressed || !png) goto fail;
     f=sceIoOpen(path,PSP_O_RDONLY,0);
     if(f<0) goto fail;
-    offset=sceIoRead(f,texture,128*160*2); sceIoClose(f);
-    if(offset!=128*160*2) goto fail;
+    offset=sceIoRead(f,texture,texture_size); sceIoClose(f);
+    if(offset!=texture_size) goto fail;
     for(y=0;y<XMB_ICON_HEIGHT;y++) {
         unsigned int row=y*(XMB_ICON_WIDTH*3+1);
-        raw[row]=0; /* PNG filter: none. Fit 64x80 cover without distortion. */
+        raw[row]=0; /* Square icon, without an opaque rectangular frame. */
         for(x=0;x<XMB_ICON_WIDTH;x++) {
             unsigned char *rgb=raw+row+1+x*3;
-            if(x<40 || x>=104) { rgb[0]=18;rgb[1]=24;rgb[2]=38;continue; }
-            offset=((y*2)*128+(x-40)*2)*2;
+            unsigned int crop=source_width<source_height?source_width:source_height;
+            unsigned int sx=(source_width-crop)/2+x*crop/XMB_ICON_WIDTH;
+            unsigned int sy=(source_height-crop)/2+y*crop/XMB_ICON_HEIGHT;
+            offset=(sy*source_width+sx)*2;
             pixel=texture[offset]|(texture[offset+1]<<8);
             rgb[0]=((pixel>>11)&31)*255/31;
             rgb[1]=((pixel>>5)&63)*255/63;
