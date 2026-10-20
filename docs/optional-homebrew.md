@@ -12,8 +12,8 @@ support for every PSP model and saving worlds beside the executable.
 Version [1.9.9](https://github.com/Pencea-Flavius/Minecraft-PE-PSP/releases/tag/v1.9.9)
 was copied to PSP/GAME/MCPSP on the existing card. EBOOT.PBP and data/ must stay
 together. The archive contains 94,405,076 bytes before filesystem overhead;
-the download is 79,517,361 bytes. Copy verification passed. Running, controls
-and world save/reload still need a user hardware test.
+the download is 79,517,361 bytes. Copy verification passed. The user confirmed that Minecraft runs well on the PSP on 2026-10-20.
+World save/reload was not separately reported.
 
 Archive SHA256: 575076729de3784fb002712e84453d583ec1a2bf88c75236c3ce940479ce7283
 

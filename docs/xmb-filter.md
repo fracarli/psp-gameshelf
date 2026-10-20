@@ -11,8 +11,9 @@ retains GPLv3-or-later terms. This is an upstream plugin, not a GameShelf emulat
 or a feature of the stable GameShelf executable.
 
 It was installed on the existing PSP-3004 / 6.61 PRO-C card on 2026-10-20.
-File writes were verified; its appearance and launch behavior still need a
-hardware check. It is not included in the stable first-install ZIP.
+File writes were verified. The user subsequently reported the remaining
+DaedalusX64 entry and game entries, consistent with the intended filter.
+Minecraft also launches. Dedicated per-system post-filter checks remain useful. It is not included in the stable first-install ZIP.
 
 ## Configuration used
 
