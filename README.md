@@ -18,7 +18,8 @@ shutdown, FastRecovery may be needed before starting homebrew.
 | [1.02](releases/v1/02/) | Confirmed on PSP | Square icons without a rectangular frame |
 | [1.03](releases/v1/03/) | Backgrounds confirmed on PSP | Full-screen background when a game is highlighted |
 | [1.04](releases/v1/04/) | Separate saves confirmed on PSP | Per-game GBA save, state and configuration filenames |
-| [1.05](candidates/1.05/) | UI language awaiting hardware confirmation | PSP system-language selection and English fallback |
+| [1.05](releases/v1/05/) | English UI confirmed on PSP | PSP system-language selection and English fallback |
+| [1.06](candidates/1.06/) | Awaiting hardware confirmation | Loading feedback, one-copy GBA staging, recoverable stale-entry cleanup |
 
 `releases/` contains hardware-confirmed builds and the working NesterJ adapter.
 Experimental builds are kept separately in `candidates/`. Obsolete packages
@@ -105,9 +106,34 @@ the stable save-isolation build; further save-state testing remains useful.
 To roll back, restore the complete backup of GameShelf, TempGBA and generated
 GBA entries. The installer rejects a launcher-only downgrade from 1.04.
 
+## Startup and installation improvements in 1.06 — experimental
+
+```sh
+# Read-only checks first; no backup directory is needed for this command.
+python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --check
+# Then update, with a complete backup.
+python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --version 1.06 --backup-root ../PSP_BACKUP
+```
+
+Checks run before writes and report missing directories, invalid PBP headers,
+missing support files and an unexpected BIOS size. This is an updater for an
+existing NES/GBA setup; it does not supply games or BIOS files.
+
+Game startup shows preparation stages and ROM-copy progress. GBA preparation
+copies the ROM once instead of twice; unchanged support modules are not
+rewritten. TempGBA also displays loading messages. Some delay during firmware
+handoff remains possible. Hardware timing comparisons have not been measured.
+`GAMESHELF/STARTUP_LOG.TXT` records preparation time and copied-file bytes only.
+
+When you generate entries with X, 1.06 checks for missing ROMs and moves verified
+GameShelf entries to `PSP/GAMESHELF/REMOVED_ENTRIES`. It never deletes saves or
+ROMs. Existing ROMs beyond the scanner limit remain protected. Unknown entries,
+entries containing extra user files and unavailable libraries are skipped.
+Restore a moved ROM and regenerate to recreate its entry.
+
 ## Language
 
-To install the 1.05 language update, preserving saves and backing up old entries:
+To install the stable 1.05 language update, preserving saves and backing up old entries:
 
 ```sh
 python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --version 1.05 --backup-root ../PSP_BACKUP
@@ -116,7 +142,7 @@ python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --version 1.05 --ba
 Open GameShelf 1.05 and press X to regenerate entries after the update.
 
 
-Project documentation and computer tools use English. The 1.05 candidate PSP launcher
+Project documentation and computer tools use English. The PSP launcher
 reads the console's system language: English and Italian are supported, with
 English as the fallback for all other languages or a failed settings read.
 Emulator menus retain the language options provided by their upstream projects.
@@ -125,8 +151,8 @@ Emulator menus retain the language options provided by their upstream projects.
 
 - Up to 32 ROMs per system, scanned from the expected directory without recursion.
 - Each game entry contains a small copy of the launcher; emulator runtimes are shared.
-- Entries for deleted ROMs must be removed manually from `PSP/GAME/GSH_GBA_*`
-  or `GSH_NES_*`.
+- Through 1.05, entries for deleted ROMs must be removed manually. The 1.06
+  candidate archives verified missing-ROM entries automatically during regeneration.
 - Exit GBA games through the emulator's **Quit/Exit** menu. The firmware HOME
   popup remains disabled in the integrated runtime.
 - Versions through 1.03 may share the GBA save filename `game.sav`.
@@ -147,10 +173,13 @@ python3 tools/verify_xmb.py
 python3 tools/verify_gba_saves.py
 python3 tools/verify_install.py
 python3 tools/verify_language.py
+python3 tools/verify_startup.py
+python3 tools/verify_cleanup.py
 ```
 
 The Makefile defaults to `~/pspdev`; set `PSPDEV` for a different installation.
-The current source builds the 1.05 candidate, using the unchanged 1.04 runtime. Tests cover generated PBP/SFO
+The current source builds the 1.06 candidate. Its TempGBA changes add loading
+messages; the hardware-confirmed 1.04 save identity and emulation logic remain. Tests cover generated PBP/SFO
 metadata, executable preservation, cover and background PNGs, invalid inputs,
 per-game save identity, paired installation and rollback, and language selection.
 Computer tests do not replace testing on a real PSP.

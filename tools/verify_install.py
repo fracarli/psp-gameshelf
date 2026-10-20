@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Exercise paired 1.05 installation on a temporary card with legacy saves."""
+"""Exercise paired 1.06 installation on a temporary card with legacy saves."""
 from pathlib import Path
 import subprocess
 import struct
@@ -21,14 +21,34 @@ with tempfile.TemporaryDirectory() as d:
     b=bytearray((ROOT/'releases/v1/03/EBOOT.PBP').read_bytes())
     pos=b.index(b'GSHXMB100TARGET!');struct.pack_into('<I',b,pos+16,3)
     (entry/'EBOOT.PBP').write_bytes(b)
+    game=card/'PSP/GAME'
+    mod=game/'TempGBA4PSP-Mod';(mod/'roms').mkdir(parents=True)
+    (mod/'gba_bios.bin').write_bytes(bytes(16384))
+    for name in ('tempgba_me.prx','cp_fix_gbk.prx','exception.prx'):
+        (mod/name).write_bytes(b'test support file')
+    nester=game/'Nester_AoEX_R3';(nester/'roms').mkdir(parents=True)
+    (nester/'EBOOT.PBP').write_bytes((ROOT/'releases/nesterj-autoload-v1/EBOOT.PBP').read_bytes())
     backups=root/'backups'
-    cmd=['python3',str(ROOT/'tools/install_release.py'),'--sd-root',str(card),'--version','1.05','--backup-root',str(backups)]
+    cmd=['python3',str(ROOT/'tools/install_release.py'),'--sd-root',str(card),'--version','1.06','--backup-root',str(backups)]
+    check=cmd+['--check']
+    subprocess.run(check,check=True,capture_output=True)
+    assert not backups.exists() and entry.exists()
+    (mod/'gba_bios.bin').write_bytes(b'bad BIOS size')
+    assert subprocess.run(check,capture_output=True).returncode!=0
+    assert subprocess.run(cmd,capture_output=True).returncode!=0
+    assert not backups.exists() and entry.exists()
+    (mod/'gba_bios.bin').write_bytes(bytes(16384))
+    nester_binary=(nester/'EBOOT.PBP').read_bytes()
+    (nester/'EBOOT.PBP').write_bytes(b'\0PBP')
+    assert subprocess.run(check,capture_output=True).returncode!=0
+    assert not backups.exists()
+    (nester/'EBOOT.PBP').write_bytes(nester_binary)
     subprocess.run(cmd,check=True,capture_output=True)
     assert not entry.exists()
     backup=next(backups.iterdir())
     assert (backup/'generated_gba_entries/GSH_GBA_TEST/EBOOT.PBP').read_bytes()==b
-    assert (shelf/'EBOOT.PBP').read_bytes()==(ROOT/'candidates/1.05/EBOOT.PBP').read_bytes()
-    assert (shelf/'TempGBA/EBOOT.PBP').read_bytes()==(ROOT/'candidates/1.05/TempGBA/EBOOT.PBP').read_bytes()
+    assert (shelf/'EBOOT.PBP').read_bytes()==(ROOT/'candidates/1.06/EBOOT.PBP').read_bytes()
+    assert (shelf/'TempGBA/EBOOT.PBP').read_bytes()==(ROOT/'candidates/1.06/TempGBA/EBOOT.PBP').read_bytes()
     assert (backup/'GAMESHELF/TempGBA/EBOOT.PBP').read_bytes()==old_runtime
     assert (shelf/'TempGBA/save/game.sav').read_bytes()==b'legacy SRAM must survive'
     assert (shelf/'TempGBA/state/game_0.svs').read_bytes()==b'legacy state must survive'
@@ -37,14 +57,15 @@ with tempfile.TemporaryDirectory() as d:
     subprocess.run(cmd,check=True,capture_output=True)
     assert (shelf/'TempGBA/save/Adventure.sav').read_bytes()==b'per-game SRAM'
     # A failure replacing the second executable restores both original files.
-    (shelf/'EBOOT.PBP').write_bytes(b'previous main executable')
-    (shelf/'TempGBA/EBOOT.PBP').write_bytes(b'previous runtime executable')
+    previous_main=(ROOT/'releases/v1/03/EBOOT.PBP').read_bytes()
+    (shelf/'EBOOT.PBP').write_bytes(previous_main)
+    (shelf/'TempGBA/EBOOT.PBP').write_bytes(old_runtime)
     spec=importlib.util.spec_from_file_location('installer',ROOT/'tools/install_release.py')
     installer=importlib.util.module_from_spec(spec);spec.loader.exec_module(installer)
     original_replace=Path.replace
     failed=[False]
     def fail_runtime_once(self,target):
-        if self.name=='GSH_UPDATE.TMP' and self.parent.name=='TempGBA' and not failed[0]:
+        if self.name=='EBOOT.PBP.GSH_TMP' and self.parent.name=='TempGBA' and not failed[0]:
             failed[0]=True;raise OSError('simulated second executable replacement failure')
         return original_replace(self,target)
     original_argv=sys.argv
@@ -55,10 +76,10 @@ with tempfile.TemporaryDirectory() as d:
         else: raise AssertionError('Expected simulated write failure')
     finally:
         Path.replace=original_replace;sys.argv=original_argv
-    assert (shelf/'EBOOT.PBP').read_bytes()==b'previous main executable'
-    assert (shelf/'TempGBA/EBOOT.PBP').read_bytes()==b'previous runtime executable'
+    assert (shelf/'EBOOT.PBP').read_bytes()==previous_main
+    assert (shelf/'TempGBA/EBOOT.PBP').read_bytes()==old_runtime
     assert (shelf/'TempGBA/save/Adventure.sav').read_bytes()==b'per-game SRAM'
     # Reject a partial downgrade; the two runtimes must be restored together.
-    downgrade=cmd.copy();downgrade[downgrade.index('1.05')]='1.03'
+    downgrade=cmd.copy();downgrade[downgrade.index('1.06')]='1.03'
     assert subprocess.run(downgrade,capture_output=True).returncode!=0
-print('PASS: paired installation, entry backup/regeneration, old and named saves preserved, rollback on runtime write failure, partial downgrade rejected')
+print('PASS: read-only preflight, bad BIOS rejected before writes, paired installation, entry backup/regeneration, old and named saves preserved, rollback on runtime write failure, partial downgrade rejected')

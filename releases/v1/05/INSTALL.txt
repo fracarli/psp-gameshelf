@@ -1,4 +1,4 @@
-PSP GameShelf 1.05 - system-language UI; awaiting hardware confirmation
+PSP GameShelf 1.05 - English UI confirmed on PSP
 
 Paired update: both GameShelf and the integrated TempGBA runtime must be updated.
 With the memory card mounted on your computer:
@@ -21,9 +21,9 @@ Existing game.sav files and shared states are preserved, not automatically
 assigned to a title. Saves archived from other emulators remain untouched.
 Identify the correct game before transferring an old save.
 
-The runtime is unchanged from hardware-confirmed 1.04. This candidate updates
-GameShelf UI language selection only. Confirm the launcher follows the PSP
-language and that the existing saves still load.
+The runtime is unchanged from hardware-confirmed 1.04. This release updates
+GameShelf UI language selection only. The user confirmed the English launcher on the PSP. The save runtime is
+unchanged from the hardware-confirmed 1.04 build.
 
 Optional regression check:
 1. Start GBA game A, save in the game and create a save state, then use Quit/Exit.

@@ -26,7 +26,7 @@ static inline const char *gsh_text(const char *english)
         { "PS1 EBOOT not found.", "EBOOT PS1 non trovato." },
         { "No title selected.", "Nessun titolo selezionato." },
         { "Loader error: 0x%08X", "Errore loader: 0x%08X" },
-        { "PSP GameShelf 1.05 - hardware test\n", "PSP GameShelf 1.05 - test PSP\n" },
+        { "PSP GameShelf 1.06 - hardware test\n", "PSP GameShelf 1.06 - test PSP\n" },
         { "Entries %d-%d of %d\n", "Elementi %d-%d di %d\n" },
         { "\nLeft/Right: change view\n", "\nSinistra/Destra: cambia vista\n" },
         { "Up/Down: choose   X: select/diagnose\n", "Su/Giu: scegli   X: seleziona/diagnostica\n" },
@@ -38,7 +38,7 @@ static inline const char *gsh_text(const char *english)
         { "Selected.\n", "Selezionato.\n" },
         { "Invalid game entry.", "Collegamento non valido." },
         { "%s\nPress HOME to exit.\n", "%s\nPremi HOME per uscire.\n" },
-        { "GameShelf 1.05\nX: create/update NES/GBA Memory Stick entries\nCircle: legacy catalog   HOME: exit\n", "GameShelf 1.05\nX: crea giochi NES/GBA nella Memory Stick\nCerchio: catalogo precedente   HOME: esci\n" },
+        { "GameShelf 1.06\nX: create/update NES/GBA Memory Stick entries\nCircle: legacy catalog   HOME: exit\n", "GameShelf 1.06\nX: crea giochi NES/GBA nella Memory Stick\nCerchio: catalogo precedente   HOME: esci\n" },
         { "\nPress X to return to the home screen.\n", "\nPremi X per tornare alla home.\n" },
         { "The library refreshes at the next startup.", "Aggiornamento disponibile al prossimo avvio." },
         { "ERROR", "ERRORE" },
@@ -56,6 +56,11 @@ static inline const char *gsh_text(const char *english)
         { "%s  View: Mega Drive (%d)\n", "%s  Vista: Mega Drive (%d)\n" },
         { "%s  View: Super Nintendo (%d)\n", "%s  Vista: Super Nintendo (%d)\n" },
         { "%s  View: Nintendo Entertainment System (%d)\n", "%s  Vista: Nintendo Entertainment System (%d)\n" },
+        { "Preparing game...", "Preparazione del gioco..." },
+        { "Checking emulator files...", "Controllo dei file emulatore..." },
+        { "Starting emulator...", "Avvio emulatore..." },
+        { "Copying ROM: %3u%%                         \n", "Copia ROM: %3u%%                         \n" },
+        { "Archived missing-ROM entries: %d (recoverable).\n", "Voci senza ROM archiviate: %d (recuperabili).\n" },
     };
     unsigned int i;
     if(gsh_language != 5)return english;

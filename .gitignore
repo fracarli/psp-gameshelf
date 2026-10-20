@@ -29,6 +29,7 @@ cheats/
 # Generated build metadata and candidate binaries.
 PARAM.SFO
 !candidates/**/EBOOT.PBP
+!candidates/**/TempGBA/*.prx
 
 # Local SD maintenance scripts and private installation data.
 tools/install_sd_100.py

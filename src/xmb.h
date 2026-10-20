@@ -1,5 +1,5 @@
 #include "language.h"
-/* GameShelf 1.05: generate per-ROM XMB EBOOTs, no emulator duplication. */
+/* GameShelf 1.06: generate per-ROM XMB EBOOTs, no emulator duplication. */
 static unsigned int read32(const unsigned char *p)
 {
     return p[0] | ((unsigned int)p[1]<<8) | ((unsigned int)p[2]<<16) | ((unsigned int)p[3]<<24);
@@ -15,6 +15,7 @@ static unsigned int rom_id(const char *s, int mode)
     return h;
 }
 #include "xmb_icon.h"
+#include "xmb_cleanup.h"
 
 static int xmb_replace_section(unsigned char **buffer, unsigned int *size,
                                unsigned int section, const unsigned char *data, unsigned int length)
@@ -146,6 +147,7 @@ static void generate_xmb(void)
         if(result==0) created++; else if(result==1) existing++; else failed++;
         pspDebugScreenPrintf("%s: %.45s\n",result<0?gsh_text("ERROR"):result?gsh_text("UPDATED"):gsh_text("CREATED"),rom);
     }
+    pspDebugScreenPrintf(gsh_text("Archived missing-ROM entries: %d (recoverable).\n"),gsh_cleanup_entries());
     pspDebugScreenPrintf(gsh_text("\nCreated %d, updated %d, errors %d.\n"),created,existing,failed);
     pspDebugScreenPrintf("%s", gsh_text("Up to 32 ROMs per system in this build.\n"));
 }

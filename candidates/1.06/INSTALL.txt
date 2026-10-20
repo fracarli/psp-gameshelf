@@ -1,0 +1,46 @@
+PSP GameShelf 1.06 - loading feedback, preparation optimization and cleanup
+Awaiting confirmation on a real PSP. Version 1.05 remains the stable fallback.
+
+Check the existing installation without changing any files:
+python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --check
+
+Install the update with a complete backup:
+python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --version 1.06 --backup-root ../PSP_BACKUP
+
+The installer checks required directories, PBP headers, support-file presence
+and the GBA BIOS size before writing. BIOS contents are not authenticated.
+This remains an update tool for an existing adapted NES/GBA installation.
+No ROMs, BIOS files or saves are supplied by the project.
+
+The update installs GameShelf and the integrated TempGBA together. Old GBA
+entries are backed up and removed: open GameShelf 1.06 on PSP and press X to
+regenerate them. Existing saves, states and game settings are retained.
+
+Startup changes:
+- Visible preparation stages and a ROM-copy percentage in the launcher.
+- One GBA ROM copy instead of two, using a 64 KiB copy buffer.
+- Identical BIOS/support modules are compared and not rewritten.
+- TempGBA displays initialization and game-loading messages.
+- STARTUP_LOG.TXT records launcher preparation time, copy count and copied-file bytes.
+  It does not include the subsequent firmware/emulator hand-off or gameplay.
+Some black-screen time may remain during the PSP firmware hand-off. No speedup
+in seconds has been measured on hardware yet.
+
+Missing-ROM cleanup runs when X generates/updates the library, not while
+launching a game. It checks the actual ROM file, independently of the 32-ROM
+scanner limit. Only a verified GameShelf entry with no extra user files is
+moved to PSP/GAMESHELF/REMOVED_ENTRIES. The complete entry folder is preserved;
+ROMs, saves and emulator folders are never deleted. Missing/unreadable library
+directories and unknown/corrupt entries are skipped.
+
+To recover an archived entry, restore its ROM first and regenerate the library.
+The archived EBOOT is also available under REMOVED_ENTRIES for manual recovery.
+
+Hardware test:
+1. Regenerate entries, then start a small and a large GBA game and one NES game.
+2. Check loading messages, launch time, existing saves and Quit/Exit behavior.
+3. To test cleanup, move a ROM to a safe temporary directory (do not delete it),
+   regenerate, and check its entry is archived while its saves remain.
+4. Restore the ROM and regenerate; its entry must reappear and its save load.
+5. If needed, restore the complete GAMESHELF and generated-entry backups to
+   roll back both launcher and runtime. Never downgrade only one executable.

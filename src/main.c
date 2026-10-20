@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include "../shared/gba_identity.h"
 
-PSP_MODULE_INFO("GameShelf", 0, 1, 5);
+PSP_MODULE_INFO("GameShelf", 0, 1, 6);
 PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER | THREAD_ATTR_VFPU);
 
 #define MAX_ENTRIES 32
@@ -443,13 +443,20 @@ static void set_status(const char *message)
     status_message[STATUS_LENGTH - 1] = '\0';
 }
 
+#include "launch_progress.h"
+
 static int copy_file(const char *source_path, const char *destination_path)
 {
     SceUID source;
     SceUID destination;
-    unsigned char buffer[16 * 1024];
+    static unsigned char buffer[64 * 1024];
     int read_count;
+    unsigned int copied=0,reported=0;
+    SceIoStat source_stat;
+    unsigned int total=sceIoGetstat(source_path,&source_stat)>=0?(unsigned int)source_stat.st_size:0;
+    int is_rom=has_extension(source_path,".gba");
 
+    if(strcmp(source_path,destination_path)==0)return 0;
     source = sceIoOpen(source_path, PSP_O_RDONLY, 0);
     if (source < 0) return -1;
     destination = sceIoOpen(destination_path,
@@ -458,16 +465,41 @@ static int copy_file(const char *source_path, const char *destination_path)
         sceIoClose(source);
         return -1;
     }
+    if(is_rom && gsh_launch_active){gsh_rom_copies++;gsh_copy_progress(0,total);}
     while ((read_count = sceIoRead(source, buffer, sizeof(buffer))) > 0) {
         if (sceIoWrite(destination, buffer, read_count) != read_count) {
             sceIoClose(destination);
             sceIoClose(source);
             return -1;
         }
+        copied+=read_count;
+        if(gsh_launch_active)gsh_copied_bytes+=read_count;
+        if(is_rom && (copied-reported>=512*1024 || copied==total)){
+            gsh_copy_progress(copied,total);reported=copied;
+        }
     }
     sceIoClose(destination);
     sceIoClose(source);
     return read_count < 0 ? -1 : 0;
+}
+
+static int copy_support_if_changed(const char *source_path,const char *destination_path)
+{
+    SceIoStat a,b;
+    SceUID source=-1,destination=-1;
+    unsigned char left[4096],right[4096];int count,identical=1;
+    if(sceIoGetstat(source_path,&a)<0)return -1;
+    if(sceIoGetstat(destination_path,&b)<0 || a.st_size!=b.st_size)
+        return copy_file(source_path,destination_path);
+    source=sceIoOpen(source_path,PSP_O_RDONLY,0);
+    destination=sceIoOpen(destination_path,PSP_O_RDONLY,0);
+    if(source<0 || destination<0){if(source>=0)sceIoClose(source);if(destination>=0)sceIoClose(destination);return -1;}
+    while((count=sceIoRead(source,left,sizeof(left)))>0){
+        if(sceIoRead(destination,right,count)!=count || memcmp(left,right,count)!=0){identical=0;break;}
+    }
+    sceIoClose(source);sceIoClose(destination);
+    if(count<0)return -1;
+    return identical?0:copy_file(source_path,destination_path);
 }
 
 static int write_gba_runtime_config(void)
@@ -565,30 +597,22 @@ static int prepare_gba_runtime(const char *rom_name)
     snprintf(source_rom, sizeof(source_rom),
              "ms0:/PSP/GAME/TempGBA4PSP-Mod/roms/%s", rom_name);
     if (copy_file(source_rom,
-                  "ms0:/PSP/GAME/GAMESHELF/roms/game.gba") < 0) return -1;
-    if (copy_file(source_rom,
                   "ms0:/PSP/GAME/GAMESHELF/TempGBA/roms/game.gba") < 0) return -1;
-    /*
-     * Keep the source-built GameShelf TempGBA EBOOT already installed in the
-     * runtime folder.  Copying the standalone EBOOT here would replace the
-     * integration build and reintroduce the cwd/dir.ini problem.
-     */
-    if (copy_file("ms0:/PSP/GAME/TempGBA4PSP-Mod/gba_bios.bin",
-                  "ms0:/PSP/GAME/GAMESHELF/gba_bios.bin") < 0) return -1;
-    if (copy_file("ms0:/PSP/GAME/GAMESHELF/gba_bios.bin",
-                  "ms0:/PSP/GAME/GAMESHELF/TempGBA/gba_bios.bin") < 0) return -1;
-    if (copy_file("ms0:/PSP/GAME/TempGBA4PSP-Mod/tempgba_me.prx",
-                  "ms0:/PSP/GAME/GAMESHELF/tempgba_me.prx") < 0) return -1;
-    if (copy_file("ms0:/PSP/GAME/GAMESHELF/tempgba_me.prx",
-                  "ms0:/PSP/GAME/GAMESHELF/TempGBA/tempgba_me.prx") < 0) return -1;
-    if (copy_file("ms0:/PSP/GAME/TempGBA4PSP-Mod/cp_fix_gbk.prx",
-                  "ms0:/PSP/GAME/GAMESHELF/cp_fix_gbk.prx") < 0) return -1;
-    if (copy_file("ms0:/PSP/GAME/GAMESHELF/cp_fix_gbk.prx",
-                  "ms0:/PSP/GAME/GAMESHELF/TempGBA/cp_fix_gbk.prx") < 0) return -1;
-    if (copy_file("ms0:/PSP/GAME/TempGBA4PSP-Mod/exception.prx",
-                  "ms0:/PSP/GAME/GAMESHELF/exception.prx") < 0) return -1;
-    if (copy_file("ms0:/PSP/GAME/GAMESHELF/exception.prx",
-                  "ms0:/PSP/GAME/GAMESHELF/TempGBA/exception.prx") < 0) return -1;
+    /* Preserve both legacy/current launch contexts, but never rewrite an
+     * identical support module. Only the unused second ROM copy is removed. */
+    gsh_launch_stage("Checking emulator files...");
+    {
+        static const char *names[]={"gba_bios.bin","tempgba_me.prx","cp_fix_gbk.prx","exception.prx"};
+        unsigned int i;char source[ENTRY_LENGTH],destination[ENTRY_LENGTH];
+        for(i=0;i<sizeof(names)/sizeof(names[0]);i++){
+            snprintf(source,sizeof(source),"ms0:/PSP/GAME/TempGBA4PSP-Mod/%s",names[i]);
+            snprintf(destination,sizeof(destination),"ms0:/PSP/GAME/GAMESHELF/%s",names[i]);
+            if(copy_support_if_changed(source,destination)<0)return -1;
+            snprintf(destination,sizeof(destination),"ms0:/PSP/GAME/GAMESHELF/TempGBA/%s",names[i]);
+            if(copy_support_if_changed(source,destination)<0)return -1;
+        }
+    }
+    gsh_launch_stage("Starting emulator...");
     return write_gba_identity(rom_name);
 }
 
@@ -907,6 +931,10 @@ static void launch_selected(void)
     strcpy(argument, path);
     has_argument = 1;
 launch_application:
+    if(gsh_launch_active){
+        const char *name=view_mode==3?gba_roms[cursor]:nes_roms[cursor];
+        gsh_launch_stage("Starting emulator...");gsh_launch_log(name);
+    }
     memset(&param, 0, sizeof(param));
     param.size = sizeof(param);
     param.args = has_argument ? strlen(argument) + 1 : 0;
@@ -938,7 +966,7 @@ static void draw_screen(void)
 
     pspDebugScreenClear();
     pspDebugScreenSetXY(0, 0);
-    pspDebugScreenPrintf("%s", gsh_text("PSP GameShelf 1.05 - hardware test\n"));
+    pspDebugScreenPrintf("%s", gsh_text("PSP GameShelf 1.06 - hardware test\n"));
     pspDebugScreenPrintf("PSP-3004 / TA-095v2 / FW 6.61\n\n");
     if (view_mode == 0) {
         pspDebugScreenPrintf(gsh_text("%s  View: PSP ISO / CSO (%d)\n"), platform_badge(), iso_count);
@@ -1022,6 +1050,10 @@ int main(void)
 {
     SceCtrlData pad;
 
+    pspDebugScreenInit();
+    pspDebugScreenPrintf("GameShelf 1.06\nStarting...\n");
+    sceDisplayWaitVblankStart();
+
     {
         int language = PSP_SYSTEMPARAM_LANGUAGE_ENGLISH;
         if (sceUtilityGetSystemParamInt(PSP_SYSTEMPARAM_ID_INT_LANGUAGE, &language) < 0)
@@ -1029,7 +1061,6 @@ int main(void)
         gsh_set_language(language);
         set_status(gsh_text("Ready."));
     }
-    pspDebugScreenInit();
     if (xmb_target.mode != 0) {
         char name[256];
         unsigned int mode = xmb_target.mode;
@@ -1042,6 +1073,7 @@ int main(void)
             cursor = 0;
             if (mode == 3) { strcpy(gba_roms[0], name); gba_count = 1; }
             else { strcpy(nes_roms[0], name); nes_count = 1; }
+            gsh_launch_begin(name);
             launch_selected();
         } else set_status(gsh_text("Invalid game entry."));
         pspDebugScreenPrintf(gsh_text("%s\nPress HOME to exit.\n"), status_message);
@@ -1049,7 +1081,7 @@ int main(void)
         sceKernelExitGame();
         return 0;
     }
-    pspDebugScreenPrintf("%s", gsh_text("GameShelf 1.05\nX: create/update NES/GBA Memory Stick entries\nCircle: legacy catalog   HOME: exit\n"));
+    pspDebugScreenPrintf("%s", gsh_text("GameShelf 1.06\nX: create/update NES/GBA Memory Stick entries\nCircle: legacy catalog   HOME: exit\n"));
     setup_callbacks();
     for (;;) {
         sceCtrlReadBufferPositive(&pad, 1);
