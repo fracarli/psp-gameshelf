@@ -1,4 +1,4 @@
-PSP GameShelf 1.03 - sfondi XMB, da confermare su PSP
+PSP GameShelf 1.03 - sfondi XMB, sfondi confermati su PSP
 
 1. Mantieni gli emulatori, ROM, BIOS e salvataggi esistenti.
 2. Sostituisci PSP/GAME/GAMESHELF/EBOOT.PBP con il nuovo EBOOT.PBP.

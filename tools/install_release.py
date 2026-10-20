@@ -18,7 +18,7 @@ def main():
     parser.add_argument('--backup-root', required=True, type=Path)
     args = parser.parse_args()
     project = Path(__file__).resolve().parents[1]
-    package = project / ('candidates/1.03' if args.version == '1.03' else 'releases/v1/' + args.version.split('.')[1])
+    package = project / ('releases/v1/' + args.version.split('.')[1])
     source = package / 'EBOOT.PBP'
     for line in (package / 'SHA256SUMS.txt').read_text().splitlines():
         digest, name = line.split('  ', 1)

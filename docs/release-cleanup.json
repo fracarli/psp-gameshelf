@@ -3,9 +3,10 @@
     "releases/v0/00 (formerly v0.51.0)",
     "releases/v1/00 (NES and GBA direct XMB launch confirmed by user)",
     "releases/v1/01 (XMB cover display confirmed by user)",
-    "releases/v1/02 (square XMB covers confirmed by user)"
+    "releases/v1/02 (square XMB covers confirmed by user)",
+    "releases/v1/03 (full-screen backgrounds confirmed by user)"
   ],
-  "candidate": "candidates/1.03 (full-screen PIC1 backgrounds; awaiting hardware confirmation)",
+  "candidate": null,
   "legacy_adapter": "releases/nesterj-autoload-v1",
   "obsolete_builds": "removed from current tree; tracked history retained",
   "excluded": "ROMs, BIOS, saves, downloaded cover art, SD backups and personal maintenance scripts"

@@ -16,7 +16,7 @@ Dopo uno spegnimento completo può essere necessario eseguire FastRecovery.
 | [1.00](releases/v1/00/) | Stabile: NES e GBA provati su PSP | Generazione delle singole voci nella Memory Stick |
 | [1.01](releases/v1/01/) | Copertine confermate su PSP | Copertina del gioco nell’icona XMB; aggiornamento delle voci 1.00 |
 | [1.02](releases/v1/02/) | Confermata su PSP | Icone quadrate senza cornice rettangolare |
-| [1.03](candidates/1.03/) | Da confermare su PSP | Sfondo a schermo intero alla selezione del gioco |
+| [1.03](releases/v1/03/) | Sfondi confermati su PSP | Sfondo a schermo intero alla selezione del gioco |
 
 `releases/` contiene soltanto le versioni stabili e l’adattatore NesterJ
 funzionante. Le build in prova sono separate in `candidates/`.
@@ -27,7 +27,7 @@ restano nella cronologia Git. La numerazione prosegue con 1.04, 1.05, ecc.
 
 1. Installa la [1.00 seguendo le istruzioni](releases/v1/00/INSTALL.txt).
 2. Per provare le copertine, sostituisci l’EBOOT principale con quello della
-   [1.03](candidates/1.03/INSTALL.txt). Gli emulatori rimangono condivisi.
+   [1.03](releases/v1/03/INSTALL.txt). Gli emulatori rimangono condivisi.
 3. Apri GameShelf e premi **X** per creare o aggiornare le voci dei giochi.
 4. Al termine premi **X** per tornare alla home e apri **Gioco → Memory Stick**.
 5. Seleziona direttamente il gioco. Le voci persistono dopo il riavvio.
@@ -104,7 +104,7 @@ per un’altra installazione. Il sorgente corrente genera la versione 1.03.
 I test eseguono il generatore C sul computer e controllano: aggiornamento delle
 voci 1.00, metadati PBP/SFO, integrità dell’eseguibile, PNG e colori delle
 copertine, fallback senza immagini e rifiuto di collisioni e input invalidi.
-Questi controlli non sostituiscono la prova della 1.03 sulla console.
+Gli sfondi della 1.03 sono stati confermati sulla console dall’utente.
 
 Gli emulatori sono submodule dei progetti originali; gli adattamenti del codice
 sono conservati in [patches/](patches/README.md).

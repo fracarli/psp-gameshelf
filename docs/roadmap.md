@@ -6,12 +6,11 @@
 - Version 1.01 displays game-specific cover icons.
 - Version 1.02 displays borderless square cover icons.
 
-## Current candidate: 1.03
+## Confirmed release: 1.03
 
 Add a full-screen PIC1 background generated from each existing cover.
-Confirm that selecting an entry displays the background and that the game
-still starts normally, for both NES and GBA. Until confirmed, 1.02 remains
-the stable fallback.
+The user confirmed that selecting an entry displays the full-screen image.
+Version 1.03 is now stable; 1.02 remains an available fallback.
 
 ## Before adding more systems
 
