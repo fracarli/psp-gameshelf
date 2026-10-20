@@ -1,19 +1,20 @@
 # Next steps
 
-1. Validate the optional XMB emulator filter on PSP: generated games, PSP/PS1
-   entries and direct launch must remain visible and working. Keep maintenance
-   and recovery tools accessible. Do not move runtime or save directories.
-2. Validate a fresh-card installation from the stable 1.08 setup ZIP with a
-   new user, including their own ROMs and GBA BIOS.
-3. Check recoverable missing-ROM cleanup and save/state separation per system
-   on hardware; measure preparation separately from firmware hand-off.
-4. Develop one installation and update flow for GameShelf and shared engines.
-   Existing emulator cores remain separate internally, with upstream licenses
-   and matching source. See architecture-next.md.
-5. Prepare an English public hardware demonstration and update the ongoing
-   LinkedIn project entry. GameShelf remains the chosen name.
+1. Validate the 1.09 single-file first installer on a fresh card: extraction,
+   game generation, correct engine selection and save/reload on PSP. Stable
+   1.08 remains the fallback; the candidate does not replace differing files.
+2. Add N64 direct launch after a user-supplied ROM is available. Upstream
+   DaedalusX64 PSP code accepts a ROM argument, but the installed binary and
+   selected game's compatibility must be checked before hiding DaedalusX64.
+3. Extend setup to recover after forced exit/power interruption and perform
+   backup-preserving updates of existing installations.
+4. Add a PSP-side setup/status flow for missing user files, especially the
+   GBA BIOS, and guide ROM placement without exposing internal engine choices.
+5. Complete per-system save/state and missing-ROM cleanup checks, then prepare
+   the English public demonstration and LinkedIn project update.
 
-The user confirmed the installed 1.08 setup works on PSP on 2026-10-20. This
-general confirmation follows earlier NES/GBA and GB/GBC tests; it is not an
-exhaustive game/save-state matrix or a fresh-card installation report.
-PSP ISO and PS1 continue to use the PSP's normal home screen.
+The user confirmed the installed 1.08 setup and Minecraft run on PSP-3004,
+6.61 PRO-C. Tag v1.08 preserves that stable project source. A private checkpoint
+backs up the launcher, runtime settings and saves. Fresh-card installer 1.09
+and its launcher changes remain unconfirmed on hardware. PSP ISO/PS1 use native
+XMB launch. The project name remains GameShelf.

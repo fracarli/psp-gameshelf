@@ -15,7 +15,7 @@
 #include "../shared/gba_identity.h"
 #include "../shared/extra_launch.h"
 
-PSP_MODULE_INFO("GameShelf", 0, 1, 8);
+PSP_MODULE_INFO("GameShelf", 0, 1, 9);
 PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER | THREAD_ATTR_VFPU);
 
 #define MAX_ENTRIES 32
@@ -944,7 +944,7 @@ static void draw_screen(void)
 
     pspDebugScreenClear();
     pspDebugScreenSetXY(0, 0);
-    pspDebugScreenPrintf("%s", gsh_text("PSP GameShelf 1.08 - hardware test\n"));
+    pspDebugScreenPrintf("%s", gsh_text("PSP GameShelf 1.09 - hardware test\n"));
     pspDebugScreenPrintf("PSP-3004 / TA-095v2 / FW 6.61\n\n");
     if (view_mode == 0) {
         pspDebugScreenPrintf(gsh_text("%s  View: PSP ISO / CSO (%d)\n"), platform_badge(), iso_count);
@@ -1064,7 +1064,7 @@ int main(void)
         sceKernelExitGame();
         return 0;
     }
-    pspDebugScreenPrintf("%s", gsh_text("GameShelf 1.08\nX: create/update game entries (7 systems)\nCircle: legacy catalog   HOME: exit\n"));
+    pspDebugScreenPrintf("%s", gsh_text("GameShelf 1.09\nX: create/update game entries (7 systems)\nCircle: legacy catalog   HOME: exit\n"));
     setup_callbacks();
     for (;;) {
         sceCtrlReadBufferPositive(&pad, 1);

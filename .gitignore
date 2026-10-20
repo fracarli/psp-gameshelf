@@ -46,3 +46,6 @@ boxart/
 !candidates/**/Snes9x/*.prx
 
 !releases/**/Snes9x/*.prx
+
+# Installer build outputs are not release payloads.
+installer/PARAM.SFO

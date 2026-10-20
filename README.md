@@ -51,6 +51,24 @@ Generated entries persist after reboot.
 
 See [START-HERE.txt](docs/START-HERE.txt) for troubleshooting and save locations.
 
+## Single-file first installer: 1.09 candidate
+
+[Download the 1.09 single-file setup ZIP](https://github.com/fracarli/psp-gameshelf/raw/refs/heads/main/candidates/1.09/GameShelf-1.09-single-file-setup.zip).
+It contains one EBOOT to place at `PSP/GAME/GameShelfSetup/EBOOT.PBP`.
+Open GameShelf Setup on an already modified PSP and press X: it extracts the
+seven systems' engines, support files and ROM directories from its own package.
+You supply your games and GBA BIOS, then run GameShelf to create game entries.
+
+This candidate is for **new installations**. It preserves matching files and
+stops before writes when an existing destination differs. Existing setups
+continue to use the stable updater below. The installer passes computer checks
+for extraction, hashes, conflicts and error rollback; PSP installation is still
+unconfirmed. Stable 1.08 remains the recommended release. Read the
+[1.09 instructions and recovery limits](candidates/1.09/INSTALL.txt).
+The source on main now builds the 1.09 candidate; tag `v1.08` preserves the
+stable source. The candidate also corrects the Moonptrl display name without
+changing its ROM or save identity. N64 integration is still pending.
+
 ## Updating an existing installation
 
 Use the backup-preserving computer updater instead of merging a first-install
@@ -171,6 +189,7 @@ are in [candidates/](candidates/). Archived executables are never overwritten.
 | [1.06](releases/v1/06/) | Confirmed startup feedback; one-copy preparation; first-install ZIP |
 | [1.07](releases/v1/07/) | GB/GBC direct launch confirmed; minimal loading bars |
 | [1.08](releases/v1/08/) | User-confirmed setup; Atari/MD/SNES adapters and bridge icon |
+| [1.09 candidate](candidates/1.09/) | Single-file first installer; Moon Patrol display correction; awaiting PSP test |
 
 See [the next architecture steps](docs/architecture-next.md) for a unified
 installation and [optional homebrew notes](docs/optional-homebrew.md) for
@@ -199,6 +218,9 @@ python3 tools/verify_setup.py
 python3 tools/verify_extra_systems.py
 python3 tools/verify_extra_install.py
 python3 tools/verify_artwork.py
+# To build/check the single-file installer candidate:
+python3 tools/build_single_file_setup.py
+python3 tools/verify_single_file_setup.py
 ```
 
 Build emulator adapters using [patches/README.md](patches/README.md).

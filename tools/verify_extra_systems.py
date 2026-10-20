@@ -70,6 +70,12 @@ with tempfile.TemporaryDirectory() as d:
   assert f'[{tag}] {Path(name).stem}'.encode() in data
   assert data[offset[1]:offset[1]+8]==b'\x89PNG\r\n\x1a\n'
   assert len(list(game.glob(f'GSH_{tag}_*')))==1
+ # Display correction must preserve the original ROM launch identity.
+ assert subprocess.run([str(root/'generator'),'Moonptrl.bin','6'],cwd=root).returncode==1
+ moon=game/'GSH_ATARI_0D77F85F/EBOOT.PBP';data=moon.read_bytes();pos=data.index(b'GSHXMB100TARGET!')
+ assert b'[ATARI] Moon Patrol (1983) (Atari)' in data
+ assert data[pos+20:pos+276].split(b'\0')[0]==b'Moonptrl.bin'
+ moon.unlink();moon.parent.rmdir()
  def cleanup():
   return int(subprocess.check_output([str(root/'generator'),'--cleanup'],cwd=root,text=True))
  assert cleanup()==0

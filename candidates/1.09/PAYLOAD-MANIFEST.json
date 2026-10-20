@@ -1,0 +1,541 @@
+[
+  {
+    "path": "PSP/GAME/GAMESHELF/EBOOT.PBP",
+    "offset": 0,
+    "size": 185853,
+    "crc": 2806285800,
+    "sha256": "9a75d9d88f09c5ed6a1850b20b8215a4d3945d5c5b818f0a430b74f4fc5a0a02"
+  },
+  {
+    "path": "PSP/GAME/GAMESHELF/GBAdhoc/COPYING.txt",
+    "offset": 185853,
+    "size": 18092,
+    "crc": 1313272993,
+    "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+  },
+  {
+    "path": "PSP/GAME/GAMESHELF/GBAdhoc/EBOOT.PBP",
+    "offset": 203945,
+    "size": 2285097,
+    "crc": 3071489597,
+    "sha256": "3afa8d0da0ea63168011b07d75483c08524bf246e5da7b377bd0cea4abf8cf93"
+  },
+  {
+    "path": "PSP/GAME/GAMESHELF/GBAdhoc/SOURCE.txt",
+    "offset": 2489042,
+    "size": 638,
+    "crc": 52242033,
+    "sha256": "a73267f0b84ca9af8f13c75fe992d04d7e2856ddc0fa8e0707b41c3dac33bb13"
+  },
+  {
+    "path": "PSP/GAME/GAMESHELF/GBAdhoc/gbadhoc_home.prx",
+    "offset": 2489680,
+    "size": 4166,
+    "crc": 288571680,
+    "sha256": "4cd1b5fcd666ba159686604ac0a3ca86f9fbbf5509f18bdc0b3a64c3298631c9"
+  },
+  {
+    "path": "PSP/GAME/GAMESHELF/GBAdhoc/gbadhoc_me.prx",
+    "offset": 2493846,
+    "size": 154430,
+    "crc": 2560803505,
+    "sha256": "4f4989149f29c984cc6275d5f92993b4f886dc1639275e09ee72ddaa52d54eb6"
+  },
+  {
+    "path": "PSP/GAME/GAMESHELF/INSTALL_VERSION.TXT",
+    "offset": 2648276,
+    "size": 5,
+    "crc": 3501473554,
+    "sha256": "4d342610cb18274a71a89020ba7ac8563a6ea9f73fefb0754c74bb41af1a1631"
+  },
+  {
+    "path": "PSP/GAME/GAMESHELF/TempGBA/COPYING.txt",
+    "offset": 2648281,
+    "size": 15131,
+    "crc": 1832701871,
+    "sha256": "67f82e045cf7acfef853ea0f426575a8359161a0a325e19f02b529a87c4b6c34"
+  },
+  {
+    "path": "PSP/GAME/GAMESHELF/TempGBA/EBOOT.PBP",
+    "offset": 2663412,
+    "size": 5608788,
+    "crc": 3027686076,
+    "sha256": "4e522b4fe829dcecac1bbb03e9ac08e19ec85fa27667dc833feab230662790c2"
+  },
+  {
+    "path": "PSP/GAME/GAMESHELF/TempGBA/SOURCE.txt",
+    "offset": 8272200,
+    "size": 870,
+    "crc": 2956663724,
+    "sha256": "a48e117c27acadec7567606a1ff8379ca85ed9287a992e5e9fed5c63b24fa0ee"
+  },
+  {
+    "path": "PSP/GAME/GAMESHELF/TempGBA/cp_fix_gbk.prx",
+    "offset": 8273070,
+    "size": 2398,
+    "crc": 4007997295,
+    "sha256": "2b57d676ebb4b4cbbbddc680d2b4cbd340e6731b9f8b9b39479d31a82a56524d"
+  },
+  {
+    "path": "PSP/GAME/GAMESHELF/TempGBA/exception.prx",
+    "offset": 8275468,
+    "size": 2466,
+    "crc": 884074559,
+    "sha256": "75d7347e9f5898acb1396dd0133c5ed5e952d431278168b88ff0dbe20c930762"
+  },
+  {
+    "path": "PSP/GAME/GAMESHELF/TempGBA/ku_bridge.prx",
+    "offset": 8277934,
+    "size": 3590,
+    "crc": 2543410136,
+    "sha256": "2a6bbc409e3af150c5da1be394bc7de718e59479dfab2a4cb451a7eece80573f"
+  },
+  {
+    "path": "PSP/GAME/GAMESHELF/TempGBA/tempgba_me.prx",
+    "offset": 8281524,
+    "size": 170698,
+    "crc": 800357682,
+    "sha256": "5b348b9e05f1da30370acb3175802b7944991a4b3888432aebae7c5e0ff895b5"
+  },
+  {
+    "path": "PSP/GAME/Nester_AoEX_R3/EBOOT.PBP",
+    "offset": 8452222,
+    "size": 1755978,
+    "crc": 362950385,
+    "sha256": "c3fc2387949f0df9cfcf751b3ce767a7f66de9921baf9c3e591696487b59774a"
+  },
+  {
+    "path": "PSP/GAME/PicoDrive/COPYING.txt",
+    "offset": 10208200,
+    "size": 1702,
+    "crc": 4071541491,
+    "sha256": "a36c54a119673c1b40233f55ff23c39042f35c3e798ce78aafba5d6bd9c19de4"
+  },
+  {
+    "path": "PSP/GAME/PicoDrive/EBOOT.PBP",
+    "offset": 10209902,
+    "size": 1880751,
+    "crc": 2872916838,
+    "sha256": "6bad2b3f25ae912c248eedd36f26710fa786f83a799ffac9f95128a6ad1647ff"
+  },
+  {
+    "path": "PSP/GAME/PicoDrive/SOURCE.txt",
+    "offset": 12090653,
+    "size": 527,
+    "crc": 1916320607,
+    "sha256": "411216baf7112ff78b930913331b262036080504c6e977b4cd9456eb92ad26ae"
+  },
+  {
+    "path": "PSP/GAME/PicoDrive/game_def.cfg",
+    "offset": 12091180,
+    "size": 3568,
+    "crc": 3894368834,
+    "sha256": "0d0a89b19d1852c3843796e71d67440b1533ec86c3016e6b55cf4474e194405f"
+  },
+  {
+    "path": "PSP/GAME/PicoDrive/readme.txt",
+    "offset": 12094748,
+    "size": 65718,
+    "crc": 1421920346,
+    "sha256": "a3c7b0255781802aea23579960905c6cff3f749acef0c16ef6791f65d0f7227b"
+  },
+  {
+    "path": "PSP/GAME/PicoDrive/skin/background.png",
+    "offset": 12160466,
+    "size": 214295,
+    "crc": 4289460036,
+    "sha256": "aa43ecc58d838d2a97a1805854c448bb462e03a8e36b57f254913a488e5f6c0f"
+  },
+  {
+    "path": "PSP/GAME/PicoDrive/skin/font.png",
+    "offset": 12374761,
+    "size": 11264,
+    "crc": 249704528,
+    "sha256": "ea96f5b7d972967150160ab4c15f78752ba79a8d8d9ec5b930d7bf296b662124"
+  },
+  {
+    "path": "PSP/GAME/PicoDrive/skin/readme.txt",
+    "offset": 12386025,
+    "size": 311,
+    "crc": 3378838628,
+    "sha256": "066dd5c3e4fee168b6f471a253887b6643678843d59b97a5dcc285b9d3b7f348"
+  },
+  {
+    "path": "PSP/GAME/PicoDrive/skin/selector.png",
+    "offset": 12386336,
+    "size": 386,
+    "crc": 2871962845,
+    "sha256": "1d09b1065e95d43a1be201950e2847adfa6b01c358bbdc3c2d9c745998e21e05"
+  },
+  {
+    "path": "PSP/GAME/PicoDrive/skin/skin.txt",
+    "offset": 12386722,
+    "size": 117,
+    "crc": 2194101192,
+    "sha256": "89c698fbd349e93dd7828d07834f6587507e09fcaa5af1aac2b02978f33d83e0"
+  },
+  {
+    "path": "PSP/GAME/TempGBA4PSP-Mod/cp_fix_gbk.prx",
+    "offset": 12386839,
+    "size": 2398,
+    "crc": 4007997295,
+    "sha256": "2b57d676ebb4b4cbbbddc680d2b4cbd340e6731b9f8b9b39479d31a82a56524d"
+  },
+  {
+    "path": "PSP/GAME/TempGBA4PSP-Mod/exception.prx",
+    "offset": 12389237,
+    "size": 2466,
+    "crc": 884074559,
+    "sha256": "75d7347e9f5898acb1396dd0133c5ed5e952d431278168b88ff0dbe20c930762"
+  },
+  {
+    "path": "PSP/GAME/TempGBA4PSP-Mod/tempgba_me.prx",
+    "offset": 12391703,
+    "size": 170698,
+    "crc": 800357682,
+    "sha256": "5b348b9e05f1da30370acb3175802b7944991a4b3888432aebae7c5e0ff895b5"
+  },
+  {
+    "path": "PSP/GAME/psp2600/COPYING.txt",
+    "offset": 12562401,
+    "size": 18025,
+    "crc": 3437555116,
+    "sha256": "45f96861f1596aaf7245f7c0ab910ebbcab1b2a87b5eeb88484e80520b9feaca"
+  },
+  {
+    "path": "PSP/GAME/psp2600/Danzeff-NOTICE.txt",
+    "offset": 12580426,
+    "size": 2088,
+    "crc": 2489282983,
+    "sha256": "eee568cb114691a6e6ff3a952f0b5119d3fcde78354bcbfd92ca3f025266924d"
+  },
+  {
+    "path": "PSP/GAME/psp2600/EBOOT.PBP",
+    "offset": 12582514,
+    "size": 4358886,
+    "crc": 2054037183,
+    "sha256": "e4b6e72509e486a2ec7702cce6310245af0aabde52958e83149a26281ccb4bc4"
+  },
+  {
+    "path": "PSP/GAME/psp2600/SOURCE.txt",
+    "offset": 16941400,
+    "size": 614,
+    "crc": 1477746836,
+    "sha256": "a8a41490e5b99aa96d0ec706523202fb9c207128bd85cac1eb576e7122c66e6d"
+  },
+  {
+    "path": "PSP/GAME/psp2600/graphics/default/keys.png",
+    "offset": 16942014,
+    "size": 11367,
+    "crc": 1975220649,
+    "sha256": "21928f6ad44cba9a738128adf1b61e6e2caa401ab112cb1e21fac3ab2d39b8c2"
+  },
+  {
+    "path": "PSP/GAME/psp2600/graphics/default/keys_c.png",
+    "offset": 16953381,
+    "size": 12670,
+    "crc": 3152341149,
+    "sha256": "f8acf4bae12524db606bf73520dd678d6e35c868bd5880012c00d2c4613c64bf"
+  },
+  {
+    "path": "PSP/GAME/psp2600/graphics/default/keys_c_t.png",
+    "offset": 16966051,
+    "size": 14397,
+    "crc": 2414719069,
+    "sha256": "e6419f5a1d055676b6bb9394abe3978fb93df950f1a790008fe13519d8bc5c5b"
+  },
+  {
+    "path": "PSP/GAME/psp2600/graphics/default/keys_s.png",
+    "offset": 16980448,
+    "size": 24244,
+    "crc": 3821157488,
+    "sha256": "d30dedef5a7f4d30fb76d38d2e0a5aa540ed82049a591cd9505dfca231f1756e"
+  },
+  {
+    "path": "PSP/GAME/psp2600/graphics/default/keys_s_c.png",
+    "offset": 17004692,
+    "size": 25960,
+    "crc": 2442505336,
+    "sha256": "38330e09ad890e9002f2382fdb79c5123f4226aef7ad5fb862e2877c03487d1a"
+  },
+  {
+    "path": "PSP/GAME/psp2600/graphics/default/keys_t.png",
+    "offset": 17030652,
+    "size": 12980,
+    "crc": 1121923253,
+    "sha256": "be81b286142adf519dc6c360fece9716aa0db75224847b96c76371ee8dfa7482"
+  },
+  {
+    "path": "PSP/GAME/psp2600/graphics/default/nums.png",
+    "offset": 17043632,
+    "size": 7179,
+    "crc": 3180834015,
+    "sha256": "900fd4427960b78a705e1d9c42c5fc8f1fe83c86a73a713a9a981ac0e1c94c35"
+  },
+  {
+    "path": "PSP/GAME/psp2600/graphics/default/nums_c.png",
+    "offset": 17050811,
+    "size": 10394,
+    "crc": 871568979,
+    "sha256": "f5105b19d595ad24e3f26d06bf7e7967ba0e1965153d8a24b90e31fbb808daef"
+  },
+  {
+    "path": "PSP/GAME/psp2600/graphics/default/nums_c_t.png",
+    "offset": 17061205,
+    "size": 11719,
+    "crc": 1507833703,
+    "sha256": "0fb65981ad29881be0030f95d939caf2b5aa01c673bd3e357a608df6795335ca"
+  },
+  {
+    "path": "PSP/GAME/psp2600/graphics/default/nums_s.png",
+    "offset": 17072924,
+    "size": 18118,
+    "crc": 671030283,
+    "sha256": "bf0b466975a820d1475b9d443a7ffb4144948c3bd0a332ea8f32c2e328c356bf"
+  },
+  {
+    "path": "PSP/GAME/psp2600/graphics/default/nums_s_c.png",
+    "offset": 17091042,
+    "size": 23574,
+    "crc": 3261584614,
+    "sha256": "8cfc86499f7a3add591d04b8e78687322edd81624768f9075a6e885c178dc35f"
+  },
+  {
+    "path": "PSP/GAME/psp2600/graphics/default/nums_t.png",
+    "offset": 17114616,
+    "size": 8029,
+    "crc": 3562643471,
+    "sha256": "62308ce69f6b8c25ee43731061a483f67ddbdaf57eeba6c54b08a647c73c9c3d"
+  },
+  {
+    "path": "PSP/GAME/s9xTYLme_mod/COPYING.txt",
+    "offset": 17122645,
+    "size": 3197,
+    "crc": 553112595,
+    "sha256": "463938bbbb3bd5facc56ef25777d4fd65000f5d4cd11b020d1bbffae3e8defc2"
+  },
+  {
+    "path": "PSP/GAME/s9xTYLme_mod/DATA/graphics/keys.png",
+    "offset": 17125842,
+    "size": 11367,
+    "crc": 1975220649,
+    "sha256": "21928f6ad44cba9a738128adf1b61e6e2caa401ab112cb1e21fac3ab2d39b8c2"
+  },
+  {
+    "path": "PSP/GAME/s9xTYLme_mod/DATA/graphics/keys_c.png",
+    "offset": 17137209,
+    "size": 12670,
+    "crc": 3152341149,
+    "sha256": "f8acf4bae12524db606bf73520dd678d6e35c868bd5880012c00d2c4613c64bf"
+  },
+  {
+    "path": "PSP/GAME/s9xTYLme_mod/DATA/graphics/keys_c_t.png",
+    "offset": 17149879,
+    "size": 14397,
+    "crc": 2414719069,
+    "sha256": "e6419f5a1d055676b6bb9394abe3978fb93df950f1a790008fe13519d8bc5c5b"
+  },
+  {
+    "path": "PSP/GAME/s9xTYLme_mod/DATA/graphics/keys_s.png",
+    "offset": 17164276,
+    "size": 24244,
+    "crc": 3821157488,
+    "sha256": "d30dedef5a7f4d30fb76d38d2e0a5aa540ed82049a591cd9505dfca231f1756e"
+  },
+  {
+    "path": "PSP/GAME/s9xTYLme_mod/DATA/graphics/keys_s_c.png",
+    "offset": 17188520,
+    "size": 25960,
+    "crc": 2442505336,
+    "sha256": "38330e09ad890e9002f2382fdb79c5123f4226aef7ad5fb862e2877c03487d1a"
+  },
+  {
+    "path": "PSP/GAME/s9xTYLme_mod/DATA/graphics/keys_t.png",
+    "offset": 17214480,
+    "size": 12980,
+    "crc": 1121923253,
+    "sha256": "be81b286142adf519dc6c360fece9716aa0db75224847b96c76371ee8dfa7482"
+  },
+  {
+    "path": "PSP/GAME/s9xTYLme_mod/DATA/graphics/nums.png",
+    "offset": 17227460,
+    "size": 7179,
+    "crc": 3180834015,
+    "sha256": "900fd4427960b78a705e1d9c42c5fc8f1fe83c86a73a713a9a981ac0e1c94c35"
+  },
+  {
+    "path": "PSP/GAME/s9xTYLme_mod/DATA/graphics/nums_c.png",
+    "offset": 17234639,
+    "size": 10394,
+    "crc": 871568979,
+    "sha256": "f5105b19d595ad24e3f26d06bf7e7967ba0e1965153d8a24b90e31fbb808daef"
+  },
+  {
+    "path": "PSP/GAME/s9xTYLme_mod/DATA/graphics/nums_c_t.png",
+    "offset": 17245033,
+    "size": 11719,
+    "crc": 1507833703,
+    "sha256": "0fb65981ad29881be0030f95d939caf2b5aa01c673bd3e357a608df6795335ca"
+  },
+  {
+    "path": "PSP/GAME/s9xTYLme_mod/DATA/graphics/nums_s.png",
+    "offset": 17256752,
+    "size": 18118,
+    "crc": 671030283,
+    "sha256": "bf0b466975a820d1475b9d443a7ffb4144948c3bd0a332ea8f32c2e328c356bf"
+  },
+  {
+    "path": "PSP/GAME/s9xTYLme_mod/DATA/graphics/nums_s_c.png",
+    "offset": 17274870,
+    "size": 23574,
+    "crc": 3261584614,
+    "sha256": "8cfc86499f7a3add591d04b8e78687322edd81624768f9075a6e885c178dc35f"
+  },
+  {
+    "path": "PSP/GAME/s9xTYLme_mod/DATA/graphics/nums_t.png",
+    "offset": 17298444,
+    "size": 8029,
+    "crc": 3562643471,
+    "sha256": "62308ce69f6b8c25ee43731061a483f67ddbdaf57eeba6c54b08a647c73c9c3d"
+  },
+  {
+    "path": "PSP/GAME/s9xTYLme_mod/DATA/snesadvance.dat",
+    "offset": 17306473,
+    "size": 75390,
+    "crc": 769563675,
+    "sha256": "8b57776a4014036774f08f247079040ac2f5eb8a56a5fbdefef03c2217aa46c2"
+  },
+  {
+    "path": "PSP/GAME/s9xTYLme_mod/Danzeff-NOTICE.txt",
+    "offset": 17381863,
+    "size": 2088,
+    "crc": 2489282983,
+    "sha256": "eee568cb114691a6e6ff3a952f0b5119d3fcde78354bcbfd92ca3f025266924d"
+  },
+  {
+    "path": "PSP/GAME/s9xTYLme_mod/EBOOT.PBP",
+    "offset": 17383951,
+    "size": 4241924,
+    "crc": 3142129653,
+    "sha256": "54943353028bbe183abbb6ad3abb5286b0f958ec71fff5b63eb979db3baf101d"
+  },
+  {
+    "path": "PSP/GAME/s9xTYLme_mod/OpenSPC-NOTICE.txt",
+    "offset": 21625875,
+    "size": 3556,
+    "crc": 1968751538,
+    "sha256": "e94722318a3a9a43dbefaf722b72bb831247a8eff579899c4970979692ef87c8"
+  },
+  {
+    "path": "PSP/GAME/s9xTYLme_mod/SOURCE.txt",
+    "offset": 21629431,
+    "size": 457,
+    "crc": 4032691761,
+    "sha256": "3976983bcb446f92c661d4f3b753a423cdbe4a226aab4ffb18457023cbef27bb"
+  },
+  {
+    "path": "PSP/GAME/s9xTYLme_mod/homehook.prx",
+    "offset": 21629888,
+    "size": 2730,
+    "crc": 1878553093,
+    "sha256": "2287ade61304a01c2ccb97bde848c1901b11fabb628ce7587260f1b07fda5a35"
+  },
+  {
+    "path": "PSP/GAME/s9xTYLme_mod/mediaengine.prx",
+    "offset": 21632618,
+    "size": 4802,
+    "crc": 846635075,
+    "sha256": "8d8816eed8c03e563edddae5f8ee58bd6b8efa5e6a4f12f34a12cc90e3a0129c"
+  },
+  {
+    "path": "PSP/GAMESHELF/DISTRIBUTION/HARDWARE-STATUS.txt",
+    "offset": 21637420,
+    "size": 179,
+    "crc": 2021054311,
+    "sha256": "24664f33e103e9a8385d71631610fe478e9e3b420901f2845881f23c0ade774e"
+  },
+  {
+    "path": "PSP/GAMESHELF/DISTRIBUTION/LICENSES/GameShelf-MIT.txt",
+    "offset": 21637599,
+    "size": 1072,
+    "crc": 970268559,
+    "sha256": "bb9d4cf1eb827452d213f7f305a034374b78428b8881c48d17059d034112b526"
+  },
+  {
+    "path": "PSP/GAMESHELF/DISTRIBUTION/LICENSES/NesterJ-COPYING.txt",
+    "offset": 21638671,
+    "size": 15384,
+    "crc": 3364019208,
+    "sha256": "611990c82ede82e535aad22e634a7d4847aefd3d6fbabaf16dc38ba55a41dcbc"
+  },
+  {
+    "path": "PSP/GAMESHELF/DISTRIBUTION/SHA256SUMS.txt",
+    "offset": 21654055,
+    "size": 8219,
+    "crc": 2703456564,
+    "sha256": "44ed162bc28076f654ce86fc592b9943a8f8aa7a5c7cb4e47bd205aa0ee32efd"
+  },
+  {
+    "path": "PSP/GAMESHELF/DISTRIBUTION/SOURCE/README.txt",
+    "offset": 21662274,
+    "size": 449,
+    "crc": 3733837240,
+    "sha256": "8d1cf49d4ce23cfe07ec74580985e31d13f96277b74c4945c18ce9dcd1aeb7ee"
+  },
+  {
+    "path": "PSP/GAMESHELF/DISTRIBUTION/SOURCE/gbadhoc-gameshelf.patch",
+    "offset": 21662723,
+    "size": 3626,
+    "crc": 550692464,
+    "sha256": "63835c22a2d328cdead78ff3eabd59f281767c2f9024603a468d60e0fb5bf95a"
+  },
+  {
+    "path": "PSP/GAMESHELF/DISTRIBUTION/SOURCE/nesterj-autoload.patch",
+    "offset": 21666349,
+    "size": 19399,
+    "crc": 895691542,
+    "sha256": "3d8e0263c077d19a2170b051c930b0063f311b09ba9a358df59735c552edeb5b"
+  },
+  {
+    "path": "PSP/GAMESHELF/DISTRIBUTION/SOURCE/psp2600-gameshelf.patch",
+    "offset": 21685748,
+    "size": 7805,
+    "crc": 4203474748,
+    "sha256": "c7212514007a56646dd25ac71bc9903fcb1e3ba1a67265e7edb0a1854ab39f21"
+  },
+  {
+    "path": "PSP/GAMESHELF/DISTRIBUTION/SOURCE/shared/extra_launch.h",
+    "offset": 21693553,
+    "size": 1591,
+    "crc": 4005589908,
+    "sha256": "653b57f7cce738f96ca33b7d3e82d60ff40510ea0e7780d097b5d626bf2a7c6f"
+  },
+  {
+    "path": "PSP/GAMESHELF/DISTRIBUTION/SOURCE/shared/gba_identity.h",
+    "offset": 21695144,
+    "size": 2808,
+    "crc": 1721741025,
+    "sha256": "6b0a0f1d3334389e5088f2d1551242ef2b60bb41d08df2db1fce50167724d4b9"
+  },
+  {
+    "path": "PSP/GAMESHELF/DISTRIBUTION/SOURCE/snes9x-gameshelf.patch",
+    "offset": 21697952,
+    "size": 9863,
+    "crc": 2219976894,
+    "sha256": "1b2c9e677eb910a4738b3e58b4ed1ea1a0d8b485dd010dd4e88e2c0b71866b8f"
+  },
+  {
+    "path": "PSP/GAMESHELF/DISTRIBUTION/SOURCE/tempgba-gameshelf.patch",
+    "offset": 21707815,
+    "size": 18225,
+    "crc": 876846378,
+    "sha256": "44ad807b9c67722f636f14d0b5dd84443851890c2f831c5b32f3300016dbf8b3"
+  },
+  {
+    "path": "PSP/GAMESHELF/DISTRIBUTION/START-HERE.txt",
+    "offset": 21726040,
+    "size": 2995,
+    "crc": 2067765785,
+    "sha256": "834291b83b82d8a93226367bf43c14aa67a5dadd57b47fa251b4e6607864a4d4"
+  }
+]

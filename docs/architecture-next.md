@@ -35,3 +35,19 @@ Suggested implementation sequence:
 
 PSP ISO and PS1 titles continue to use native XMB launch. Minecraft and optional
 Wi-Fi stores are separate homebrew applications, not GameShelf emulator cores.
+
+## Implemented 1.09 first-installer candidate
+
+The single GameShelfSetup EBOOT now embeds the curated seven-system payload.
+It reads files from its PSAR section in 64 KiB blocks, creates directories,
+verifies CRCs before commit and skips matching installed files. Conflicting
+files stop the entire operation before installation writes. Normal failures
+roll back newly introduced files while preserving pre-existing files and saves.
+The public wrapper contains one executable; outer SHA256 and the per-file
+payload manifest accompany the candidate. No emulator is downloaded at runtime.
+
+The current candidate intentionally handles first installations. Existing-setup
+updates, interrupted-install recovery and PSP-side missing-dependency guidance
+remain subsequent work. The transaction code has host filesystem checks,
+including injected commit failures and corrupt/truncated payloads. PSP behavior
+has not yet been tested. Keep stable 1.08 available for existing users.

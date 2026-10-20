@@ -1,0 +1,63 @@
+GameShelf 1.09 - single-file first-installer candidate
+
+Status: built with PSPDEV and checked using the actual installer transaction
+code on a computer. Installation and launcher 1.09 still require a PSP test.
+The seven emulator engines are unchanged from stable 1.08.
+
+FOR A NEW INSTALLATION
+1. Use a PSP that already runs homebrew with custom firmware.
+2. Download GameShelf-1.09-single-file-setup.zip and extract it.
+3. Copy its PSP folder to the memory card root, merging folders.
+   There is only one executable to copy:
+   PSP/GAME/GameShelfSetup/EBOOT.PBP
+4. Safely eject the card. Open Game > Memory Stick > GameShelf Setup 1.09.
+   Press X. The installer creates the runtime files and ROM directories.
+5. Add your own games and, for GBA, your own BIOS in the paths below.
+6. Open PSP GameShelf 1.09, press X to create game entries and X to return home.
+
+No separate emulator downloads, Python or compiler are needed on the user's
+computer. No games, BIOS, downloaded covers or personal saves are supplied.
+The setup executable contains all 77 payload files, source patches and notices.
+It streams from its own package instead of loading all engines into memory.
+
+ROM DIRECTORIES
+NES: PSP/GAME/Nester_AoEX_R3/roms/ (.nes)
+GBA: PSP/GAME/TempGBA4PSP-Mod/roms/ (.gba)
+GB/GBC: same directory as GBA (.gb, .gbc)
+Atari 2600: PSP/GAME/psp2600/roms/ (.a26, .bin, .rom)
+Mega Drive: PSP/GAME/PicoDrive/roms/ (.md, .bin, .gen, .smd)
+SNES: PSP/GAME/s9xTYLme_mod/roms/ (.smc, .sfc)
+GBA BIOS: PSP/GAME/TempGBA4PSP-Mod/gba_bios.bin (your own, 16,384 bytes)
+The GBA BIOS is not required to install the package or play other systems.
+Up to 32 uncompressed ROMs per system; no nested ROM directories.
+
+EXISTING INSTALLATIONS
+This prototype is a first installer. It skips byte-matching files and stops
+before installing anything if any existing destination differs. It never
+replaces an existing engine, setting or save. Continue using the computer
+backup-preserving updater for stable 1.08 installations. Version 1.09 is not
+accepted by that updater yet.
+
+SAFETY AND RECOVERY
+The installer stages and verifies all new files before committing them. A
+normal preparation/commit error removes only files introduced by that attempt;
+existing files and saves are preserved. Empty directories may remain.
+Power loss/forced exit can leave a partial first installation or .gshnew files.
+Automatic recovery from an interrupted installation is not implemented: the
+installer stops when it finds a staging file, so it can be reviewed rather
+than overwritten. Keep the PSP charged while testing. Firmware is not changed.
+The optional XMB filter is not installed by this candidate.
+
+LAUNCHER CHANGE
+Moonptrl.bin is displayed as Moon Patrol (1983) (Atari) during regeneration.
+Its original ROM filename, entry identity and save association are unchanged.
+The artwork helper also recognizes the verified Moon Patrol ROM by its MD5.
+N64 direct launch is not included; DaedalusX64 remains accessible.
+
+SOURCES
+Project: https://github.com/fracarli/psp-gameshelf
+Installer: installer/main.c, installer/install.h
+Builder: tools/build_single_file_setup.py
+Host verification: tools/verify_single_file_setup.py
+Individual engine notices, source references and patches are installed with
+their payloads. Additional distribution notices are in PSP/GAMESHELF/DISTRIBUTION.

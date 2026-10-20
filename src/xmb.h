@@ -1,6 +1,6 @@
 #include "language.h"
 #include "../shared/extra_launch.h"
-/* GameShelf 1.08: generate per-ROM XMB EBOOTs, no emulator duplication. */
+/* GameShelf 1.09: generate per-ROM XMB EBOOTs, no emulator duplication. */
 static unsigned int read32(const unsigned char *p)
 {
     return p[0] | ((unsigned int)p[1]<<8) | ((unsigned int)p[2]<<16) | ((unsigned int)p[3]<<24);
@@ -79,7 +79,9 @@ static int make_xmb_entry(const char *rom, int mode)
     memmove(b+end+growth,b+end,size-end);
     size+=growth;
     for (i=1;i<8;i++) put32(b+8+i*4,read32(b+8+i*4)+growth);
-    snprintf(title,sizeof(title),"[%s] %.115s",gsh_system(mode),rom);
+    /* Display aliases never alter the launch path, entry hash or save identity. */
+    snprintf(title,sizeof(title),"[%s] %.115s",gsh_system(mode),
+             mode==6 && !strcmp(rom,"Moonptrl.bin") ? "Moon Patrol (1983) (Atari)" : rom);
     { char *dot=strrchr(title,'.'); if(dot) *dot=0; }
     memset(b+value,0,128); strcpy((char *)b+value,title);
     put32(b+title_entry+4,strlen(title)+1); put32(b+title_entry+8,128);

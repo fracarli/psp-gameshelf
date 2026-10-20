@@ -8,6 +8,7 @@ the user's SD card. No ROMs, BIOS files or images are added to the repository.
 from __future__ import annotations
 
 import argparse
+import hashlib
 from difflib import SequenceMatcher
 import re
 import struct
@@ -277,7 +278,10 @@ def main() -> int:
             if playlist not in indexes:
                 print(f"Loading index: {playlist}...")
                 indexes[playlist] = list_boxarts(playlist)
-            remote_name = find_remote_name(indexes[playlist], title)
+            lookup_title = title
+            if platform == "atari" and hashlib.md5(rom_path.read_bytes()).hexdigest() == "515046e3061b7b18aa3a551c3ae12673":
+                lookup_title = "Moon Patrol"
+            remote_name = find_remote_name(indexes[playlist], lookup_title)
             if remote_name is None:
                 print(f"MISS  {platform}: {rom_path.name}")
                 missing += 1
