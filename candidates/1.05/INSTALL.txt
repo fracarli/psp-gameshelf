@@ -1,13 +1,13 @@
-PSP GameShelf 1.04 - separate GBA saves; awaiting hardware confirmation
+PSP GameShelf 1.05 - system-language UI; awaiting hardware confirmation
 
 Paired update: both GameShelf and the integrated TempGBA runtime must be updated.
 With the memory card mounted on your computer:
-python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --version 1.04 --backup-root ../PSP_BACKUP
+python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --version 1.05 --backup-root ../PSP_BACKUP
 
 The installer creates a complete backup and updates both EBOOTs. Old generated
 GBA entries are backed up and removed because they contain the previous launcher.
-Open GameShelf 1.04 on the PSP and press X to regenerate game entries.
-Do not mix the old 1.03 launcher with the new 1.04 TempGBA runtime.
+Open GameShelf 1.05 on the PSP and press X to regenerate game entries.
+Do not mix the old 1.03 launcher with the save-isolation TempGBA runtime.
 
 The staged ROM remains game.gba, but saves and states use the original ROM name:
 for example Game.sav and Game_0.svs in GAMESHELF/TempGBA/save and state.
@@ -21,7 +21,11 @@ Existing game.sav files and shared states are preserved, not automatically
 assigned to a title. Saves archived from other emulators remain untouched.
 Identify the correct game before transferring an old save.
 
-Hardware test:
+The runtime is unchanged from hardware-confirmed 1.04. This candidate updates
+GameShelf UI language selection only. Confirm the launcher follows the PSP
+language and that the existing saves still load.
+
+Optional regression check:
 1. Start GBA game A, save in the game and create a save state, then use Quit/Exit.
 2. Start GBA game B, save and use Quit/Exit.
 3. Reopen A and verify its own progress and state.

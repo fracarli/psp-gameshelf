@@ -15,11 +15,11 @@ def digest(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--sd-root', required=True, type=Path)
-    parser.add_argument('--version', choices=('1.00', '1.01', '1.02', '1.03', '1.04'), default='1.04')
+    parser.add_argument('--version', choices=('1.00', '1.01', '1.02', '1.03', '1.04', '1.05'), default='1.05')
     parser.add_argument('--backup-root', required=True, type=Path)
     args = parser.parse_args()
     project = Path(__file__).resolve().parents[1]
-    package = project / ('candidates/1.04' if args.version == '1.04' else 'releases/v1/' + args.version.split('.')[1])
+    package = project / ('candidates/1.05' if args.version == '1.05' else 'releases/v1/' + args.version.split('.')[1])
     for line in (package / 'SHA256SUMS.txt').read_text().splitlines():
         expected, name = line.split('  ', 1)
         if hashlib.sha256((package / name).read_bytes()).hexdigest() != expected:
@@ -30,11 +30,11 @@ def main():
     version_file = shelf / 'INSTALL_VERSION.TXT'
     if not target.is_file():
         raise RuntimeError('Existing GameShelf installation not found')
-    if version_file.exists() and version_file.read_text().strip() == '1.04' and args.version != '1.04':
-        raise RuntimeError('To roll back 1.04, restore the complete backup, including TempGBA and generated entries')
+    if version_file.exists() and version_file.read_text().strip() in ('1.04', '1.05') and args.version not in ('1.04', '1.05'):
+        raise RuntimeError('To roll back the save-isolation runtime, restore the complete backup, including TempGBA and generated entries')
     updates = [(package / 'EBOOT.PBP', target)]
     entries = []
-    if args.version == '1.04':
+    if args.version in ('1.04', '1.05'):
         runtime = shelf / 'TempGBA/EBOOT.PBP'
         if not runtime.is_file():
             raise RuntimeError('Existing integrated TempGBA runtime not found')
@@ -70,7 +70,7 @@ def main():
                 raise RuntimeError('Installed EBOOT verification failed: ' + str(dest))
         for folder in entries:
             shutil.rmtree(folder)
-        if args.version == '1.04':
+        if args.version in ('1.04', '1.05'):
             (shelf / 'TempGBA/SAVE_ID.TXT').unlink(missing_ok=True)
         version_file.write_text(args.version + '\n')
     except Exception:

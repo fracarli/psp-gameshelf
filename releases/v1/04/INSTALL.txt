@@ -1,0 +1,36 @@
+PSP GameShelf 1.04 - separate GBA saves confirmed on PSP
+
+Paired update: both GameShelf and the integrated TempGBA runtime must be updated.
+With the memory card mounted on your computer:
+python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --version 1.04 --backup-root ../PSP_BACKUP
+
+The installer creates a complete backup and updates both EBOOTs. Old generated
+GBA entries are backed up and removed because they contain the previous launcher.
+Open GameShelf 1.04 on the PSP and press X to regenerate game entries.
+Do not mix the old 1.03 launcher with the new 1.04 TempGBA runtime.
+
+The staged ROM remains game.gba, but saves and states use the original ROM name:
+for example Game.sav and Game_0.svs in GAMESHELF/TempGBA/save and state.
+Game settings, cheats and screenshots also use the original name.
+ROM filenames are limited to 180 bytes. Renaming a ROM changes its save filename.
+SAVE_ID.TXT checks the original name, ROM size and header fingerprint before
+loading saves. This is not a cryptographic check of the entire ROM.
+A missing or inconsistent identity stops ROM loading.
+
+Existing game.sav files and shared states are preserved, not automatically
+assigned to a title. Saves archived from other emulators remain untouched.
+Identify the correct game before transferring an old save.
+
+Hardware test:
+1. Start GBA game A, save in the game and create a save state, then use Quit/Exit.
+2. Start GBA game B, save and use Quit/Exit.
+3. Reopen A and verify its own progress and state.
+4. Reopen B and verify its progress. Also check icons and backgrounds.
+The integrated runtime retains the previous firmware HOME popup limitation.
+
+The 1.04 executable retains its original UI. Automatic system-language
+selection and English fallback are available in the separate 1.05 candidate.
+The user confirmed independent Mario Kart and Zelda saves on the tested PSP.
+
+Rollback: restore the complete GAMESHELF backup and the GBA entries from its
+generated_gba_entries directory. Restore both EBOOTs together, not only the launcher.

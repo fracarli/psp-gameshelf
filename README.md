@@ -17,7 +17,8 @@ shutdown, FastRecovery may be needed before starting homebrew.
 | [1.01](releases/v1/01/) | Cover icons confirmed on PSP | Game-specific cover icons |
 | [1.02](releases/v1/02/) | Confirmed on PSP | Square icons without a rectangular frame |
 | [1.03](releases/v1/03/) | Backgrounds confirmed on PSP | Full-screen background when a game is highlighted |
-| [1.04](candidates/1.04/) | Awaiting hardware confirmation | Separate GBA save, state and configuration filenames |
+| [1.04](releases/v1/04/) | Separate saves confirmed on PSP | Per-game GBA save, state and configuration filenames |
+| [1.05](candidates/1.05/) | UI language awaiting hardware confirmation | PSP system-language selection and English fallback |
 
 `releases/` contains hardware-confirmed builds and the working NesterJ adapter.
 Experimental builds are kept separately in `candidates/`. Obsolete packages
@@ -75,7 +76,7 @@ python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --version 1.03 --ba
 
 This is an update helper; emulator runtimes must already be installed.
 
-## GBA save isolation in 1.04 — experimental
+## GBA save isolation in 1.04 — confirmed on PSP
 
 Version 1.04 must update **both GameShelf and the integrated TempGBA runtime**:
 
@@ -98,15 +99,24 @@ automatically assigning them to a game. Identifying the correct title is
 required before transferring an old shared save.
 
 Test on hardware: **game A → save → game B → save → reopen A**, then reopen B.
-Check each game's normal saves and save states. Version 1.03 remains the stable
-reference until this sequence is confirmed on a PSP.
+The user confirmed independent Mario Kart and Zelda saves. Version 1.04 is
+the stable save-isolation build; further save-state testing remains useful.
 
 To roll back, restore the complete backup of GameShelf, TempGBA and generated
 GBA entries. The installer rejects a launcher-only downgrade from 1.04.
 
 ## Language
 
-Project documentation and computer tools use English. The 1.04 candidate PSP launcher
+To install the 1.05 language update, preserving saves and backing up old entries:
+
+```sh
+python3 tools/install_release.py --sd-root /Volumes/SD-FAT32 --version 1.05 --backup-root ../PSP_BACKUP
+```
+
+Open GameShelf 1.05 and press X to regenerate entries after the update.
+
+
+Project documentation and computer tools use English. The 1.05 candidate PSP launcher
 reads the console's system language: English and Italian are supported, with
 English as the fallback for all other languages or a failed settings read.
 Emulator menus retain the language options provided by their upstream projects.
@@ -120,7 +130,7 @@ Emulator menus retain the language options provided by their upstream projects.
 - Exit GBA games through the emulator's **Quit/Exit** menu. The firmware HOME
   popup remains disabled in the integrated runtime.
 - Versions through 1.03 may share the GBA save filename `game.sav`.
-  Separate filenames in 1.04 still require hardware confirmation.
+  Separate save filenames in 1.04 have been confirmed on PSP.
 - PSP ISO and PS1 games work through the normal XMB, but launching them through
   GameShelf remains unresolved on the tested PRO-C installation.
 - GB/GBC, Atari, Mega Drive and SNES appear in the legacy catalog; automatic
@@ -140,7 +150,7 @@ python3 tools/verify_language.py
 ```
 
 The Makefile defaults to `~/pspdev`; set `PSPDEV` for a different installation.
-The current source builds the 1.04 candidate. Tests cover generated PBP/SFO
+The current source builds the 1.05 candidate, using the unchanged 1.04 runtime. Tests cover generated PBP/SFO
 metadata, executable preservation, cover and background PNGs, invalid inputs,
 per-game save identity, paired installation and rollback, and language selection.
 Computer tests do not replace testing on a real PSP.

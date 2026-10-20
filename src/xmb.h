@@ -1,5 +1,5 @@
 #include "language.h"
-/* GameShelf 1.04: generate per-ROM XMB EBOOTs, no emulator duplication. */
+/* GameShelf 1.05: generate per-ROM XMB EBOOTs, no emulator duplication. */
 static unsigned int read32(const unsigned char *p)
 {
     return p[0] | ((unsigned int)p[1]<<8) | ((unsigned int)p[2]<<16) | ((unsigned int)p[3]<<24);

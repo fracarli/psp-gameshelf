@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Exercise paired 1.04 installation on a temporary card with legacy saves."""
+"""Exercise paired 1.05 installation on a temporary card with legacy saves."""
 from pathlib import Path
 import subprocess
 import struct
@@ -22,13 +22,13 @@ with tempfile.TemporaryDirectory() as d:
     pos=b.index(b'GSHXMB100TARGET!');struct.pack_into('<I',b,pos+16,3)
     (entry/'EBOOT.PBP').write_bytes(b)
     backups=root/'backups'
-    cmd=['python3',str(ROOT/'tools/install_release.py'),'--sd-root',str(card),'--version','1.04','--backup-root',str(backups)]
+    cmd=['python3',str(ROOT/'tools/install_release.py'),'--sd-root',str(card),'--version','1.05','--backup-root',str(backups)]
     subprocess.run(cmd,check=True,capture_output=True)
     assert not entry.exists()
     backup=next(backups.iterdir())
     assert (backup/'generated_gba_entries/GSH_GBA_TEST/EBOOT.PBP').read_bytes()==b
-    assert (shelf/'EBOOT.PBP').read_bytes()==(ROOT/'candidates/1.04/EBOOT.PBP').read_bytes()
-    assert (shelf/'TempGBA/EBOOT.PBP').read_bytes()==(ROOT/'candidates/1.04/TempGBA/EBOOT.PBP').read_bytes()
+    assert (shelf/'EBOOT.PBP').read_bytes()==(ROOT/'candidates/1.05/EBOOT.PBP').read_bytes()
+    assert (shelf/'TempGBA/EBOOT.PBP').read_bytes()==(ROOT/'candidates/1.05/TempGBA/EBOOT.PBP').read_bytes()
     assert (backup/'GAMESHELF/TempGBA/EBOOT.PBP').read_bytes()==old_runtime
     assert (shelf/'TempGBA/save/game.sav').read_bytes()==b'legacy SRAM must survive'
     assert (shelf/'TempGBA/state/game_0.svs').read_bytes()==b'legacy state must survive'
@@ -59,6 +59,6 @@ with tempfile.TemporaryDirectory() as d:
     assert (shelf/'TempGBA/EBOOT.PBP').read_bytes()==b'previous runtime executable'
     assert (shelf/'TempGBA/save/Adventure.sav').read_bytes()==b'per-game SRAM'
     # Reject a partial downgrade; the two runtimes must be restored together.
-    downgrade=cmd.copy();downgrade[downgrade.index('1.04')]='1.03'
+    downgrade=cmd.copy();downgrade[downgrade.index('1.05')]='1.03'
     assert subprocess.run(downgrade,capture_output=True).returncode!=0
 print('PASS: paired installation, entry backup/regeneration, old and named saves preserved, rollback on runtime write failure, partial downgrade rejected')
