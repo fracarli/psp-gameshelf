@@ -16,6 +16,7 @@
 
 The user confirmed the installed 1.08 setup and Minecraft run on PSP-3004,
 6.61 PRO-C. Tag v1.08 preserves that stable project source. A private checkpoint
-backs up the launcher, runtime settings and saves. Fresh-card installer 1.09
-and N64 candidate 1.10 remain unconfirmed on hardware. PSP ISO/PS1 use native
+backs up the launcher, runtime settings and saves. Installer 1.09
+still requires a fresh-card hardware test. N64 candidate 1.10 has partial hardware
+validation; see [test results](n64-hardware-tests.md). PSP ISO/PS1 use native
 XMB launch. The project name remains GameShelf.

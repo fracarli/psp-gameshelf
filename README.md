@@ -79,8 +79,11 @@ backgrounds are supported. Existing runtime settings and saves remain in use.
 
 This is a launcher-only test update for the existing setup, not a complete
 first installer or a supported computer-updater target. The separate 1.09
-single-file installer still includes seven systems. N64 startup, controls,
-performance and saves require PSP validation before joining a stable package.
+single-file installer still includes seven systems. User hardware tests confirm
+direct launch and gameplay in Super Mario 64 and Super Smash Bros.; Paper Mario
+launches but has gameplay/audio slowdowns, and Mario Tennis freezes at the
+Camelot logo. Save/reload and repeatable startup timings still need validation.
+See the [hardware test notes](docs/n64-hardware-tests.md). N64 remains experimental.
 Read the candidate instructions for backups and how to show Daedalus again
 if a direct launch fails.
 
@@ -150,8 +153,9 @@ Downloaded art stays on the card and is never part of this repository.
 ## Hiding emulator entries
 
 An optional Game Categories Lite filter can hide the shared emulator entries
-while retaining their executables and all existing game/save paths. GameShelf,
-FastRecovery and the N64 emulator remain visible because they are still useful.
+while retaining their executables and all existing game/save paths. GameShelf
+and FastRecovery remain visible. The test card also hides Daedalus; its filter
+line can be removed to access the emulator menu for comparison tests.
 See [the XMB filter guide](docs/xmb-filter.md). This optional configuration
 is awaiting a PSP check and is not included in the stable setup ZIP.
 
@@ -180,7 +184,7 @@ ROM and regenerate to recreate its entry.
 | NES / GBA | Confirmed on PSP |
 | GB / GBC | Direct launch confirmed on PSP in 1.07 |
 | Atari / Mega Drive / SNES | Available in stable 1.08; installed setup confirmed by user |
-| N64 | Direct launch implemented in 1.10 candidate; awaiting PSP confirmation |
+| N64 | 1.10 experimental: gameplay confirmed for selected titles; compatibility varies |
 | PSP ISO / PS1 | Use the normal PSP home screen; GameShelf launch remains unresolved on tested PRO-C |
 
 Each entry contains a small launcher copy; emulator runtimes remain shared.
@@ -206,7 +210,7 @@ are in [candidates/](candidates/). Archived executables are never overwritten.
 | [1.07](releases/v1/07/) | GB/GBC direct launch confirmed; minimal loading bars |
 | [1.08](releases/v1/08/) | User-confirmed setup; Atari/MD/SNES adapters and bridge icon |
 | [1.09 candidate](candidates/1.09/) | Single-file first installer; Moon Patrol display correction; awaiting PSP test |
-| [1.10 candidate](candidates/1.10/) | N64 direct launch through unmodified DaedalusX64; awaiting PSP test |
+| [1.10 candidate](candidates/1.10/) | N64 direct launch; partial hardware validation, still experimental |
 
 An English [presentation storyboard and narration](media/presentation/production-plan.md)
 are prepared for a real-hardware demonstration.
